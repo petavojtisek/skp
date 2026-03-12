@@ -6,7 +6,10 @@ use App\Model\Base\BaseDao;
 
 class LookupDao extends BaseDao
 {
-    protected $entityName = 'Lookup\LookupEntity';
+    protected string $entityName = 'Lookup\LookupEntity';
+
+    /** @var LookupMapper */
+    protected $mapper;
 
     public function __construct(LookupMapper $mapper)
     {
@@ -42,4 +45,6 @@ class LookupDao extends BaseDao
     {
         $this->mapper->deleteTranslations($lookupId);
     }
+
+
 }

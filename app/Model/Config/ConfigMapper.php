@@ -6,8 +6,8 @@ use App\Model\Base\BaseMapper;
 
 class ConfigMapper extends BaseMapper
 {
-    protected $tableName = 'config';
-    protected $primaryKey = 'config_id';
+    protected string $tableName = 'config';
+    protected string $primaryKey = 'config_id';
 
     /**
      * Get values from translation table

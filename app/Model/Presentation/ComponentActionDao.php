@@ -6,15 +6,21 @@ use App\Model\Base\BaseDao;
 
 class ComponentActionDao extends BaseDao
 {
-    protected $entityName = 'Presentation\ComponentActionEntity';
+    protected string $entityName = 'ComponentActionEntity';
+
+    /** @var ComponentActionMapper */
+    protected $mapper;
 
     public function __construct(ComponentActionMapper $mapper)
     {
         $this->mapper = $mapper;
     }
 
-    public function findByPresentation(int $presentationId): array
+    /**
+     * @return ComponentActionMapper
+     */
+    public function getMapper(): \App\Model\Base\IMapper
     {
-        return $this->findAllBy(['presentation_id' => $presentationId]) ?: [];
+        return $this->mapper;
     }
 }

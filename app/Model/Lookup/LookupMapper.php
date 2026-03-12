@@ -6,8 +6,14 @@ use App\Model\Base\BaseMapper;
 
 class LookupMapper extends BaseMapper
 {
-    protected $tableName = 'lookup';
-    protected $primaryKey = 'lookup_id';
+    protected string $tableName = 'lookup';
+
+    protected string $primaryKey = 'lookup_id';
+
+
+    protected string $translateName = 'lookup_lang';
+    protected string $translateKey = 'lookup_id';
+    protected string $langKey = 'lang_id';
 
     public function getConstants(): array
     {
@@ -23,13 +29,13 @@ class LookupMapper extends BaseMapper
      * @param int|null $langId
      * @return array
      */
-    public function getLookupList($pid, $langId = null)
+    public function getLookupList(int $pid, ?int $langId = null): array
     {
         $selection = $this->db->select('l.lookup_id, COALESCE(ll.item, l.item) as item, l.constant')
             ->from($this->tableName)->as('l')
             ->leftJoin('lookup_lang')->as('ll')->on('l.lookup_id = ll.lookup_id AND ll.lang_id = %i', $langId)
             ->where('l.parent_id = %i', $pid);
-            
+
         return $selection->fetchAssoc('lookup_id');
     }
 
@@ -39,7 +45,7 @@ class LookupMapper extends BaseMapper
      * @param int|null $langId
      * @return string|null
      */
-    public function getLookupItem($lookupId, $langId = null)
+    public function getLookupItem(int $lookupId, ?int $langId = null): ?string
     {
         return $this->db->select('COALESCE(ll.item, l.item)')
             ->from($this->tableName)->as('l')

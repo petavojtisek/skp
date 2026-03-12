@@ -6,6 +6,6 @@ use App\Model\Base\BaseMapper;
 
 class ComponentActionMapper extends BaseMapper
 {
-    protected $tableName = 'presentation_component_action';
-    protected $primaryKey = 'element_id';
+    protected string $tableName = 'presentation_component_action';
+    protected string $primaryKey = 'element_id';
 }

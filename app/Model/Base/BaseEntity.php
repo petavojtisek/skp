@@ -67,12 +67,16 @@ class BaseEntity extends AEntity implements IEntity
 	public function setSessionId($sessionId = null)
 	{
 		if (!empty($sessionId)) {
-			$this->setVariable('sessionId', $sessionId);
+			$this->setVariable('session_id', $sessionId, self::VALUE_TYPE_STRING);
 		} else {
-			$this->setVariable('sessionId', session_id());
+			$this->setVariable('session_id', session_id(), self::VALUE_TYPE_STRING);
 		}
-
 	}
+
+    public function getSessionId(): ?string
+    {
+        return $this->session_id;
+    }
 
 	public function getIdHash(){
 
@@ -82,23 +86,28 @@ class BaseEntity extends AEntity implements IEntity
 	public function setCreatedIp($createdIp = null)
 	{
 		if (!empty($createdIp)) {
-			$this->setVariable('createdIp', $createdIp);
+			$this->setVariable('created_ip', $createdIp, self::VALUE_TYPE_STRING);
 		} else {
-			$this->setVariable('createdIp', filter_input(INPUT_SERVER, 'REMOTE_ADDR'));
+			$this->setVariable('created_ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'), self::VALUE_TYPE_STRING);
 		}
 	}
+
+    public function getCreatedIp(): ?string
+    {
+        return $this->created_ip;
+    }
 
 	public function setCreatedDt($createdDt = null)
 	{
 		if (!empty($createdDt) and $createdDt instanceof DateTime) {
-			$this->setVariable('createdDt', $createdDt);
+			$this->setVariable('created_dt', $createdDt,self::VALUE_TYPE_DATE);
 		} else {
-			$this->setVariable('createdDt', new DateTime());
+			$this->setVariable('created_dt', new DateTime(), self::VALUE_TYPE_DATE);
 		}
-
 	}
 
-
-
-
+    public function getCreatedDt($fomat = null)
+    {
+        return $this->getDateTime($this->created_dt  , $fomat);
+    }
 }

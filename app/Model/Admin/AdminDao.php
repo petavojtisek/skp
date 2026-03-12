@@ -6,7 +6,10 @@ use App\Model\Base\BaseDao;
 
 class AdminDao extends BaseDao
 {
-    protected $entityName = 'Admin\AdministratorEntity';
+    protected string $entityName = 'Admin\AdministratorEntity';
+
+    /** @var AdminMapper */
+    protected $mapper;
 
     public function __construct(AdminMapper $mapper)
     {
@@ -42,5 +45,13 @@ class AdminDao extends BaseDao
     public function saveAdminPresentations(int $adminId, array $presentationIds): void
     {
         $this->mapper->saveAdminPresentations($adminId, $presentationIds);
+    }
+
+    /**
+     * @return AdminMapper
+     */
+    public function getMapper(): \App\Model\Base\IMapper
+    {
+        return $this->mapper;
     }
 }

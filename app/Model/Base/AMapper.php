@@ -23,22 +23,35 @@ abstract class AMapper implements IMapper
 
 
 	/** @var Connection */
-	protected $db;
+	protected Connection $db;
 
 	/** @var Connection */
-	protected $dbSlave;
+	protected Connection $dbSlave;
 
 	/** @var string */
-	protected $tableName;
+	protected string $tableName;
 
 	/** @var string */
-	protected $primaryKey;
+	protected string $primaryKey;
+
+    protected string $translateKey;
+    protected string $translateTableName;
+
+    /** @var \Nette\DI\Container */
+    protected \Nette\DI\Container $container;
 
 
 	public function __construct(Connection $connection) {
 		$this->db = $connection;
 		#$this->dbSlave = $slaveConnection;
 	}
+
+
+    public function injectContainer(\Nette\DI\Container $container)
+    {
+
+        $this->container = $container;
+    }
 
 	public function setSlaveConnection(Connection $slaveConnection): void{
 
@@ -144,8 +157,6 @@ abstract class AMapper implements IMapper
 		if ($data instanceof IEntity) {
 			$data = $data->getEntityData();
 			//unset defaults if exist
-
-
 		}
 
 
@@ -153,10 +164,7 @@ abstract class AMapper implements IMapper
 			$id = $data[$this->primaryKey];
 			unset($data[$this->primaryKey]);
 
-			if(array_key_exists('credit', $data))
-				unset($data['credit']);
-
-			if(array_key_exists('createdDt', $data))
+			if(array_key_exists('created_dt', $data))
 				unset($data['createdDt']);
 
 			return $this->db->update($this->tableName, $data)->where($this->primaryKey . ' = %i', $id);

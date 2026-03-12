@@ -27,12 +27,7 @@ class AdminService extends BaseService
 
     public function saveAdmin(AdministratorEntity $admin): int
     {
-        if ($admin->getId()) {
-            $this->adminDao->update($admin);
-            return (int)$admin->getId();
-        } else {
-            return (int)$this->adminDao->insert($admin);
-        }
+        return (int)$this->adminDao->save($admin)->getId();
     }
 
     public function softDelete(int $id): void

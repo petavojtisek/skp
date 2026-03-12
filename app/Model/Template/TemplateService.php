@@ -40,7 +40,7 @@ class TemplateService extends BaseService
 
     public function getCodeNames(int $templateId): array
     {
-        return $this->codeNameDao->findByTemplate($templateId);
+        return $this->codeNameDao->findAllBy(['template_id' => $templateId]) ?: [];
     }
 
     public function getCodeName(int $id): ?CodeNameEntity

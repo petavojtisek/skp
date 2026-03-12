@@ -6,8 +6,14 @@ use App\Model\Base\BaseMapper;
 
 class LogMapper extends BaseMapper
 {
-    protected $tableName = 'cms_log';
-    protected $primaryKey = 'id';
+    protected string $tableName = 'cms_log';
+    protected string $primaryKey = 'id';
+
+
+    public static function getTablenNameStatic()
+    {
+        return 'cms_log';
+    }
 
     public function getLogsWithAdmin(): array
     {

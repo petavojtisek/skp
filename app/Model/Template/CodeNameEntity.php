@@ -6,11 +6,11 @@ use App\Model\Base\BaseEntity;
 
 class CodeNameEntity extends BaseEntity
 {
-    public $id;
-    public $template_id;
-    public $module;
-    public $code_name;
+    public mixed $id = null;
+    public mixed $template_id = null;
+    public ?string $module = null;
+    public ?string $code_name = null;
 
-    public function getId() { return $this->id; }
-    public function setId($id): void { $this->setVariable('id', $id, self::VALUE_TYPE_INTEGER); }
+    public function getId(): mixed { return $this->id; }
+    public function setId(mixed $id): void { $this->setVariable('id', $id, self::VALUE_TYPE_INTEGER); }
 }

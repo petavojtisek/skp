@@ -4,17 +4,14 @@ namespace App\Model\Admin;
 
 class LoggedUserEntity extends AdministratorEntity
 {
-    /** @var array|null */
-    public $group;
+    public ?array $group = null;
 
     /** @var array [presentation_id => 1/0] */
-    public $presentations = [];
+    public array $presentations = [];
 
-    /** @var array */
-    public $rights = [];
+    public array $rights = [];
 
-    /** @var int|null */
-    public $active_presentation_id;
+    public ?int $active_presentation_id = null;
 
     public function setGroup(?array $group): void
     {

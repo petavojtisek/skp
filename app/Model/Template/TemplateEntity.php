@@ -6,13 +6,13 @@ use App\Model\Base\BaseEntity;
 
 class TemplateEntity extends BaseEntity
 {
-    public $template_id;
-    public $template_type;
-    public $template_filename;
-    public $template_name;
-    public $template_path;
-    public $presentation_id;
+    public mixed $template_id = null;
+    public mixed $template_type = null;
+    public ?string $template_filename = null;
+    public ?string $template_name = null;
+    public ?string $template_path = null;
+    public mixed $presentation_id = null;
 
-    public function getId() { return $this->template_id; }
-    public function setId($id): void { $this->setVariable('template_id', $id, self::VALUE_TYPE_INTEGER); }
+    public function getId(): mixed { return $this->template_id; }
+    public function setId(mixed $id): void { $this->setVariable('template_id', $id, self::VALUE_TYPE_INTEGER); }
 }

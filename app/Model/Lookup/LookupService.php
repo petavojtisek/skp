@@ -79,18 +79,14 @@ class LookupService extends BaseService
 
     public function saveLookup(LookupEntity $lookup): int
     {
-        if ($lookup->getId()) {
-            $this->lookupDao->update($lookup);
-            $id = $lookup->getId();
-        } else {
+        if (!$lookup->getId() && $lookup->parent_id == 1) {
             // Logic for Master ID series (+100)
-            if ($lookup->parent_id == 1) {
-                $maxId = $this->lookupDao->getMapper()->getMaxMasterId();
-                $newId = (int) (floor($maxId / 100) * 100 + 100);
-                $lookup->setId($newId);
-            }
-            $id = (int) $this->lookupDao->insert($lookup);
+            $maxId = $this->lookupDao->getMapper()->getMaxMasterId();
+            $newId = (int) (floor($maxId / 100) * 100 + 100);
+            $lookup->setId($newId);
         }
+
+        $id = (int) $this->lookupDao->save($lookup)->getId();
 
         foreach ($lookup->getTranslations() as $langId => $item) {
             if (defined('C_LANGUAGE_CS') && $langId == C_LANGUAGE_CS) continue;

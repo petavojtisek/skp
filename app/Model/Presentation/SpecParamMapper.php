@@ -6,6 +6,6 @@ use App\Model\Base\BaseMapper;
 
 class SpecParamMapper extends BaseMapper
 {
-    protected $tableName = 'spec_param_presentation';
-    protected $primaryKey = 'spec_param_id';
+    protected string $tableName = 'spec_param_presentation';
+    protected string $primaryKey = 'spec_param_id';
 }

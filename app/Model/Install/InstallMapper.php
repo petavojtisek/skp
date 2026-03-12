@@ -6,6 +6,6 @@ use App\Model\Base\BaseMapper;
 
 class InstallMapper extends BaseMapper
 {
-    protected $tableName = 'install';
-    protected $primaryKey = 'install_id';
+    protected string $tableName = 'install';
+    protected string $primaryKey = 'install_id';
 }

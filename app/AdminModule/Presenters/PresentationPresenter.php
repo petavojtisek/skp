@@ -36,7 +36,7 @@ final class PresentationPresenter extends AdminPresenter
                 $this->error('Prezentace nebyla nalezena');
             }
             $this['basicForm']->setDefaults($presentation->getEntityData());
-            
+
             // SpecParams & ComponentActions
             $this->template->specParams = $this->presentationFacade->getSpecParams($id);
             $this->template->componentActions = $this->presentationFacade->getComponentActions($id);
@@ -97,7 +97,7 @@ final class PresentationPresenter extends AdminPresenter
     {
         $this->presentationFacade->deleteSpecParam($id);
         $this->flashMessage('Parametr byl smazán.');
-        
+
         if ($this->isAjax()) {
             $this->template->presentationId = $presentationId;
             $this->template->specParams = $this->presentationFacade->getSpecParams($presentationId);
@@ -111,9 +111,9 @@ final class PresentationPresenter extends AdminPresenter
     protected function createComponentBasicForm(): Form
     {
         $form = new Form;
-        
+
         $form->addHidden('presentation_id');
-        
+
         $form->addText('presentation_name', 'Název prezentace')
             ->setRequired('Zadejte název prezentace');
 
@@ -142,15 +142,15 @@ final class PresentationPresenter extends AdminPresenter
 
         $presentation = $id ? $this->presentationFacade->getPresentation($id) : new PresentationEntity();
         $presentation->fillEntity((array) $values);
-        
+
         if (!$id) {
-            $presentation->presentation_lang = C_LANGUAGE_CS; 
-            $presentation->presentation_status = C_PRESENTATION_STATUS_ACTIVE; 
+            $presentation->presentation_lang = C_LANGUAGE_CS;
+            $presentation->presentation_status = C_PRESENTATION_STATUS_ACTIVE;
         }
-        
+
         $newId = $this->presentationFacade->savePresentation($presentation);
         $this->flashMessage('Základní nastavení bylo uloženo.');
-        
+
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('basicFormSnippet');
@@ -184,13 +184,13 @@ final class PresentationPresenter extends AdminPresenter
     public function specParamFormSucceeded(Form $form, \stdClass $values): void
     {
         $presentationId = (int) $values->presentation_id;
-        
+
         $entity = new SpecParamEntity();
         $entity->fillEntity((array) $values);
-        
-        $this->presentationFacade->saveSpecParam($entity);
+
+        $entity = $this->presentationFacade->saveSpecParam($entity);
         $this->flashMessage('Parametr byl uložen.');
-        
+
         if ($this->isAjax()) {
             $this->spec_param_id = null;
             $form->setValues([], true);

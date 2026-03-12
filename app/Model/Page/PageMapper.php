@@ -6,6 +6,6 @@ use App\Model\Base\BaseMapper;
 
 class PageMapper extends BaseMapper
 {
-    protected $tableName = 'page';
-    protected $primaryKey = 'id';
+    protected string $tableName = 'page';
+    protected string $primaryKey = 'id';
 }

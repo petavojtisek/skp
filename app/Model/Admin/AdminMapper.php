@@ -6,8 +6,8 @@ use App\Model\Base\BaseMapper;
 
 class AdminMapper extends BaseMapper
 {
-    protected $tableName = 'admin';
-    protected $primaryKey = 'admin_id';
+    protected string $tableName = 'admin';
+    protected string $primaryKey = 'admin_id';
 
     public function getActiveAdmins(): array
     {

@@ -6,15 +6,14 @@ use App\Model\Base\BaseDao;
 
 class CodeNameDao extends BaseDao
 {
-    protected $entityName = 'Template\CodeNameEntity';
+    protected string $entityName = 'CodeNameEntity';
+
+    /** @var CodeNameMapper */
+    protected $mapper;
 
     public function __construct(CodeNameMapper $mapper)
     {
         $this->mapper = $mapper;
     }
 
-    public function findByTemplate(int $templateId): array
-    {
-        return $this->findAllBy(['template_id' => $templateId]) ?: [];
-    }
 }

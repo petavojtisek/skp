@@ -1,25 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: PetrV
- * Date: 3.2.2019
- * Time: 10:16
- */
-
 namespace App\Model\Base;
 
-use App\Model\System\EncodeDecode;
+
 use Dibi\DateTime;
 use Nette\Utils\ArrayHash;
 
 abstract class AEntity implements IEntity
 {
-	const VALUE_TYPE_INTEGER = 'int';
-	const VALUE_TYPE_FLOAT = 'float';
-	const VALUE_TYPE_STRING = 'string';
-	const VALUE_TYPE_JSON = 'json';
-	const VALUE_TYPE_DATE = 'date';
-	const VALUE_TYPE_BOOLEAN = 'bool';
+	const string VALUE_TYPE_INTEGER = 'int';
+	const string VALUE_TYPE_FLOAT = 'float';
+	const string VALUE_TYPE_STRING = 'string';
+	const string VALUE_TYPE_JSON = 'json';
+	const string VALUE_TYPE_DATE = 'date';
+	const string VALUE_TYPE_BOOLEAN = 'bool';
 
 	protected array $defaultProperties = ['session_id','created_ip','created_dt'];
 
@@ -30,13 +23,16 @@ abstract class AEntity implements IEntity
 	/** @var array */
 	protected array $valuesSet = [];
 
-	/** @var array */
+    protected $valuesIgnored = [];
+
+    protected $valuesDiff = [];
+
+    /** @var array */
 	protected array $valuesUpdated = [];
 
-	/** @var EncodeDecode|null */
-	private ?EncodeDecode $encodeDecode = null;
 
-
+    /** @var array of BaseTranslateEntity */
+    protected array $translates = [];
 
 	/**
 	 * BaseEntity constructor.
@@ -103,10 +99,41 @@ abstract class AEntity implements IEntity
 			}
 		}
 
+        if (!empty($this->$variableName) and $this->$variableName !== $value) {
+            $this->valuesUpdated[$variableName] = $variableName;
+        }
+
 		$this->$variableName = $value;
 		$this->valuesSet[$variableName] = $variableName;
-		return $this;
+
+
+        // Sleduj zmeny v entitach
+        $this->logChanges($variableName, $type === self::VALUE_TYPE_JSON ? json_encode($value) : $value);
+
+        return $this;
 	}
+
+    protected function logChanges(string $variableName, $value): void
+    {
+        if (!in_array($variableName, $this->valuesIgnored, true))
+        {
+            if (array_key_exists($variableName, $this->valuesDiff) && is_array($this->valuesDiff[$variableName]) && count($this->valuesDiff[$variableName]) > 0)
+            {
+                if ($this->valuesDiff[$variableName][0] != $value) // Zemerne pouzita podobnost ( != ) namisto totoznosti ( !== )
+                {
+                    $this->valuesDiff[$variableName][1] = $value;
+                }
+                else if (array_key_exists(1, $this->valuesDiff[$variableName]))
+                {
+                    unset($this->valuesDiff[$variableName][1]);
+                }
+            }
+            else
+            {
+                $this->valuesDiff[$variableName] = [$value];
+            }
+        }
+    }
 
 
 	/**
@@ -115,28 +142,60 @@ abstract class AEntity implements IEntity
 	 * @param bool $setDefaults
 	 * @return IEntity
 	 */
-	public function fillEntity(array $data = [], bool $setDefaults = true): IEntity
-	{
-		if($setDefaults) {
-			$this->setDefaultsProperty();
-		}
+    public function fillEntity(array $data = [], bool $setDefaults = true): IEntity
+    {
+        if ($setDefaults) {
+            $this->setDefaultsProperty();
+        }
 
-		if (!empty($data)) {
-			foreach ($data as $key => $value) {
-				$methodName = 'set' . ucfirst((string)$key);
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                if ($key == 'translates') {
+                    foreach ($value as $translateKey => $translateValue) {
+                        if ($translateValue instanceof BaseTranslateEntity) {
+                            $this->addTranslate($translateValue);
+                        } else {
+                            $translateValue = new \ArrayObject($translateValue);
+                            $translate = new BaseTranslateEntity([
+                                'element_id' => $translateValue->element_id?? null,
+                                'lang_id' => $translateValue->lang_id?? null,
+                                'value' => $translateValue->value?? null,
+                            ]);
 
-				if (method_exists($this, $methodName)) {
-					$this->$methodName($value);
-				} else {
-					if (property_exists($this, (string)$key)) {
-						$this->setVariable((string)$key, $value);
-					}
-				}
-			}
-		}
+                            $this->addTranslate($translate);
+                        }
+                    }
+                } else {
+                    $methodName = 'set' . ucfirst((string)$key);
+                    if (method_exists($this, $methodName)) {
+                        $this->$methodName($value);
+                    } else {
+                        if (property_exists($this, (string)$key)) {
+                            $this->setVariable((string)$key, $value);
+                        }
+                    }
+                }
+            }
+        }
 
-		return $this;
-	}
+        return $this;
+    }
+
+
+    public function setTranslates(array $translates): void
+    {
+        $this->translates = $translates;
+    }
+
+    public function getTranslates(): array
+    {
+        return $this->translates;
+    }
+
+    public function addTranslate(BaseTranslateEntity $translateEntity): void
+    {
+        $this->translates[$translateEntity->getLangId()] = $translateEntity;
+    }
 
 	/**
 	 * Get core data
@@ -158,7 +217,75 @@ abstract class AEntity implements IEntity
 		return $values;
 	}
 
+    public function getUpdatedData() {
+        $values = array();
+        if (!empty($this->valuesUpdated)) {
+            foreach ($this->valuesUpdated as $value) {
+                $getter = 'get' . ucfirst($value);
+                $values[$value] = ($this->$value === '') ? null : $this->$getter();
+            }
+        }
+        return $values;
+    }
 
+    public function hasChanged($includeObjects = false) : bool
+    {
+        foreach ($this->valuesDiff as $values)
+            if (count($values) > 1 && ($includeObjects || ((!is_object($values[0]) || method_exists($values[0], '__toString')) && (!is_object($values[1]) || method_exists($values[1], '__toString')))))
+                return true;
+
+        return false;
+    }
+
+    public function getDiffData(bool $allValues = false, bool $includeObjects = false) : ?array
+    {
+        $diff = null;
+
+        if (count($this->valuesDiff) > 0)
+        {
+            $diff = [
+                'before' => [],
+                'after' => [],
+            ];
+
+            foreach ($this->valuesDiff as $name => $values)
+            {
+                if (!$includeObjects)
+                {
+                    foreach ([0,1] as $i)
+                    {
+                        if (array_key_exists($i, $values) && is_object($values[$i]))
+                        {
+                            if (method_exists($values[$i], '__toString'))
+                            {
+                                $values[$i] = $values[$i]->__toString();
+                            }
+                            else
+                            {
+                                unset($values[$i]);
+                            }
+                        }
+                    }
+                }
+
+                if (count($values) > 0)
+                {
+                    if (count($values) === 2 && ($includeObjects || (!is_object($values[0]) && !is_object($values[1]))))
+                    {
+                        $diff['before'][$name] = $values[0];
+                        $diff['after'][$name] = $values[1];
+                    }
+                    else if ($allValues && ($includeObjects || !is_object($values[0])))
+                    {
+                        $diff['before'][$name] = $values[0];
+                        $diff['after'][$name] = $values[0];
+                    }
+                }
+            }
+        }
+
+        return $diff;
+    }
 
 	public function getJSON(string $variable, mixed $key = false): mixed
 	{
@@ -238,18 +365,4 @@ abstract class AEntity implements IEntity
 		}
 		return null;
 	}
-
-	/**
-	 * @return EncodeDecode
-	 */
-	public function getEncodeDecode(): EncodeDecode
-	{
-		if (!$this->encodeDecode) {
-			$this->encodeDecode = new EncodeDecode();
-		}
-		return $this->encodeDecode;
-	}
-
-
-
 }

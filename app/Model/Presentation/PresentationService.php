@@ -40,11 +40,7 @@ class PresentationService extends BaseService
 
     public function savePresentation(PresentationEntity $presentation): int
     {
-        if ($presentation->getId()) {
-            return $this->presentationDao->update($presentation);
-        } else {
-            return (int) $this->presentationDao->insert($presentation);
-        }
+        return (int) $this->presentationDao->save($presentation)->getId();
     }
 
     public function deletePresentation(int $id): void
@@ -54,11 +50,11 @@ class PresentationService extends BaseService
 
     public function getSpecParams(int $presentationId): array
     {
-        return $this->specParamDao->findByPresentation($presentationId);
+        return $this->specParamDao->findAllBy(['presentation_id' => $presentationId]) ?: [];
     }
 
     public function getComponentActions(int $presentationId): array
     {
-        return $this->componentActionDao->findByPresentation($presentationId);
+        return $this->componentActionDao->findAllBy(['presentation_id' => $presentationId]) ?: [];
     }
 }

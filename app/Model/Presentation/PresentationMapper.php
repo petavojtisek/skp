@@ -6,6 +6,6 @@ use App\Model\Base\BaseMapper;
 
 class PresentationMapper extends BaseMapper
 {
-    protected $tableName = 'presentation';
-    protected $primaryKey = 'presentation_id';
+    protected string $tableName = 'presentation';
+    protected string $primaryKey = 'presentation_id';
 }

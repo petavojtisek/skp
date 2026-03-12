@@ -6,11 +6,11 @@ use App\Model\Base\BaseEntity;
 
 class InstallEntity extends BaseEntity
 {
-    public $install_id;
-    public $module_name;
-    public $installed;
-    public $path;
+    public mixed $install_id = null;
+    public ?string $module_name = null;
+    public mixed $installed = null;
+    public ?string $path = null;
 
-    public function getId() { return $this->install_id; }
-    public function setId($id): void { $this->setVariable('install_id', $id, self::VALUE_TYPE_INTEGER); }
+    public function getId(): mixed { return $this->install_id; }
+    public function setId(mixed $id): void { $this->setVariable('install_id', $id, self::VALUE_TYPE_INTEGER); }
 }

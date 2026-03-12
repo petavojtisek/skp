@@ -36,11 +36,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <strong>Odeslaná data:</strong>
-                                <pre class="small">{$log->send_data ? json_encode(json_decode($log->send_data), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : ''}</pre>
+                                <pre class="small">{$log->send_data ? json_encode(json_decode($log->send_data), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
                             </div>
                             <div class="col-md-6">
                                 <strong>Původní data:</strong>
-                                <pre class="small">{$log->before_data ? json_encode(json_decode($log->before_data), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : ''}</pre>
+                                <pre class="small">{$log->before_data ? json_encode(json_decode($log->before_data), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
                             </div>
                         </div>
                     </td>

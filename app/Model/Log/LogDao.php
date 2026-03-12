@@ -6,15 +6,19 @@ use App\Model\Base\BaseDao;
 
 class LogDao extends BaseDao
 {
-    protected $entityName = 'Log\LogEntity';
+    protected string $entityName = 'Log\\LogEntity';
+
+    /** @var LogMapper */
+    protected $mapper;
 
     public function __construct(LogMapper $mapper)
     {
         $this->mapper = $mapper;
     }
 
-    public function getLogs(): array
+    public function getLogs()
     {
-        return $this->mapper->getLogsWithAdmin();
+        return [];
     }
+
 }

@@ -38,10 +38,10 @@ class ConfigService extends BaseService
         }
 
         // Save translations (excluding default if logic requires it, but here we save all provided)
-        foreach ($config->getTranslations() as $langId => $value) {
+        foreach ($config->getTranslates() as $langId => $value) {
             if ($langId == C_LANGUAGE_CS) continue; // CS is already in the main table value
             if ($value === null || $value === '') continue; // Skip empty translations
-            
+
             $this->configDao->getMapper()->saveTranslation((int)$id, (int)$langId, (string)$value);
         }
 

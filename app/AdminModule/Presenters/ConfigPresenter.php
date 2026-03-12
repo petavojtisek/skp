@@ -24,7 +24,7 @@ final class ConfigPresenter extends AdminPresenter
     public function renderEdit(?int $id = null): void
     {
         $this->template->title = $id ? 'Editace nastavení' : 'Nová nastavení';
-        
+
         // Get languages excluding default CS
         $languages = $this->getOtherLanguages();
         $this->template->languages = $languages;
@@ -34,12 +34,12 @@ final class ConfigPresenter extends AdminPresenter
             if (!$config) {
                 $this->error('Nastavení nebylo nalezeno');
             }
-            
+
             $defaults = $config->getEntityData();
             foreach ($config->getTranslations() as $langId => $val) {
                 $defaults['value_' . $langId] = $val;
             }
-            
+
             $this['configForm']->setDefaults($defaults);
         }
     }
@@ -79,7 +79,7 @@ final class ConfigPresenter extends AdminPresenter
     {
         $config = new ConfigEntity();
         $config->fillEntity((array) $values);
-        
+
         // Extract translations
         $translations = [];
         $languages = $this->getOtherLanguages();
@@ -89,7 +89,7 @@ final class ConfigPresenter extends AdminPresenter
                 $translations[$lang->lookup_id] = $values->$key;
             }
         }
-        $config->setTranslations($translations);
+        $config->setTranslates($translations);
 
         $this->configFacade->saveConfig($config);
         $this->flashMessage('Nastavení bylo uloženo.');

@@ -6,25 +6,36 @@ use App\Model\Base\BaseDao;
 
 class ConfigDao extends BaseDao
 {
-    protected $entityName = 'Config\ConfigEntity';
+    protected string $entityName = 'Config\\ConfigEntity';
+
+    /** @var ConfigMapper */
+    protected $mapper;
 
     public function __construct(ConfigMapper $mapper)
     {
         $this->mapper = $mapper;
     }
 
-    public function getDescriptions(int $configId): array
+    public function getTranslations(int $configId): array
     {
-        return $this->mapper->getDescriptions($configId);
+        return $this->mapper->getTranslations($configId);
     }
 
-    public function saveDescription(int $configId, int $langId, string $description): void
+    public function saveTranslation(int $configId, int $langId, string $value): void
     {
-        $this->mapper->saveDescription($configId, $langId, $description);
+        $this->mapper->saveTranslation($configId, $langId, $value);
     }
 
-    public function deleteDescriptions(int $configId): void
+    public function deleteTranslations(int $configId): void
     {
-        $this->mapper->deleteDescriptions($configId);
+        $this->mapper->deleteTranslations($configId);
+    }
+
+    /**
+     * @return ConfigMapper
+     */
+    public function getMapper(): \App\Model\Base\IMapper
+    {
+        return $this->mapper;
     }
 }

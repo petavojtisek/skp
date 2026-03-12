@@ -7,23 +7,23 @@ use App\Model\Base\SecurityEntity;
 
 class AdministratorEntity extends SecurityEntity implements IEntity
 {
-    public $admin_id;
-    public $admin_group_id;
-    public $user_name;
-    public $user_password;
-    public $user_pass_salt;
-    public $name;
-    public $surname;
-    public $email;
-    public $phone;
-    public $last_logged_dt;
-    public $disabled_dt;
-    public $status;
-    public $admin_lang;
-    public $admin_group_name;
+    public mixed $admin_id = null;
+    public mixed $admin_group_id = null;
+    public ?string $user_name = null;
+    public ?string $user_password = null;
+    public ?string $user_pass_salt = null;
+    public ?string $name = null;
+    public ?string $surname = null;
+    public ?string $email = null;
+    public ?string $phone = null;
+    public mixed $last_logged_dt = null;
+    public mixed $disabled_dt = null;
+    public mixed $status = null;
+    public mixed $admin_lang = null;
+    public ?string $admin_group_name = null;
 
-    public function getId() { return $this->admin_id; }
-    public function setId($id): void { $this->setVariable('admin_id', $id, self::VALUE_TYPE_INTEGER); }
+    public function getId(): mixed { return $this->admin_id; }
+    public function setId(mixed $id): void { $this->setVariable('admin_id', $id, self::VALUE_TYPE_INTEGER); }
 
-    public function getUserPassword() { return $this->user_password; }
+    public function getUserPassword(): ?string { return $this->user_password; }
 }

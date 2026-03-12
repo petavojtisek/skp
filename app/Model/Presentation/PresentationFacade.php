@@ -43,17 +43,17 @@ class PresentationFacade
 
     public function getSpecParam(int $id): ?SpecParamEntity
     {
-        return $this->specParamDao->getSpecParam($id);
+        return $this->specParamDao->find($id);
     }
 
-    public function saveSpecParam(SpecParamEntity $entity): int
+    public function saveSpecParam(SpecParamEntity $entity): SpecParamEntity
     {
-        return $this->specParamDao->saveSpecParam($entity);
+        return $this->specParamDao->save($entity);
     }
 
     public function deleteSpecParam(int $id): void
     {
-        $this->specParamDao->deleteSpecParam($id);
+        $this->specParamDao->delete($id);
     }
 
     public function getComponentActions(int $presentationId): array
