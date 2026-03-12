@@ -1,0 +1,34 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Strom stránek</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová stránka</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul class="todo-list" data-widget="todo-list">
+            <!-- Simplified tree representation for MVP -->
+            <li n:foreach="$pages as $page">
+                <span class="handle"><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i></span>
+                <span class="text">{$page['name']}</span>
+                <small class="badge badge-{$page['active'] ? 'success' : 'secondary'}">{$page['url']}</small>
+                <div class="tools">
+                    <a n:href="edit $page['id']"><i class="fas fa-edit"></i></a>
+                    <a href="#" class="text-danger"><i class="fas fa-trash"></i></a>
+                </div>
+                <ul n:if="isset($page['children'])" class="ml-4 mt-2 mb-2">
+                    <li n:foreach="$page['children'] as $child" style="list-style: none;">
+                        <span class="handle"><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i></span>
+                        <span class="text">{$child['name']}</span>
+                        <small class="badge badge-{$child['active'] ? 'success' : 'secondary'}">{$child['url']}</small>
+                        <div class="tools">
+                            <a n:href="edit $child['id']"><i class="fas fa-edit"></i></a>
+                            <a href="#" class="text-danger"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

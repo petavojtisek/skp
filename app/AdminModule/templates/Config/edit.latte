@@ -1,0 +1,45 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Formulář nastavení</h3>
+    </div>
+    <form n:name="configForm">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="item">Název (Klíč)</label>
+                        <input n:name="item" class="form-control" placeholder="Např. EMAIL_FROM">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="value">Hodnota (CS - Výchozí)</label>
+                        <input n:name="value" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <h5>Překlady hodnot</h5>
+            <div class="row">
+                <div n:foreach="$languages as $lang" class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="'value_' . $lang->lookup_id">Hodnota ({$lang->item|upper})</label>
+                        <input n:name="'value_' . $lang->lookup_id" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button n:name="send" class="btn btn-success">Uložit nastavení</button>
+        </div>
+    </form>
+</div>
+{/block}

@@ -1,0 +1,189 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline card-outline-tabs">
+    <div class="card-header p-0 border-bottom-0">
+        <ul class="nav nav-tabs" id="presentation-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní nastavení</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if !$presentationId}disabled{/if}" id="tab-spec-params-tab" data-toggle="pill" href="#tab-spec-params" role="tab" aria-controls="tab-spec-params" aria-selected="false">Speciální parametry</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if !$presentationId}disabled{/if}" id="tab-module-settings-tab" data-toggle="pill" href="#tab-module-settings" role="tab" aria-controls="tab-module-settings" aria-selected="false">Nastavení modulů</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="presentation-tabs-content">
+            <!-- Basic settings -->
+            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+                {snippet basicFormSnippet}
+                <form n:name="basicForm" class="ajax">
+                    <div class="form-group">
+                        <label n:name="presentation_name">Název prezentace</label>
+                        <input n:name="presentation_name" class="form-control" placeholder="Např. Chalupa Studený">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="domain">Doména</label>
+                                <input n:name="domain" class="form-control" placeholder="studeny-upotoka.cz">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="directory">Adresář</label>
+                                <input n:name="directory" class="form-control" placeholder="cs">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label n:name="presentation_description">Popis (SEO Description)</label>
+                        <textarea n:name="presentation_description" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label n:name="presentation_keywords">Klíčová slova</label>
+                        <textarea n:name="presentation_keywords" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                            <input n:name="is_default" class="custom-control-input" id="is_default_switch">
+                            <label class="custom-control-label" for="is_default_switch">Výchozí prezentace</label>
+                        </div>
+                    </div>
+                    <button n:name="send" class="btn btn-success">Uložit základní nastavení</button>
+                </form>
+                {/snippet}
+            </div>
+
+            <!-- Special Parameters -->
+            <div class="tab-pane fade" id="tab-spec-params" role="tabpanel" aria-labelledby="tab-spec-params-tab">
+                <div class="row">
+                    <div class="col-md-4">
+                        {snippet specParamFormSnippet}
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">{if $spec_param_id}Editace parametru{else}Nový parametr{/if}</h3>
+                            </div>
+                            <form n:name="specParamForm" class="ajax form-horizontal">
+                                <input type="hidden" n:name="presentation_id" value="{$presentationId}">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label n:name="name">Název</label>
+                                        <input n:name="name" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label n:name="value">Hodnota</label>
+                                        <input n:name="value" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button n:name="send" class="btn btn-primary">Uložit parametr</button>
+                                    <a n:if="$spec_param_id" n:href="cancelSpecParam!" class="btn btn-default float-right ajax">Zrušit</a>
+                                </div>
+                            </form>
+                        </div>
+                        {/snippet}
+                    </div>
+                    <div class="col-md-8">
+                        {snippet specParamsTableSnippet}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Název</th>
+                                        <th>Hodnota</th>
+                                        <th style="width: 100px">Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr n:foreach="$specParams as $param">
+                                        <td>{$param->name}</td>
+                                        <td>{$param->value}</td>
+                                        <td>
+                                            <a n:href="editSpecParam!, specParamId => $param->spec_param_id" class="btn btn-sm btn-info ajax"><i class="fas fa-edit"></i></a>
+                                            <a n:href="deleteSpecParam!, id => $param->spec_param_id, presentationId => $presentationId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr n:if="!$specParams">
+                                        <td colspan="3" class="text-center text-muted">Žádné speciální parametry.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {/snippet}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Settings -->
+            <div class="tab-pane fade" id="tab-module-settings" role="tabpanel" aria-labelledby="tab-module-settings-tab">
+                <div class="mb-3">
+                    <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Přidat modul</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Modul</th>
+                                <th>Akce</th>
+                                <th>Parametry</th>
+                                <th style="width: 100px">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr n:foreach="$componentActions as $ca">
+                                <td>{$ca->module}</td>
+                                <td>{$ca->action}</td>
+                                <td><small>{$ca->params}</small></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr n:if="!$componentActions">
+                                <td colspan="4" class="text-center text-muted">Žádné nastavení modulů.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block scripts}
+<script>
+$(function() {
+  function activateTab(hash) {
+    if (hash) {
+      var tabLink = $('.nav-tabs a[href="' + hash + '"]');
+      if (tabLink.length) {
+        tabLink.tab('show');
+      }
+    }
+  }
+  if (window.location.hash) {
+    activateTab(window.location.hash);
+  }
+  $('.nav-tabs a').on('shown.bs.tab', function (e) {
+    if (history.replaceState) {
+      history.pushState(null, null, e.target.hash);
+    } else {
+      window.location.hash = e.target.hash;
+    }
+  });
+  window.onhashchange = function() {
+    activateTab(window.location.hash);
+  };
+});
+</script>
+{/block}

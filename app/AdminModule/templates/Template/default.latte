@@ -1,0 +1,38 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Seznam šablon</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová šablona</a>
+        </div>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 40px">ID</th>
+                    <th>Název</th>
+                    <th>Soubor</th>
+                    <th>Cesta</th>
+                    <th style="width: 150px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$templates as $tpl">
+                    <td>{$tpl->template_id}</td>
+                    <td><strong>{$tpl->template_name}</strong></td>
+                    <td><code>{$tpl->template_filename}</code></td>
+                    <td>{$tpl->template_path}</td>
+                    <td>
+                        <a n:href="edit, id => $tpl->template_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:href="delete, id => $tpl->template_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                    </td>
+                </tr>
+                <tr n:if="!$templates">
+                    <td colspan="5" class="text-center text-muted">Žádné šablony nebyly nalezeny.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}

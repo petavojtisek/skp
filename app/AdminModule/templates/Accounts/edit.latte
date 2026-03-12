@@ -1,0 +1,162 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline card-outline-tabs">
+    <div class="card-header p-0 border-bottom-0">
+        <ul class="nav nav-tabs" id="account-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní údaje</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if !$accountId}disabled{/if}" id="tab-groups-tab" data-toggle="pill" href="#tab-groups" role="tab" aria-controls="tab-groups" aria-selected="false">Skupiny</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if !$accountId}disabled{/if}" id="tab-presentations-tab" data-toggle="pill" href="#tab-presentations" role="tab" aria-controls="tab-presentations" aria-selected="false">Přístup k prezentacím</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="account-tabs-content">
+            <!-- Basic settings -->
+            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+                <form n:name="accountForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="user_name">Uživatelské jméno</label>
+                                <input n:name="user_name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="user_password">Heslo {if $accountId}(nechte prázdné pro zachování){/if}</label>
+                                <input n:name="user_password" class="form-control" placeholder="****">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="name">Jméno</label>
+                                <input n:name="name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="surname">Příjmení</label>
+                                <input n:name="surname" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="email">Email</label>
+                                <input n:name="email" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="phone">Telefon</label>
+                                <input n:name="phone" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="status">Status</label>
+                                <select n:name="status" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="admin_lang">Jazyk administrace</label>
+                                <select n:name="admin_lang" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <button n:name="send" class="btn btn-success">Uložit základní údaje</button>
+                </form>
+            </div>
+
+            <!-- Groups -->
+            <div class="tab-pane fade" id="tab-groups" role="tabpanel" aria-labelledby="tab-groups-tab">
+                <form n:name="groupsForm">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px">Zvolit</th>
+                                    <th>Název skupiny</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr n:foreach="$form[admin_group_id]->items as $key => $label">
+                                    <td>
+                                        <div class="custom-control custom-radio">
+                                            <input n:name="admin_group_id:$key" class="custom-control-input" id="group_{$key}">
+                                            <label for="group_{$key}" class="custom-control-label"></label>
+                                        </div>
+                                    </td>
+                                    <td><label for="group_{$key}" style="font-weight: normal; cursor: pointer">{$label}</label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <button n:name="send" class="btn btn-primary">Uložit skupinu</button>
+                </form>
+            </div>
+
+            <!-- Presentations -->
+            <div class="tab-pane fade" id="tab-presentations" role="tabpanel" aria-labelledby="tab-presentations-tab">
+                <form n:name="presentationsForm">
+                    <div class="row">
+                        <div n:foreach="$form[presentations]->items as $key => $label" class="col-md-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input n:name="presentations:$key" class="custom-control-input" id="pres_{$key}">
+                                <label for="pres_{$key}" class="custom-control-label">{$label}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <button n:name="send" class="btn btn-primary">Uložit přístupy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block scripts}
+<script>
+$(function() {
+  function activateTab(hash) {
+    if (hash) {
+      var tabLink = $('.nav-tabs a[href="' + hash + '"]');
+      if (tabLink.length) {
+        tabLink.tab('show');
+      }
+    }
+  }
+  if (window.location.hash) {
+    activateTab(window.location.hash);
+  }
+  $('.nav-tabs a').on('shown.bs.tab', function (e) {
+    if (history.replaceState) {
+      history.pushState(null, null, e.target.hash);
+    } else {
+      window.location.hash = e.target.hash;
+    }
+  });
+  window.onhashchange = function() {
+    activateTab(window.location.hash);
+  };
+});
+</script>
+{/block}

@@ -1,0 +1,40 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Seznam uživatelských účtů</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nový účet</a>
+        </div>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 40px">ID</th>
+                    <th>Uživatel</th>
+                    <th>Jméno a příjmení</th>
+                    <th>Email</th>
+                    <th>Skupina</th>
+                    <th style="width: 150px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$accounts as $acc">
+                    <td>{$acc->admin_id}</td>
+                    <td><strong>{$acc->user_name}</strong></td>
+                    <td>{$acc->name} {$acc->surname}</td>
+                    <td><a href="mailto:{$acc->email}">{$acc->email}</a></td>
+                    <td><span class="badge badge-secondary">{$acc->admin_group_name ?: 'Bez skupiny'}</span></td>
+                    <td>
+                        <a n:href="edit, id => $acc->admin_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:href="delete, id => $acc->admin_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu odstranit tento účet?')"><i class="fas fa-trash"></i> Smazat</a>
+                    </td>
+                </tr>
+                <tr n:if="!$accounts">
+                    <td colspan="6" class="text-center text-muted">Žádné aktivní účty nebyly nalezeny.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}

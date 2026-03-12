@@ -1,0 +1,45 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Formulář číselníku</h3>
+    </div>
+    <form n:name="lookupForm">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="item">Název (CS - Výchozí)</label>
+                        <input n:name="item" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="constant">Konstanta</label>
+                        <input n:name="constant" class="form-control" placeholder="Např. STATUS_ACTIVE">
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <h5>Překlady názvu</h5>
+            <div class="row">
+                <div n:foreach="$languages as $lang" class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="'item_' . $lang->lookup_id">Název ({$lang->item|upper})</label>
+                        <input n:name="'item_' . $lang->lookup_id" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button n:name="send" class="btn btn-success">Uložit položku</button>
+        </div>
+    </form>
+</div>
+{/block}

@@ -1,0 +1,91 @@
+{block content}
+
+<!-- Installed Modules -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-plug mr-1"></i> Aktuálně nahráné moduly</h3>
+    </div>
+    <div class="card-body table-responsive p-0">
+        {snippet installedTableSnippet}
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 40px">ID</th>
+                    <th>Modul</th>
+                    <th class="text-center" style="width: 100px">Aktivní</th>
+                    <th style="width: 150px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$installedModules as $module">
+                    <td>{$module->install_id}</td>
+                    <td><strong>{$module->module_name}</strong></td>
+                    <td class="text-center">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input ajax-toggle" id="mod_{$module->install_id}" 
+                                   n:attr="checked => $module->installed" 
+                                   data-url="{link toggleActive!, id => $module->install_id}">
+                            <label class="custom-control-label" for="mod_{$module->install_id}"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <a n:href="uninstall!, id => $module->install_id" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu odinstalovat?')">
+                            <i class="fas fa-trash"></i> Odinstalovat
+                        </a>
+                    </td>
+                </tr>
+                <tr n:if="!$installedModules">
+                    <td colspan="4" class="text-center text-muted">Žádné moduly nejsou nainstalovány.</td>
+                </tr>
+            </tbody>
+        </table>
+        {/snippet}
+    </div>
+</div>
+
+<!-- Available to Install -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-download mr-1"></i> Moduly k instalaci</h3>
+    </div>
+    <div class="card-body table-responsive p-0">
+        {snippet availableTableSnippet}
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th>Název modulu (adresář)</th>
+                    <th style="width: 150px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$availableModules as $name">
+                    <td><code>{$name}</code></td>
+                    <td>
+                        <a n:href="install!, name => $name" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Instalovat
+                        </a>
+                    </td>
+                </tr>
+                <tr n:if="!$availableModules">
+                    <td colspan="2" class="text-center text-muted">Všechny moduly jsou již nainstalovány.</td>
+                </tr>
+            </tbody>
+        </table>
+        {/snippet}
+    </div>
+</div>
+
+{/block}
+
+{block scripts}
+<script>
+$(function() {
+    // Custom logic for AJAX toggle switches
+    $(document).on('change', '.ajax-toggle', function() {
+        var state = $(this).is(':checked') ? 1 : 0;
+        var url = $(this).data('url') + '&state=' + state;
+        naja.makeRequest('GET', url);
+    });
+});
+</script>
+{/block}

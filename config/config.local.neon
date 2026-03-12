@@ -1,0 +1,15 @@
+# SKP Local Configuration
+
+parameters:
+	database:
+		host: localhost
+		username: root
+		password: ""
+		database: skp
+		driver: mysqli
+
+services:
+	connection:
+		class: Dibi\Connection
+		arguments: [%database%]
+		autowired: yes

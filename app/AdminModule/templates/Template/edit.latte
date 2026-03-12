@@ -1,0 +1,152 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline card-outline-tabs">
+    <div class="card-header p-0 border-bottom-0">
+        <ul class="nav nav-tabs" id="template-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní nastavení</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if !$templateId}disabled{/if}" id="tab-code-names-tab" data-toggle="pill" href="#tab-code-names" role="tab" aria-controls="tab-code-names" aria-selected="false">Kódová označení</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="template-tabs-content">
+            <!-- Basic settings -->
+            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+                <form n:name="templateForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="template_name">Název šablony</label>
+                                <input n:name="template_name" class="form-control" placeholder="Např. home">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="presentation_id">Prezentace</label>
+                                <select n:name="presentation_id" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="template_filename">Soubor (.tpl)</label>
+                                <input n:name="template_filename" class="form-control" placeholder="home.tpl">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="template_path">Cesta</label>
+                                <input n:name="template_path" class="form-control" placeholder="cs/">
+                            </div>
+                        </div>
+                    </div>
+                    <button n:name="send" class="btn btn-success">Uložit šablonu</button>
+                </form>
+            </div>
+
+            <!-- Code Names -->
+            <div class="tab-pane fade" id="tab-code-names" role="tabpanel" aria-labelledby="tab-code-names-tab">
+                <div class="row">
+                    <div class="col-md-4">
+                        {snippet codeNameFormSnippet}
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">{if $code_name_id}Editace kódu{else}Nový kód{/if}</h3>
+                            </div>
+                            <form n:name="codeNameForm" class="ajax">
+                                <input type="hidden" n:name="template_id" value="{$templateId}">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label n:name="code_name">Kódové označení</label>
+                                        <input n:name="code_name" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label n:name="module">Modul (ID)</label>
+                                        <input n:name="module" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button n:name="send" class="btn btn-primary">Uložit</button>
+                                    <a n:if="$code_name_id" n:href="cancelEdit!" class="btn btn-default float-right ajax">Zrušit</a>
+                                </div>
+                            </form>
+                        </div>
+                        {/snippet}
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-outline-secondary btn-block disabled" title="TODO: Implementovat skenování .tpl souboru">
+                                <i class="fas fa-sync"></i> Načíst ze šablony (TODO)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        {snippet codeNamesTableSnippet}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Kódové označení</th>
+                                        <th>Modul</th>
+                                        <th style="width: 100px">Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr n:foreach="$codeNames as $cn">
+                                        <td><code>{$cn->code_name}</code></td>
+                                        <td>{$cn->module}</td>
+                                        <td>
+                                            <a n:href="editCodeName!, codeNameId => $cn->id" class="btn btn-sm btn-info ajax"><i class="fas fa-edit"></i></a>
+                                            <a n:href="deleteCodeName!, id => $cn->id, templateId => $templateId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr n:if="!$codeNames">
+                                        <td colspan="3" class="text-center text-muted">Žádná kódová označení.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {/snippet}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block scripts}
+<script>
+$(function() {
+  function activateTab(hash) {
+    if (hash) {
+      var tabLink = $('.nav-tabs a[href="' + hash + '"]');
+      if (tabLink.length) {
+        tabLink.tab('show');
+      }
+    }
+  }
+  if (window.location.hash) {
+    activateTab(window.location.hash);
+  }
+  $('.nav-tabs a').on('shown.bs.tab', function (e) {
+    if (history.replaceState) {
+      history.pushState(null, null, e.target.hash);
+    } else {
+      window.location.hash = e.target.hash;
+    }
+  });
+  window.onhashchange = function() {
+    activateTab(window.location.hash);
+  };
+});
+</script>
+{/block}

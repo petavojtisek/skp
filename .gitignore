@@ -1,0 +1,5 @@
+app_broken_last_version
+.idea
+vendor
+/temp/cache
+/log

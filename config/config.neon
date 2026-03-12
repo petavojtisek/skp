@@ -1,0 +1,83 @@
+# SKP Global Configuration
+
+parameters:
+	domain: skp.dev
+	# Paths or other global parameters like in ebcar
+
+application:
+	errorPresenter: Front:Error:Error4xx
+	mapping:
+		*: App\*Module\Presenters\*Presenter
+
+decorator:
+	App\Model\Base\AMapper:
+		inject: yes
+
+session:
+	expiration: 14 days
+
+latte:
+	strictParsing: yes
+
+services:
+	router: App\RouterFactory::createRouter
+	
+	# MAPPERS
+	- App\Model\Page\PageMapper
+	- App\Model\Lookup\LookupMapper
+	- App\Model\Presentation\PresentationMapper
+	- App\Model\Presentation\SpecParamMapper
+	- App\Model\Presentation\ComponentActionMapper
+	- App\Model\Config\ConfigMapper
+	- App\Model\Template\TemplateMapper
+	- App\Model\Template\CodeNameMapper
+	- App\Model\Install\InstallMapper
+	- App\Model\Log\LogMapper
+	- App\Model\Admin\AdminMapper
+
+	# DAO
+	- App\Model\Page\PageDao
+	- App\Model\Lookup\LookupDao
+	- App\Model\Presentation\PresentationDao
+	- App\Model\Presentation\SpecParamDao
+	- App\Model\Presentation\ComponentActionDao
+	- App\Model\Config\ConfigDao
+	- App\Model\Template\TemplateDao
+	- App\Model\Template\CodeNameDao
+	- App\Model\Install\InstallDao
+	- App\Model\Log\LogDao
+	- App\Model\Admin\AdminDao
+
+	# AUTH
+	authenticator:
+		class: App\Model\Admin\SystemAuthenticator
+		setup:
+			- addAuthenticator(admin, App\Model\Admin\AdminAuthenticator(@connection))
+
+	# ENTITIES (as services for global access)
+	- App\Model\Admin\LoggedUserEntity
+
+	# SERVICE
+	- App\Model\System\Cache
+	- App\Model\Login\LoginService
+	- App\Model\Page\PageService
+	- App\Model\Lookup\LookupService
+	- App\Model\Presentation\PresentationService
+	- App\Model\Config\ConfigService
+	- App\Model\Template\TemplateService
+	- App\Model\Install\InstallService
+	- App\Model\Log\LogService
+	- App\Model\Admin\AdminService
+
+	# FACADE
+	- App\Model\Page\PageFacade
+	- App\Model\Lookup\LookupFacade
+	- App\Model\Login\LoginFacade
+	- App\Model\Presentation\PresentationFacade
+	- App\Model\Config\ConfigFacade
+	- App\Model\Template\TemplateFacade
+	- App\Model\Install\InstallFacade
+	- App\Model\Log\LogFacade
+	- App\Model\Admin\AdminFacade
+
+	# Register other ebcar-like services here

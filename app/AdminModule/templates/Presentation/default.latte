@@ -1,0 +1,49 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Seznam prezentací</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová prezentace</a>
+        </div>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 40px">Status</th>
+                    <th style="width: 40px">ID</th>
+                    <th>Název</th>
+                    <th>Doména</th>
+                    <th>Adresář</th>
+                    <th>Výchozí</th>
+                    <th style="width: 150px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$presentations as $presentation">
+                    <td class="text-center">
+                        <i n:if="$presentation->presentation_status == $C_PRESENTATION_STATUS_ACTIVE" class="fas fa-check-circle text-success" title="Aktivní"></i>
+                        <i n:if="$presentation->presentation_status == $C_PRESENTATION_STATUS_DEACTIVE" class="fas fa-times-circle text-danger" title="Neaktivní"></i>
+                        <i n:if="$presentation->presentation_status != $C_PRESENTATION_STATUS_ACTIVE && $presentation->presentation_status != $C_PRESENTATION_STATUS_DEACTIVE" class="fas fa-question-circle text-warning" title="Neznámý status"></i>
+                    </td>
+                    <td>{$presentation->presentation_id}</td>
+                    <td>{$presentation->presentation_name}</td>
+                    <td>{$presentation->domain}</td>
+                    <td>{$presentation->directory}</td>
+                    <td class="text-center">
+                        <i n:if="$presentation->is_default" class="fas fa-star text-warning" title="Výchozí prezentace"></i>
+                        <i n:if="!$presentation->is_default" class="far fa-star text-muted"></i>
+                    </td>
+                    <td>
+                        <a n:href="edit, id => $presentation->presentation_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:href="delete, id => $presentation->presentation_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                    </td>
+                </tr>
+                <tr n:if="!$presentations">
+                    <td colspan="7" class="text-center text-muted">Žádné prezentace nebyly nalezeny.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}

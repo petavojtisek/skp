@@ -1,0 +1,56 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Přehled akcí v systému</h3>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th style="width: 180px">Datum</th>
+                    <th>Admin</th>
+                    <th>Modul</th>
+                    <th>Akce</th>
+                    <th>Název</th>
+                    <th>ID</th>
+                    <th style="width: 100px">Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach $logs as $log}
+                <tr>
+                    <td>{$log->inserted|date:'d.m.Y H:i:s'}</td>
+                    <td><span class="badge badge-info">{$log->admin_name}</span></td>
+                    <td><code>{$log->module}</code></td>
+                    <td>{$log->action}</td>
+                    <td>{$log->name}</td>
+                    <td>{$log->element_id}</td>
+                    <td>
+                        <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#data_{$log->id}">
+                            <i class="fas fa-eye"></i> Zobrazit
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="data_{$log->id}">
+                    <td colspan="7" class="bg-light">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Odeslaná data:</strong>
+                                <pre class="small">{$log->send_data ? json_encode(json_decode($log->send_data), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : ''}</pre>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Původní data:</strong>
+                                <pre class="small">{$log->before_data ? json_encode(json_decode($log->before_data), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : ''}</pre>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {/foreach}
+                <tr n:if="!$logs">
+                    <td colspan="7" class="text-center text-muted">Žádné záznamy v logu.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/block}
