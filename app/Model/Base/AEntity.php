@@ -21,99 +21,56 @@ abstract class AEntity implements IEntity
 	const VALUE_TYPE_DATE = 'date';
 	const VALUE_TYPE_BOOLEAN = 'bool';
 
-	protected $defaultProperties = ['session_id','created_ip','created_dt','disabled_dt'];
+	protected array $defaultProperties = ['session_id','created_ip','created_dt'];
 
-	public $session_id;
-	public $created_ip;
-	public $created_dt;
-	public $disabled_dt;
-
-	/** @var array */
-	protected $valuesSet = [];
+	public ?string $session_id = null;
+	public ?string $created_ip = null;
+	public mixed $created_dt = null;
 
 	/** @var array */
-	protected $valuesUpdated = [];
+	protected array $valuesSet = [];
 
-	/** @var bool */
-	protected $isFilling = false;
+	/** @var array */
+	protected array $valuesUpdated = [];
 
-	/** @var EncodeDecode */
-	protected $encodeDecode;
+	/** @var EncodeDecode|null */
+	private ?EncodeDecode $encodeDecode = null;
 
 
 
 	/**
 	 * BaseEntity constructor.
 	 * @param array $data
-	 * @param bool|null $new  True if entity is new, False if loading from DB. If null, determined by presence of ID in $data.
+	 * @param bool $new
 	 */
-	public function __construct($data = [], $new = null)
+	public function __construct(array $data = [], bool $new = true)
 	{
-		// Determine if new if not explicitly provided
-		if ($new === null) {
-			$new = true;
-			// We check if any ID-like field is present in data (primary key)
-			// Each entity should ideally define its primary key, but usually it ends with _id
-			foreach ($data as $key => $val) {
-				if (str_ends_with($key, '_id') && !empty($val)) {
-					$new = false;
-					break;
-				}
-			}
-		}
-
 		if($new){
 			$this->setDefaultsProperty();
 		}
 
 		if ($data) {
-			// If not new, we are hydrating from DB -> don't track as updated
-			$this->fillEntity($data, false, !$new);
+			$this->fillEntity($data, $new);
 		}
 
 	}
 
-	public function get($variable, $format = null)
-	{
-		// Try snake_case first
-		if (property_exists($this, $variable)) {
-			$value = $this->$variable;
-		} else {
-			// Try converting camelCase to snake_case
-			$snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $variable));
-			if (property_exists($this, $snake)) {
-				$value = $this->$snake;
-				$variable = $snake;
-			} else {
-				return null;
-			}
-		}
-
-		if ($value instanceof DateTime || $value instanceof \DateTime) {
-			return $this->getDateTime($value, $format);
-		}
-		if (is_object($value) || is_array($value)) {
-			return $this->getJSON($variable, $format);
-		}
-		return $value;
-	}
-
-	public function setId($id)
+	public function setId(mixed $id): void
 	{
 
 	}
 
-	public function getId()
+	public function getId(): mixed
 	{
-
+		return null;
 	}
 
 
-	public function setDefaultsProperty(): void{
-
+	public function setDefaultsProperty(): void
+	{
 		foreach($this->defaultProperties as $property) {
-			if (property_exists($this, $property)) {
-				$methodName = 'set' . str_replace('_', '', ucwords((string) $property, '_'));
+			if (property_exists($this, (string)$property)) {
+				$methodName = 'set' . ucfirst((string)$property);
 				if (method_exists($this, $methodName)) {
 					$this->$methodName(null);
 				}
@@ -121,8 +78,9 @@ abstract class AEntity implements IEntity
 		}
 	}
 
-	public function setVariable($variableName, $value, $type = null) {
-		if ($type && $value !== null) {
+	public function setVariable(string $variableName, mixed $value, ?string $type = null): self
+	{
+		if ($type && $value) {
 			switch ($type) {
 				case self::VALUE_TYPE_INTEGER:
 					$value = (int) $value;
@@ -147,11 +105,6 @@ abstract class AEntity implements IEntity
 
 		$this->$variableName = $value;
 		$this->valuesSet[$variableName] = $variableName;
-		
-		if (!$this->isFilling) {
-			$this->valuesUpdated[$variableName] = $variableName;
-		}
-		
 		return $this;
 	}
 
@@ -160,89 +113,63 @@ abstract class AEntity implements IEntity
 	 * get Entity and fill data
 	 * @param array $data
 	 * @param bool $setDefaults
-	 * @param bool $isHydrating If true, changes won't be marked as updated
 	 * @return IEntity
 	 */
-	public function fillEntity($data = [], $setDefaults = true, $isHydrating = false) {
+	public function fillEntity(array $data = [], bool $setDefaults = true): IEntity
+	{
+		if($setDefaults) {
+			$this->setDefaultsProperty();
+		}
 
-		if ($setDefaults) {
-            $this->setDefaultsProperty();
-        }
-
-		$prevFilling = $this->isFilling;
-		$this->isFilling = $isHydrating;
-		
 		if (!empty($data)) {
 			foreach ($data as $key => $value) {
-				$methodName = 'set' . str_replace('_', '', ucwords((string) $key, '_'));
+				$methodName = 'set' . ucfirst((string)$key);
 
 				if (method_exists($this, $methodName)) {
-                    $this->$methodName($value);
-                } elseif (property_exists($this, $key)) {
-                    $this->setVariable($key, $value);
-                }
+					$this->$methodName($value);
+				} else {
+					if (property_exists($this, (string)$key)) {
+						$this->setVariable((string)$key, $value);
+					}
+				}
 			}
 		}
-		$this->isFilling = $prevFilling;
 
 		return $this;
 	}
 
 	/**
-	 * Get all set data
+	 * Get core data
 	 * @return array
 	 */
-	public function getEntityData() {
+	public function getEntityData(): array
+	{
 		$values = [];
-		foreach ($this->valuesSet as $value) {
-				$getter = 'get' . str_replace('_', '', ucwords((string) $value, '_'));
+		if (!empty($this->valuesSet)) {
+			foreach ($this->valuesSet as $value) {
+				$getter = 'get' . ucfirst((string)$value);
 				if (method_exists($this, $getter)) {
-					$values[$value] = $this->$getter();
+					$values[$value] = ($this->$value === '') ? null : $this->$getter();
 				} else {
 					$values[$value] = ($this->$value === '') ? null : $this->$value;
 				}
 			}
-		return $values;
-	}
-
-	/**
-	 * Get only updated data
-	 * @return array
-	 */
-	public function getUpdatedData() {
-		$values = [];
-		foreach ($this->valuesUpdated as $value) {
-				$getter = 'get' . str_replace('_', '', ucwords((string) $value, '_'));
-				if (method_exists($this, $getter)) {
-					$values[$value] = $this->$getter();
-				} elseif (property_exists($this, $value)) {
-					$values[$value] = ($this->$value === '') ? null : $this->$value;
-				}
-			}
+		}
 		return $values;
 	}
 
 
 
-	public function getJSON($variable, $key = false)
+	public function getJSON(string $variable, mixed $key = false): mixed
 	{
-		if (!isset($this->$variable) || $this->$variable === null) {
+		if (!isset($this->$variable) || !$this->$variable) {
 			return null;
 		}
-
-		if ($key === 'json' || $key === 'string') {
-			return json_encode($this->$variable, JSON_UNESCAPED_UNICODE);
-		}
-
-		if ($key === 'array') {
-			return json_decode(json_encode($this->$variable), true);
-		}
-
 		if ($key === true) {
 			return $this->$variable;
-		}
-
-		if (is_string($key)) {
+		} elseif ($key === 'array') {
+			return json_decode(json_encode($this->$variable), true);
+		} elseif (is_string($key)) {
 			if (isset($this->$variable->$key)) {
 				return $this->$variable->$key;
 			} else {
@@ -256,25 +183,25 @@ abstract class AEntity implements IEntity
 
 	/**
 	 * @param DateTime|int|string $value
-	 * @param string $format
+	 * @param string|bool $format
 	 * @return false|int|string|DateTime
 	 */
-	protected function getDateTime($value, $format) {
-		if ($format == 'int' || $format === true) {
+	protected function getDateTime(mixed $value, mixed $format): mixed
+	{
+		if ($format === 'int' || $format === true) {
 			if ($value instanceof DateTime) {
 				return $value->getTimestamp();
 			} elseif($value) {
-				return strtotime((string) $value);
+				return strtotime((string)$value);
 			}
-		} elseif ($format == 'ms') {
+		} elseif ($format === 'ms') {
 			if ($value instanceof DateTime) {
 				return $value->getTimestamp() * 1000;
 			} elseif($value) {
-				return strtotime((string) $value) * 1000;
+				return strtotime((string)$value) * 1000;
 			}
 		} elseif ($format && $value instanceof DateTime) {
-
-			return $value->format($format);
+			return $value->format((string)$format);
 		}
 
 		return $value;
@@ -282,21 +209,21 @@ abstract class AEntity implements IEntity
 
 	/**
 	 * @param DateTime|int|string $value
-	 * @return DateTime
+	 * @return DateTime|mixed
 	 */
-	protected function createDateTime($value)
+	protected function createDateTime(mixed $value): mixed
 	{
 		if (is_numeric($value) || is_string($value)) {
-            return new DateTime($value);
-        }
+			return new DateTime($value);
+		}
 
 		return $value;
 	}
 
 
 
-	protected function createJson($value) {
-
+	protected function createJson(mixed $value): mixed
+	{
 		if ($value === null) {
 			return null;
 		} elseif (is_array($value)) {
@@ -315,7 +242,7 @@ abstract class AEntity implements IEntity
 	/**
 	 * @return EncodeDecode
 	 */
-	public function getEncodeDecode()
+	public function getEncodeDecode(): EncodeDecode
 	{
 		if (!$this->encodeDecode) {
 			$this->encodeDecode = new EncodeDecode();

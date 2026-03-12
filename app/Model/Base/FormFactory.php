@@ -18,7 +18,10 @@ class FormFactory
 		$this->translator = $translator;	
 	}
 	
-	public function create(): \App\UserModule\Forms\BaseForm
+	/**
+	 * @return BaseForm
+	 */
+	public function create()
 	{
 		$form = new BaseForm;
 		$form->setTranslator($this->translator);
@@ -26,11 +29,12 @@ class FormFactory
 	}
 
 	/**
-     * @param string $name
-     *
-     * @return Controls\NumberInput
-     */
-    public function addNumber($name, $label = NULL)
+	 * @param string $name
+	 * @param null   $label
+	 *
+	 * @return Controls\NumberInput
+	 */
+	public function addNumber($name, $label = NULL)
 	{
 		$control = new Controls\NumberInput($label);
 		$control->setNullable();

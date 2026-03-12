@@ -9,8 +9,11 @@
 namespace App\Model\Base;
 
 use Dibi\Fluent;
+use Latte\IMacro;
 use Nette;
 use Dibi\Connection;
+use Dibi\Result;
+use Dibi\Row;
 use App\Model\Base\IEntity;
 
 abstract class AMapper implements IMapper
@@ -19,7 +22,8 @@ abstract class AMapper implements IMapper
 	use Nette\SmartObject;
 
 
-	protected \Dibi\Connection $db;
+	/** @var Connection */
+	protected $db;
 
 	/** @var Connection */
 	protected $dbSlave;
@@ -30,23 +34,14 @@ abstract class AMapper implements IMapper
 	/** @var string */
 	protected $primaryKey;
 
-	/** @var array */
-	private static $tableColumns = [];
-
-	/** @var \Nette\DI\Container */
-	protected $container;
-
 
 	public function __construct(Connection $connection) {
 		$this->db = $connection;
-	}
-
-	public function injectContainer(\Nette\DI\Container $container)
-	{
-		$this->container = $container;
+		#$this->dbSlave = $slaveConnection;
 	}
 
 	public function setSlaveConnection(Connection $slaveConnection): void{
+
 		$this->dbSlave = $slaveConnection;
 	}
 
@@ -62,39 +57,43 @@ abstract class AMapper implements IMapper
 		$this->db->rollback();
 	}
 
-	public function findAll() {
+	public function findAll(): array {
 		return $this->db->select('*')->from($this->tableName)->fetchAssoc($this->primaryKey);
 	}
 
-	public function findBy(array $by, $orderBy = null) {
+	public function findBy(array $by, ?string $orderBy = null): mixed {
 		$query = $this->db->select('*')->from($this->tableName)->where($by);
+
 		if ($orderBy) {
 			$query->orderBy($orderBy);
 		}
+
 		return $query;
 	}
 
-	public function rowExist(array $by) {
+	public function rowExist(array $by): bool {
 		return (bool) $this->db->select(1)->from($this->tableName)->where($by)->fetchSingle();
 	}
 
-	public function findOneBy(array $by, $orderBy = null) {
+	public function findOneBy(array $by, ?string $orderBy = null): mixed {
+
 		return $this->findBy($by,$orderBy)->fetch();
 	}
 
-	public function findOneValueBy($value, array $by) {
+	public function findOneValueBy(string $value, array $by): mixed {
 		return $this->db->select($value)->from($this->tableName)->where($by)->fetchSingle();
 	}
 
-	public function getIDBy(array $by) {
+	public function getIDBy(array $by): mixed {
 		return $this->db->select($this->primaryKey)->from($this->tableName)->where($by)->fetchSingle();
 	}
 
-	public function getIDsBy(array $by) {
+	public function getIDsBy(array $by): array {
 		return $this->db->select($this->primaryKey)->from($this->tableName)->where($by)->fetchPairs($this->primaryKey, $this->primaryKey);
 	}
 
-	public function findAllBy($by = [], $limit = null, $offset = null, $orderBy = null) {
+	public function findAllBy(array $by = [], ?int $limit = null, ?int $offset = null, ?string $orderBy = null): array {
+
 		$query = $this->db->select('*')->from($this->tableName);
 		if ($by) {
 			$query->where($by);
@@ -103,68 +102,80 @@ abstract class AMapper implements IMapper
 			$query->limit($limit);
 		}
 		if ($offset) {
-			$query->offset((int)$offset);
-			$query->limit((int)$limit);
+			$query->offset($offset);
+			$query->limit($limit);
 		}
 		if ($orderBy) {
 			$query->orderBy($orderBy);
 		}
+
+
 		return $query->fetchAssoc($this->primaryKey);
 	}
 
-	public function find($id) {
+	public function find(mixed $id): mixed {
 		return $this->db->select('*')->from($this->tableName)->where([$this->primaryKey => $id])->fetch();
 	}
 
-	public function count($where = []) {
-		return $this->db->select('COUNT(*)')->from($this->tableName)->where($where)->fetchSingle();
+	public function count(array $where = []): int {
+		if ($where) {
+			return (int)$this->db->select('COUNT(*)')->from($this->tableName)->where($where)->fetchSingle();
+		}
+		return (int)$this->db->select('COUNT(*)')->from($this->tableName)->fetchSingle();
 	}
 
-	public function sum(string $field, $where = []) {
-		return $this->db->select('SUM(' . $field . ')')->from($this->tableName)->where($where)->fetchSingle();
+	public function sum(string $field, array $where = []): mixed {
+		if ($where) {
+			return $this->db->select('SUM(' . $field . ')')->from($this->tableName)->where($where)->fetchSingle();
+		}
+		return $this->db->select('SUM(' . $field . ')')->from($this->tableName)->fetchSingle();
 	}
 
-	public function update($data) {
+	public function update(mixed $data): mixed {
 		$q = $this->getUpdateQuery($data);
-		if ($q) {
+		if($q){
 			return $this->doUpdate($q);
 		}
 		return 0;
 	}
 
-	private function getUpdateQuery(array|IEntity $data){
-		$id = null;
-		$updateData = [];
+	private function getUpdateQuery(mixed $data): mixed {
 
 		if ($data instanceof IEntity) {
-			$id = $data->getId();
-			$updateData = $data->getUpdatedData();
-		} elseif (is_array($data) && isset($data[$this->primaryKey])) {
-			$id = $data[$this->primaryKey];
-			$updateData = $data;
-			unset($updateData[$this->primaryKey]);
+			$data = $data->getEntityData();
+			//unset defaults if exist
+
+
 		}
 
-		if ($id && !empty($updateData)) {
-			$dbData = $this->filterColumns($updateData);
-			if (!empty($dbData)) {
-				return $this->db->update($this->tableName, $dbData)->where($this->primaryKey . ' = %i', $id);
-			}
+
+		if (isset($data[$this->primaryKey])) {
+			$id = $data[$this->primaryKey];
+			unset($data[$this->primaryKey]);
+
+			if(array_key_exists('credit', $data))
+				unset($data['credit']);
+
+			if(array_key_exists('createdDt', $data))
+				unset($data['createdDt']);
+
+			return $this->db->update($this->tableName, $data)->where($this->primaryKey . ' = %i', $id);
 		}
 		return 0;
 	}
 
-	public function insert($data) {
-		$insertData = [];
+
+
+	public function insert(mixed $data): mixed {
+		$dataArray = null;
 		if ($data instanceof IEntity) {
-			$insertData = $data->getEntityData();
-		} elseif(is_array($data)){
-			$insertData = $data;
+			$dataArray = $data->getEntityData();
+		}elseif(is_array($data)){
+			$dataArray = $data;
 		}
 
-		if (!empty($insertData)) {
-			$dbData = $this->filterColumns($insertData);
-			$this->db->insert($this->tableName, $dbData)->execute();
+		if(isset($dataArray)){
+			$this->db->insert($this->tableName, $dataArray)->execute();
 			$lastInsertId = $this->db->getInsertId();
 
 			if ($data instanceof IEntity) {
@@ -173,39 +184,20 @@ abstract class AMapper implements IMapper
 			return $lastInsertId;
 		}
 		return false;
+
 	}
 
-	/**
-	 * Filters data to include only existing table columns
-	 */
-	private function filterColumns(array $data): array
-	{
-		$columns = $this->getTableColumns();
-		return array_intersect_key($data, array_flip($columns));
-	}
-
-	/**
-	 * Returns array of column names for current table
-	 */
-	private function getTableColumns(): array
-	{
-		if (!isset(self::$tableColumns[$this->tableName])) {
-			self::$tableColumns[$this->tableName] = $this->db->query('SHOW COLUMNS FROM ' . $this->tableName)->fetchPairs('Field', 'Field');
-		}
-		return self::$tableColumns[$this->tableName];
-	}
-
-	public function delete($id) {
+	public function delete(mixed $id): mixed {
 		$this->db->delete($this->tableName)->where($this->primaryKey . ' = %i', $id)->execute();
 		return $this->db->getAffectedRows();
 	}
 
-	public function deleteBy($by) {
+	public function deleteBy(array $by): mixed {
 		$this->db->delete($this->tableName)->where($by)->execute();
 		return $this->db->getAffectedRows();
 	}
 
-	public function assocArray($key, $array) {
+	public function assocArray(string $key, array $array): array {
 		$newArray = [];
 		if (!empty($array)) {
 			foreach ($array as $value) {
@@ -215,37 +207,46 @@ abstract class AMapper implements IMapper
 		return $newArray;
 	}
 
-	public function getTableFields() {
+	public function getTableFields(): Result {
 		return $this->db->query('SHOW FIELDS FROM ' . $this->tableName . '');
 	}
 
-	public function save(IEntity $entity, $withTranslation = false) {
+	public function save(IEntity $entity, bool $withTranslation = false): IEntity {
+
 		if ($entity->getId()) {
-			$this->update($entity);
+			$this->update($entity, $withTranslation);
 		} else {
-			$id = $this->insert($entity);
+			$id = $this->insert($entity->getEntityData());
 			$entity->setId($id);
 		}
 		return $entity;
 	}
 
-	public function getLookupOptions($pid, $query = false){
-		$rs =  $this->db->select('*')->from('lookup')->where('pid=%i',$pid);
+
+
+	public function getLookupOptions(int $pid, mixed $query = false): array {
+
+		$rs =  $this->db->select('*')->from('lookup')
+				->where('pid=%i',$pid);
+
 		if($query){
 			$rs->where('item LIKE %like~',$query);
 		}
+
 		return $rs->fetchPairs('id','item');
 	}
 
-	public function getLookupList($pid){
-		return $this->db->select('*')->from('lookup')->where('pid=%i',$pid)->fetchAssoc('id');
+	public function getLookupList(int $pid): array {
+		return $this->db->select('*')->from('lookup')
+				->where('pid=%i',$pid)->fetchAssoc('id');
 	}
 
-	public function getLookupItem($lookupId){
+	public function getLookupItem(int $lookupId): mixed {
 		return $this->db->select('item')->from('lookup')->where('id=%i',$lookupId)->fetchSingle();
 	}
 
-	private function doUpdate(Fluent $q): int{
+
+	private function doUpdate(Fluent $q): int {
 		$q->execute();
 		return $this->db->getAffectedRows();
 	}

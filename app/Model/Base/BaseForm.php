@@ -17,11 +17,15 @@ class BaseForm extends \Nette\Application\UI\Form
 	/** @var callable */
 	public $onParentError;
 
+	/** @var Translator */
+	private $translator;
+
 	/**
-     * Set form ajax flag
-     * @param bool $isAjax
-     */
-    public function setAjax($isAjax): static
+	 * Set form ajax flag
+	 * @param bool $isAjax
+	 * @return BaseForm
+	 */
+	public function setAjax($isAjax)
 	{
 		$this->isAjax = $isAjax;
 		return $this;
@@ -37,35 +41,43 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * @return $this
-     */
-    public function setParentSuccessCallback(callable $callback): static{
+	 * @param callable $callback
+	 * @return $this
+	 */
+	public function setParentSuccessCallback(callable $callback){
 		$this->onParentSuccess[] = $callback;
 		return $this;
 	}
 
 	/**
-     * @return $this
-     */
-    public function setParentErrorCallback(callable $callback): static{
+	 * @param callable $callback
+	 * @return $this
+	 */
+	public function setParentErrorCallback(callable $callback){
 		$this->onParentError[] = $callback;
 		return $this;
 	}
 
-	protected function beforeRender(): void
+	/**
+	 * @return void
+	 */
+	protected function beforeRender()
 	{
 
 		$classes  = $this->getElementPrototype()->getClass();
-		$classes  = (empty($classes) ? [] : array_unique(explode(" ", $classes)));
+		$classes  = (empty($classes) ? array() : array_unique(explode(" ", $classes)));
 
 		$position = array_search("ajax", $classes);
 
-		if ($position === FALSE && $this->isAjax) {
-            $classes[] = "ajax";
-        } elseif ($position !== FALSE && !$this->isAjax) {
-            file_put_contents(DIR_LOG.DS."ajaxform-need-factory.log", "Je potreba nastavit ajax u formulare ".$this->getName().", ktery je potomkem ".$this->getParent()->getName()."\r\n", FILE_APPEND);
-            array_splice($classes, $position, 1);
-        }
+		if($position === FALSE && $this->isAjax)
+		{
+			$classes[] = "ajax";
+		}
+		else if($position !== FALSE && !$this->isAjax)
+		{
+			file_put_contents(DIR_LOG.DS."ajaxform-need-factory.log", "Je potreba nastavit ajax u formulare ".$this->getName().", ktery je potomkem ".$this->getParent()->getName()."\r\n", FILE_APPEND);
+			array_splice($classes, $position, 1);
+		}
 
 		$this->getElementPrototype()->setClass(implode(" ", $classes));
 
@@ -73,11 +85,12 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * Adds input for email.
-     * @param  string  control name
-     * @param  string  label
-     */
-    public function addEmail($name, $label = NULL, int $maxLength = 255): \Nette\Forms\Controls\TextInput
+	 * Adds input for email.
+	 * @param  string  control name
+	 * @param  string  label
+	 * @return Controls\TextInput
+	 */
+	public function addEmail($name, $label = NULL)
 	{
 		return $this[$name] = (new Controls\TextInput($label))
 			->setOption('type', 'email')
@@ -86,11 +99,12 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * @param string $name
-     *
-     * @return Controls\NumberInput
-     */
-    public function addNumber($name, $label = NULL)
+	 * @param string $name
+	 * @param null   $label
+	 *
+	 * @return Controls\NumberInput
+	 */
+	public function addNumber($name, $label = NULL)
 	{
 		$control = new Controls\NumberInput($label);
 		$control->setNullable();
@@ -100,11 +114,12 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * @param string $name
-     *
-     * @return Controls\MonthInput
-     */
-    public function addMonth($name, $label = NULL)
+	 * @param string $name
+	 * @param null   $label
+	 *
+	 * @return Controls\MonthInput
+	 */
+	public function addMonth($name, $label = NULL)
 	{
 		$control = new Controls\MonthInput($label);
 		$control->setNullable();
@@ -114,11 +129,12 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * @param string $name
-     *
-     * @return Controls\DateInput
-     */
-    public function addDate($name, $label = NULL): \Nette\Forms\Controls\DateTimeControl
+	 * @param string $name
+	 * @param null   $label
+	 *
+	 * @return Controls\DateInput
+	 */
+	public function addDate($name, $label = NULL)
 	{
 		$control = new Controls\DateInput($label);
 		$control->setNullable();
@@ -128,11 +144,12 @@ class BaseForm extends \Nette\Application\UI\Form
 	}
 
 	/**
-     * @param string $name
-     *
-     * @return Controls\DateTimeInput
-     */
-    public function addDateTime($name, $label = NULL, bool $withSeconds = false): \Nette\Forms\Controls\DateTimeControl
+	 * @param string $name
+	 * @param null   $label
+	 *
+	 * @return Controls\DateTimeInput
+	 */
+	public function addDateTime($name, $label = NULL)
 	{
 		$control = new Controls\DateTimeInput($label);
 		$control->setNullable();

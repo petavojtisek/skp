@@ -14,26 +14,26 @@ interface IEntity
 
 	/**
 	 * get Id
-	 * @return int
+	 * @return int|string|null
 	 */
-	public function getId();
+	public function getId(): mixed;
 
 	/**
 	 * set new id
-	 * @param int $id
+	 * @param int|string $id
 	 */
-	public function setId($id);
+	public function setId(mixed $id): void;
 
 	/**
 	 * Get core data
 	 * @return array
 	 */
-	public function getEntityData();
+	public function getEntityData(): array;
 
 	/**
 	 * @param array $data
 	 * @return mixed
 	 */
-	public function fillEntity($data = []);
+	public function fillEntity(array $data = []): mixed;
 
 }

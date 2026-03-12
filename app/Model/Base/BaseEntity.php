@@ -17,10 +17,10 @@ class BaseEntity extends AEntity implements IEntity
 	use SmartObject;
 
 
-	function __call(string $method, array $params)
+	function __call($method, $params)
 	{
 
-		$var = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', substr($method, 3)));
+		$var = lcfirst(substr($method, 3));
 
 		if (strncasecmp($method, "get", 3) === 0) {
 			return $this->$var;
@@ -31,17 +31,12 @@ class BaseEntity extends AEntity implements IEntity
 		}
 	}
 
-	public function __get(string $property): mixed
+	public function __get($property)
 	{
-		return $this->$property ?? null;
+		return (isset($this->$property)) ? $this->$property : null;
 	}
 
-	public function __isset(string $property): bool
-	{
-		return isset($this->$property);
-	}
-
-	function __set(string $name, mixed $value)
+	function __set($name, $value)
 	{
 		$type = self::VALUE_TYPE_STRING;
 
@@ -49,11 +44,11 @@ class BaseEntity extends AEntity implements IEntity
 			$type = self::VALUE_TYPE_INTEGER;
 		}
 
-		if (is_float($value) or is_float($value)) {
+		if (is_double($value) or is_float($value)) {
 			$type = self::VALUE_TYPE_FLOAT;
 		}
 
-		if (is_array($value) or is_object($value) or json_decode((string) $value)) {
+		if (is_array($value) or is_object($value) or json_decode($value)) {
 			$type = self::VALUE_TYPE_JSON;
 		}
 
@@ -65,16 +60,16 @@ class BaseEntity extends AEntity implements IEntity
 			$type = self::VALUE_TYPE_DATE;
 		}
 
-		$var = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+		$var = lcfirst($name);
 		$this->setVariable($var, $value, $type);
 	}
 
-	public function setSessionId($sessionId = null): void
+	public function setSessionId($sessionId = null)
 	{
 		if (!empty($sessionId)) {
-			$this->setVariable('session_id', $sessionId);
+			$this->setVariable('sessionId', $sessionId);
 		} else {
-			$this->setVariable('session_id', session_id());
+			$this->setVariable('sessionId', session_id());
 		}
 
 	}
@@ -84,21 +79,21 @@ class BaseEntity extends AEntity implements IEntity
 		return $this->getEncodeDecode()->encodeSmallHash($this->getId());
 	}
 
-	public function setCreatedIp($createdIp = null): void
+	public function setCreatedIp($createdIp = null)
 	{
 		if (!empty($createdIp)) {
-			$this->setVariable('created_ip', $createdIp);
+			$this->setVariable('createdIp', $createdIp);
 		} else {
-			$this->setVariable('created_ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'));
+			$this->setVariable('createdIp', filter_input(INPUT_SERVER, 'REMOTE_ADDR'));
 		}
 	}
 
-	public function setCreatedDt($createdDt = null): void
+	public function setCreatedDt($createdDt = null)
 	{
 		if (!empty($createdDt) and $createdDt instanceof DateTime) {
-			$this->setVariable('created_dt', $createdDt);
+			$this->setVariable('createdDt', $createdDt);
 		} else {
-			$this->setVariable('created_dt', new DateTime());
+			$this->setVariable('createdDt', new DateTime());
 		}
 
 	}

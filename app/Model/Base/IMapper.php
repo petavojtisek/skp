@@ -10,19 +10,18 @@ namespace App\Model\Base;
 
 use Dibi\Result;
 use Dibi\Row;
-use App\Model\IEntity;
 
 interface IMapper
 {
 	/**
 	 * begin transaction
 	 */
-	public function begin();
+	public function begin(): void;
 
 	/**
 	 * commit transaction
 	 */
-	public function commit();
+	public function commit(): void;
 }
 
 
@@ -33,103 +32,111 @@ interface Test
 	/**
 	 * rollback transaction
 	 */
-	public function rollback();
+	public function rollback(): void;
 
 	/**
 	 * return all records from table
-	 * @return Row[]
+	 * @return Row[]|array
 	 */
-	public function findAll();
+	public function findAll(): array;
 
 	/**
-     * return filtered rows by array
-     * (array('name' => 'David') convert to SQL query WHERE name = 'David')
-     * @return Row
-     */
-    public function findBy(array $by);
+	 * return filtered rows by array
+	 * (array('name' => 'David') convert to SQL query WHERE name = 'David')
+	 * @param array $by
+	 * @return Row|null|mixed
+	 */
+	public function findBy(array $by): mixed;
 
 	/**
-     * return if record already exist
-     * (array('name' => 'David') convert to SQL query WHERE name = 'David')
-     * @return bool
-     */
-    public function rowExist(array $by);
+	 * return if record already exist
+	 * (array('name' => 'David') convert to SQL query WHERE name = 'David')
+	 * @param array $by
+	 * @return bool
+	 */
+	public function rowExist(array $by): bool;
 
 	/**
-     * return single row
-     * @return Row
-     */
-    public function findOneBy(array $by);
+	 * return single row
+	 * @param array $by
+	 * @return Row|null|mixed
+	 */
+	public function findOneBy(array $by): mixed;
 
 	/**
-     * return single row
-     * @param string $value name of col
-     * @return mixed
-     */
-    public function findOneValueBy($value, array $by);
+	 * return single row
+	 * @param string $value name of col
+	 * @param array $by
+	 * @return mixed
+	 */
+	public function findOneValueBy(string $value, array $by): mixed;
 
 	/**
-     * return ID of row
-     * @return int
-     */
-    public function getIDBy(array $by);
+	 * return ID of row
+	 * @param array $by
+	 * @return int|string|null
+	 */
+	public function getIDBy(array $by): mixed;
 
 	/**
-     * return ID of row
-     * @return int
-     */
-    public function getIDsBy(array $by);
+	 * return IDs of row
+	 * @param array $by
+	 * @return array
+	 */
+	public function getIDsBy(array $by): array;
 
 	/**
 	 * return all row by condition in array
 	 * @param array $by
-	 * @param int $limit
-	 * @param int $offset
-	 * @param string $orderBy
-	 * @return Row[]
+	 * @param int|null $limit
+	 * @param int|null $offset
+	 * @param string|null $orderBy
+	 * @return Row[]|array
 	 */
-	public function findAllBy($by = [], $limit = null, $offset = null, $orderBy = null);
+	public function findAllBy(array $by = [], ?int $limit = null, ?int $offset = null, ?string $orderBy = null): array;
 
 	/**
 	 * return single row by primary key
-	 * @param int $id
-	 * @return Row
+	 * @param int|string $id
+	 * @return Row|null|mixed
 	 */
-	public function find($id);
+	public function find(mixed $id): mixed;
 
 	/**
 	 * count rows
 	 * @param array $where if is not set count all
 	 * @return int
 	 */
-	public function count($where = []);
+	public function count(array $where = []): int;
 
 	/**
 	 * count summary in rows
 	 * @param string $field field name to summary
 	 * @param array $where if is not set count all
-	 * @return int
+	 * @return int|float
 	 */
-	public function sum($field, $where = []);
+	public function sum(string $field, array $where = []): mixed;
 
 	/**
 	 * update record
-	 * @param array $data array have to include primary key
+	 * @param array|IEntity $data array have to include primary key
+	 * @return int|bool
 	 */
-	public function update($data);
+	public function update(mixed $data): mixed;
 
 	/**
 	 * insert record and return insert ID
-	 * @param array $data
-	 * @return int of inserted ID
+	 * @param array|IEntity $data
+	 * @return int|string|bool of inserted ID
 	 */
-	public function insert($data);
+	public function insert(mixed $data): mixed;
 
 	/**
 	 * remove row by ID
-	 * @param int $id
+	 * @param int|string $id
+	 * @return int|bool
 	 */
-	public function delete($id);
+	public function delete(mixed $id): mixed;
 
 	/**
 	 * sort multidimensional array
@@ -137,17 +144,17 @@ interface Test
 	 * @param IEntity[] $array
 	 * @return array
 	 */
-	public function assocArray($key, $array);
+	public function assocArray(string $key, array $array): array;
 
 	/**
-	 * get fable fields
+	 * get table fields
 	 * @return Result
 	 */
-	public function getTableFields();
+	public function getTableFields(): Result;
 
 	/**
-     * @return IEntity
-     */
-    public function save(IEntity $entity);
+	 * @param IEntity $entity
+	 * @return IEntity
+	 */
+	public function save(IEntity $entity): IEntity;
 }
-
