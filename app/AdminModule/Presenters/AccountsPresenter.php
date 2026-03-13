@@ -22,6 +22,11 @@ final class AccountsPresenter extends AdminPresenter
     /** @var int|null @persistent */
     public $id;
 
+    public function actionDefault(): void
+    {
+        $this->id = null;
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Účty';

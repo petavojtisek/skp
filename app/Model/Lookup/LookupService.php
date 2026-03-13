@@ -87,16 +87,16 @@ class LookupService extends BaseService
             $maxId = $this->lookupDao->getMapper()->getMaxMasterId();
             $newId = (int) (floor($maxId / 100) * 100 + 100);
             $lookup->setId($newId);
+            $mapper = $this->lookupDao->getMapper();
+            $mapper->insert($lookup);
+            $mapper->deleteTranslations($lookup->getId());
+            foreach ($lookup->getTranslates() as $langId => $translationEntity)
+            {
+                $mapper->saveTranslation($lookup->getId(), $langId, $translationEntity->getValue());
+            }
+        }else {
+            $id = (int)$this->lookupDao->save($lookup)->getId();
         }
-
-        $id = (int) $this->lookupDao->save($lookup)->getId();
-
-        /*
-        foreach ($lookup->getTranslations() as $langId => $item) {
-            if (defined('C_LANGUAGE_CS') && $langId == C_LANGUAGE_CS) continue;
-            $this->lookupDao->saveTranslation((int)$id, (int)$langId, (string)$item);
-        }
-        */
 
         $this->invalidateCache();
         return (int)$id;

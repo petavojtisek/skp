@@ -13,5 +13,22 @@ class BaseDao extends ADao
 {
 
 
+    public function getTranslations(int $id): array
+    {
+        $list =  $this->mapper->getTranslations($id);
+        $translates = [];
+        if($list){
+            foreach ($list as $lang_id=> $item) {
+                $translates[$lang_id] = new BaseTranslateEntity(
+                    [
+                        'entity_id' => $id,
+                        'lang_id' => $lang_id,
+                        'value' => $item
+                    ]
+                );
+            }
+        }
+        return $translates;
+    }
 
 }

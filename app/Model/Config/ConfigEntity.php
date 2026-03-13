@@ -14,5 +14,5 @@ class ConfigEntity extends BaseEntity
     public function getId(): mixed { return $this->config_id; }
     public function setId(mixed $id): void { $this->setVariable('config_id', $id, self::VALUE_TYPE_INTEGER); }
 
-    public function getTranslations(): array { return $this->translations; }
+
 }

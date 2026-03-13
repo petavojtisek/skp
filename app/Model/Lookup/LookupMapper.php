@@ -55,13 +55,6 @@ class LookupMapper extends BaseMapper
             ->fetchSingle();
     }
 
-    public function getTranslations(int $lookupId): array
-    {
-        return $this->db->select('lang_id, value')
-            ->from('lookup_lang')
-            ->where('lookup_id = %i', $lookupId)
-            ->fetchPairs('lang_id', 'value');
-    }
 
     public function getMaxMasterId(): int
     {

@@ -32,28 +32,6 @@ class LookupDao extends BaseDao
         return $this->mapper->getLookupItem($lookupId, $langId);
     }
 
-    public function getTranslations(int $lookupId): array
-    {
-        $list =  $this->mapper->getTranslations($lookupId);
-        $translates = [];
-        if($list){
-            foreach ($list as $lang_id=> $item) {
-                $translates[$lang_id] = new BaseTranslateEntity(
-                    [
-                        'element_id' => $lookupId,
-                        'lang_id' => $lang_id,
-                        'value' => $item
-                    ]
-                );
-            }
-        }
-        return $translates;
-    }
-
-    public function saveTranslation(int $lookupId, int $langId, string $item): void
-    {
-        $this->mapper->saveTranslation($lookupId, $langId, $item);
-    }
 
     public function deleteTranslations(int $lookupId): void
     {

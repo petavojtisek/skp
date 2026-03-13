@@ -38,6 +38,8 @@ services:
 	- App\Model\AdminModulePermission\AdminModulePermissionMapper
 	- App\Model\AdminPageGroup\AdminPageGroupMapper
 	- App\Model\Object\ObjectMapper
+	- App\Model\AdminRight\AdminRightMapper
+	- App\Model\AdminGroupRight\AdminGroupRightMapper
 
 	# DAO
 	- App\Model\Page\PageDao
@@ -55,6 +57,8 @@ services:
 	- App\Model\AdminModulePermission\AdminModulePermissionDao
 	- App\Model\AdminPageGroup\AdminPageGroupDao
 	- App\Model\Object\ObjectDao
+	- App\Model\AdminRight\AdminRightDao
+	- App\Model\AdminGroupRight\AdminGroupRightDao
 
 	# AUTH
 	authenticator:
@@ -95,5 +99,6 @@ services:
 	- App\Model\AdminModulePermission\AdminModulePermissionFacade
 	- App\Model\AdminPageGroup\AdminPageGroupFacade
 	- App\Model\Object\ObjectFacade
+	- App\Model\AdminRight\AdminRightFacade
 
 	# Register other ebcar-like services here

@@ -9,28 +9,13 @@ class ConfigMapper extends BaseMapper
     protected string $tableName = 'config';
     protected string $primaryKey = 'config_id';
 
-    /**
-     * Get values from translation table
-     */
-    public function getTranslations(int $configId): array
-    {
-        return $this->db->select('language_id, value')
-            ->from('config_description')
-            ->where('config_id = %i', $configId)
-            ->fetchPairs('language_id', 'value');
-    }
 
-    public function saveTranslation(int $configId, int $langId, string $value): void
-    {
-        $this->db->query('REPLACE INTO config_description', [
-            'config_id' => $configId,
-            'language_id' => $langId,
-            'value' => $value,
-        ]);
-    }
+    public string $translateTableName = 'config_lang';
+    public string $translatePrimaryKey = 'config_id';
+    public string $translateLangId = 'lang_id';
+    public string $translateValueKey = 'value';
 
-    public function deleteTranslations(int $configId): void
-    {
-        $this->db->delete('config_description')->where('config_id = %i', $configId)->execute();
-    }
+
+
+
 }

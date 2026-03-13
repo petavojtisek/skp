@@ -18,6 +18,12 @@ final class PresentationPresenter extends AdminPresenter
     /** @var int|null @persistent */
     public $spec_param_id;
 
+    public function actionDefault(): void
+    {
+        $this->id = null;
+        $this->spec_param_id = null;
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Prezentace';

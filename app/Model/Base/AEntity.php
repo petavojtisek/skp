@@ -194,6 +194,7 @@ abstract class AEntity implements IEntity
 
     public function setTranslates(array $translates): void
     {
+
         $this->translates = $translates;
     }
 
@@ -219,11 +220,11 @@ abstract class AEntity implements IEntity
         $translations =  $this->getTranslates();
         foreach ($languages as $lang) {
             $key = 'item_' . $lang->lookup_id;
-           
+
             if (isset($values[$key]) and $lang->lookup_id !== C_LANGUAGE_CS) {
                 $translateEntity = $this->getTranslate($lang->lookup_id);
                 $translateEntity->fillEntity([
-                    'entity_id' => $this->getId(),
+                    'entity_id' => (int)$this->getId(),
                     'lang_id' => $lang->lookup_id,
                     'value' => $values[$key]
                 ]);

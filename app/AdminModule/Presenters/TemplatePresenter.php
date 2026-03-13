@@ -22,6 +22,12 @@ final class TemplatePresenter extends AdminPresenter
     /** @var int|null @persistent */
     public $code_name_id;
 
+    public function actionDefault(): void
+    {
+        $this->id = null;
+        $this->code_name_id = null;
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Šablony';

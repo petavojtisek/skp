@@ -18,6 +18,11 @@ final class ConfigPresenter extends AdminPresenter
     /** @var int|null @persistent */
     public $id;
 
+    public function actionDefault(): void
+    {
+        $this->id = null;
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Nastavení systému';
@@ -33,14 +38,14 @@ final class ConfigPresenter extends AdminPresenter
         $this->template->languages = $languages;
 
         if ($id) {
-            $config = $this->configFacade->getConfig($id);
+            $config = $this->configFacade->getConfig((int) $id);
             if (!$config) {
                 $this->error('Nastavení nebylo nalezeno');
             }
 
             $defaults = $config->getEntityData();
-            foreach ($config->getTranslations() as $langId => $val) {
-                $defaults['value_' . $langId] = $val;
+            foreach ($config->getTranslates() as $langId => $val) {
+                $defaults['item_' . $langId] = $val->getValue();
             }
 
             $this['configForm']->setDefaults($defaults);
@@ -68,7 +73,7 @@ final class ConfigPresenter extends AdminPresenter
         // Other values for each other language
         $languages = $this->getOtherLanguages();
         foreach ($languages as $lang) {
-            $form->addText('value_' . $lang->lookup_id, 'Hodnota (' . strtoupper($lang->item) . ')');
+            $form->addText('item_' . $lang->lookup_id, 'Hodnota (' . strtoupper($lang->item) . ')');
         }
 
         $form->addSubmit('send', 'Uložit nastavení')
@@ -80,20 +85,9 @@ final class ConfigPresenter extends AdminPresenter
 
     public function configFormSucceeded(Form $form, \stdClass $values): void
     {
-        $config = new ConfigEntity();
-        $config->fillEntity((array) $values);
-
-        // Extract translations
-        $translations = [];
+        $config =  $this->configFacade->getConfig((int)$values->config_id) ?? new ConfigEntity();
         $languages = $this->getOtherLanguages();
-        foreach ($languages as $lang) {
-            $key = 'value_' . $lang->lookup_id;
-            if (isset($values->$key)) {
-                $translations[$lang->lookup_id] = $values->$key;
-            }
-        }
-        $config->setTranslates($translations);
-
+        $config->fillEntity((array) $values,true, $languages);
         $this->configFacade->saveConfig($config);
         $this->flashMessage('Nastavení bylo uloženo.');
         $this->redirect('default');
@@ -101,7 +95,7 @@ final class ConfigPresenter extends AdminPresenter
 
     private function getOtherLanguages(): array
     {
-        $all = $this->lookupFacade->getLookupList(500);
+        $all = $this->lookupFacade->getLookupList(C_LANGUAGE);
         return array_filter($all, fn($l) => $all[$l->lookup_id]->lookup_id != C_LANGUAGE_CS);
     }
 }

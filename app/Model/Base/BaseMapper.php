@@ -29,12 +29,11 @@ class BaseMapper extends AMapper
         $this->application = $application;
     }
 
-    public function save(IEntity $entity, bool $withTranslation = false): IEntity
+    public function save(IEntity $entity): IEntity
     {
 
-        $entity = parent::save($entity, $withTranslation);
+        $entity = parent::save($entity);
         $this->logChanges($entity, 'save');
-
 
         if(isset($this->translateTableName) && $entity->getId() and $entity->hasTranslates())
         {
@@ -47,8 +46,6 @@ class BaseMapper extends AMapper
 
         return $entity;
     }
-
-
 
     public function saveTranslation(int $primaryId, int $langId, string $item): void
     {
@@ -65,11 +62,26 @@ class BaseMapper extends AMapper
     }
 
 
+    /**
+     * Get values from translation table
+     */
+    public function getTranslations(int $id): array
+    {
+        return $this->db->select($this->translateLangId .','.$this->translateValueKey)
+            ->from($this->translateTableName)
+            ->where($this->translatePrimaryKey.'= %i', $id)
+            ->fetchPairs($this->translateLangId , $this->translateValueKey);
+    }
+
     public function delete(mixed $id): mixed
     {
         $data = $this->find($id);
         return  parent::delete($id);
         $this->logDelete($data, $id);
+        if(isset($this->translateTableName) and !empty($this->translateTableName))
+        {
+            $this->deleteTranslations($id);
+        }
     }
 
    public function deleteBy(array $by): mixed
@@ -136,6 +148,7 @@ class BaseMapper extends AMapper
             return;
         }
 
+
         /** @var Presenter $presenter */
         $presenter = $this->application->getPresenter();
 
@@ -163,8 +176,9 @@ class BaseMapper extends AMapper
             }
         }
 
-
+        $id = 0;
         if ($entity) {
+            $id = $entity->getId();
             $reflection = new \ReflectionClass($entity);
             $module = str_replace('Entity', '', $reflection->getShortName());
             $fullData = $entity->getEntityData();

@@ -255,8 +255,8 @@ abstract class ADao
 		return false;
 	}
 
-	public function save(IEntity $entity, bool $withTranslation = false): IEntity {
-		return $this->mapper->save($entity, $withTranslation );
+	public function save(IEntity $entity): IEntity {
+		return $this->mapper->save($entity);
 	}
 
 	protected function onUpdate(mixed $ret): void

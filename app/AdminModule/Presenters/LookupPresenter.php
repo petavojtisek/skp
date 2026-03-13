@@ -15,6 +15,11 @@ final class LookupPresenter extends AdminPresenter
     /** @var int|null @persistent */
     public $id;
 
+    public function actionDefault(): void
+    {
+        $this->id = null;
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Číselníky';
@@ -86,7 +91,8 @@ final class LookupPresenter extends AdminPresenter
     public function lookupFormSucceeded(Form $form, \stdClass $values): void
     {
 
-        $lookup = $this->lookupFacade->getLookup($values->lookup_id) ?? new LookupEntity();
+        xdebug_break();
+        $lookup = $this->lookupFacade->getLookup((int)$values->lookup_id) ?? new LookupEntity();
         $languages = $this->lookupFacade->getLookupList(C_LANGUAGE);
         $lookup->fillEntity((array) $values, true, $languages);
 

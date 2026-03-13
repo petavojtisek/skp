@@ -203,6 +203,7 @@ abstract class AMapper implements IMapper
 		return $this->db->getAffectedRows();
 	}
 
+
 	public function deleteBy(array $by): mixed {
 		$this->db->delete($this->tableName)->where($by)->execute();
 		return $this->db->getAffectedRows();
@@ -222,17 +223,15 @@ abstract class AMapper implements IMapper
 		return $this->db->query('SHOW FIELDS FROM ' . $this->tableName . '');
 	}
 
-	public function save(IEntity $entity, bool $withTranslation = false): IEntity {
+	public function save(IEntity $entity): IEntity {
 		if ($entity->getId()) {
-			$this->update($entity, $withTranslation);
+			$this->update($entity);
 		} else {
 			$id = $this->insert($entity->getEntityData());
 			$entity->setId($id);
 		}
 		return $entity;
 	}
-
-
 
 	public function getLookupOptions(int $pid, mixed $query = false): array {
 
