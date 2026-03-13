@@ -3,15 +3,22 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
+	<title>{ifset title}{include title|stripHtml} | {/ifset}SKP Krajina Polabí</title>
+	<link rel="stylesheet" href="{$basePath}/assets/style.css">
 
-	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
-
-	{asset? 'main.js'}
 </head>
-
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-
+{include 'header.latte'}
+<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+<main>
 	{include content}
+</main>
+
+{include 'footer.latte'}
+
+{block scripts}
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	{asset? 'main.js'}
+{/block}
 </body>
 </html>

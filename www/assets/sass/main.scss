@@ -1,0 +1,170 @@
+// Import fontů
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lato:wght@400;700&display=swap');
+
+// Proměnné z tvého zadání
+$primary-green: #4a7c2c;
+$river-blue: #0066cc;
+$gold-accent: #d4a017;
+$text-dark: #333;
+$white: #fff;
+
+$font-header: 'Montserrat', sans-serif;
+$font-body: 'Lato', sans-serif;
+
+body {
+  font-family: $font-body;
+  color: $text-dark;
+  margin: 0;
+}
+
+h1, h2, h3 {
+  font-family: $font-header;
+  text-transform: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// Hero Sekce - Opravené jednotky (3rem místo 3 rem)
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('krajina-polabi.jpg');
+  background-size: cover;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: $white;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+}
+
+// Tlačítka
+.btn {
+  padding: 12px 25px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+
+  &.btn-primary {
+    background: $primary-green;
+    color: $white;
+}
+
+  &.btn-white {
+    background: $white;
+    color: $primary-green;
+}
+}
+
+// Patička - Opravené jednotky (15px místo 15 px)
+.main-footer {
+  background-color: $primary-green;
+  color: $white;
+  padding: 40px 0 20px;
+  margin-top: 50px;
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+  h3, h4 {
+    color: $white;
+    margin-bottom: 15px;
+}
+
+  a {
+    color: $white;
+    text-decoration: underline;
+}
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 30px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+}
+
+// Header & Logo - Opravené jednotky (50px, 1.5rem atd.)
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  img {
+    height: 50px;
+}
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+
+    .brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: $primary-green;
+  }
+
+    .subtext {
+      font-size: 0.9rem;
+      color: $text-dark;
+  }
+}
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  ul {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+
+    a {
+      text-decoration: none;
+      color: $text-dark;
+      font-weight: 500;
+      transition: color 0.3s;
+
+      &:hover {
+        color: $primary-green;
+    }
+  }
+}
+}
+
+// Sekce Náš účel (grid)
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  text-align: center;
+  margin: 50px 0;
+
+  .feature .icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+}
