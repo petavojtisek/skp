@@ -2,6 +2,8 @@
 
 namespace App\Model\Template;
 
+use App\Model\Entity\CodeNameEntity;
+
 class TemplateFacade
 {
     /** @var TemplateService */

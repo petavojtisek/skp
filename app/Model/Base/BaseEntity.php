@@ -17,6 +17,7 @@ class BaseEntity extends AEntity implements IEntity
 	use SmartObject;
 
 
+
 	function __call($method, $params)
 	{
 
@@ -109,5 +110,12 @@ class BaseEntity extends AEntity implements IEntity
     public function getCreatedDt($fomat = null)
     {
         return $this->getDateTime($this->created_dt  , $fomat);
+    }
+
+
+    public function hasTranslates() : bool
+    {
+
+        return !empty($this->getTranslates());
     }
 }

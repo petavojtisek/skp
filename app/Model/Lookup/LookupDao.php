@@ -3,6 +3,7 @@
 namespace App\Model\Lookup;
 
 use App\Model\Base\BaseDao;
+use App\Model\Base\BaseTranslateEntity;
 
 class LookupDao extends BaseDao
 {
@@ -33,7 +34,20 @@ class LookupDao extends BaseDao
 
     public function getTranslations(int $lookupId): array
     {
-        return $this->mapper->getTranslations($lookupId);
+        $list =  $this->mapper->getTranslations($lookupId);
+        $translates = [];
+        if($list){
+            foreach ($list as $lang_id=> $item) {
+                $translates[$lang_id] = new BaseTranslateEntity(
+                    [
+                        'element_id' => $lookupId,
+                        'lang_id' => $lang_id,
+                        'value' => $item
+                    ]
+                );
+            }
+        }
+        return $translates;
     }
 
     public function saveTranslation(int $lookupId, int $langId, string $item): void

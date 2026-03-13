@@ -11,9 +11,10 @@ class LookupMapper extends BaseMapper
     protected string $primaryKey = 'lookup_id';
 
 
-    protected string $translateName = 'lookup_lang';
-    protected string $translateKey = 'lookup_id';
-    protected string $langKey = 'lang_id';
+    public string $translateTableName = 'lookup_lang';
+    public string $translatePrimaryKey = 'lookup_id';
+    public string $translateLangId = 'lang_id';
+    public string $translateValueKey = 'value';
 
     public function getConstants(): array
     {
@@ -31,7 +32,7 @@ class LookupMapper extends BaseMapper
      */
     public function getLookupList(int $pid, ?int $langId = null): array
     {
-        $selection = $this->db->select('l.lookup_id, COALESCE(ll.item, l.item) as item, l.constant')
+        $selection = $this->db->select('l.lookup_id, COALESCE(ll.value, l.item) as item, l.constant')
             ->from($this->tableName)->as('l')
             ->leftJoin('lookup_lang')->as('ll')->on('l.lookup_id = ll.lookup_id AND ll.lang_id = %i', $langId)
             ->where('l.parent_id = %i', $pid);
@@ -56,24 +57,10 @@ class LookupMapper extends BaseMapper
 
     public function getTranslations(int $lookupId): array
     {
-        return $this->db->select('lang_id, item')
+        return $this->db->select('lang_id, value')
             ->from('lookup_lang')
             ->where('lookup_id = %i', $lookupId)
-            ->fetchPairs('lang_id', 'item');
-    }
-
-    public function saveTranslation(int $lookupId, int $langId, string $item): void
-    {
-        $this->db->query('REPLACE INTO lookup_lang', [
-            'lookup_id' => $lookupId,
-            'lang_id' => $langId,
-            'item' => $item,
-        ]);
-    }
-
-    public function deleteTranslations(int $lookupId): void
-    {
-        $this->db->delete('lookup_lang')->where('lookup_id = %i', $lookupId)->execute();
+            ->fetchPairs('lang_id', 'value');
     }
 
     public function getMaxMasterId(): int

@@ -10,6 +10,9 @@ final class InstallPresenter extends AdminPresenter
     /** @var InstallFacade @inject */
     public $installFacade;
 
+    /** @var int|null @persistent */
+    public $id;
+
     public function renderDefault(): void
     {
         $this->template->title = 'Instalované moduly';

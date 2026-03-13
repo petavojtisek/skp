@@ -105,7 +105,7 @@
                                         <td>{$cn->module}</td>
                                         <td>
                                             <a n:href="editCodeName!, codeNameId => $cn->id" class="btn btn-sm btn-info ajax"><i class="fas fa-edit"></i></a>
-                                            <a n:href="deleteCodeName!, id => $cn->id, templateId => $templateId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                            <a n:href="deleteCodeName!, codeNameId => $cn->id, id => $templateId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                                     <tr n:if="!$codeNames">

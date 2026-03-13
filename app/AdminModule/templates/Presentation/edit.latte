@@ -108,7 +108,7 @@
                                         <td>{$param->value}</td>
                                         <td>
                                             <a n:href="editSpecParam!, specParamId => $param->spec_param_id" class="btn btn-sm btn-info ajax"><i class="fas fa-edit"></i></a>
-                                            <a n:href="deleteSpecParam!, id => $param->spec_param_id, presentationId => $presentationId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                            <a n:href="deleteSpecParam!, specParamId => $param->spec_param_id, id => $presentationId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                                     <tr n:if="!$specParams">

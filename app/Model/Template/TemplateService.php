@@ -3,6 +3,7 @@
 namespace App\Model\Template;
 
 use App\Model\Base\BaseService;
+use App\Model\Entity\CodeNameEntity;
 
 class TemplateService extends BaseService
 {

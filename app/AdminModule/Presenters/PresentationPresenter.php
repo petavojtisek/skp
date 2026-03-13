@@ -26,6 +26,10 @@ final class PresentationPresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null): void
     {
+        if ($id === null && $this->id !== null) {
+            $id = (int)$this->id;
+        }
+
         $this->template->title = $id ? 'Editace prezentace' : 'Nová prezentace';
         $this->template->presentationId = $id;
         $this->template->spec_param_id = $this->spec_param_id;
@@ -33,6 +37,9 @@ final class PresentationPresenter extends AdminPresenter
         if ($id) {
             $presentation = $this->presentationFacade->getPresentation($id);
             if (!$presentation) {
+                if ($this->isAjax()) {
+                    return;
+                }
                 $this->error('Prezentace nebyla nalezena');
             }
             $this['basicForm']->setDefaults($presentation->getEntityData());
@@ -93,18 +100,19 @@ final class PresentationPresenter extends AdminPresenter
     /**
      * Signal for deleting spec param (AJAX supported)
      */
-    public function handleDeleteSpecParam(int $id, int $presentationId): void
+    public function handleDeleteSpecParam(int $specParamId, int $id): void
     {
-        $this->presentationFacade->deleteSpecParam($id);
+        $this->presentationFacade->deleteSpecParam($specParamId);
         $this->flashMessage('Parametr byl smazán.');
+        $this->id = $id;
 
         if ($this->isAjax()) {
-            $this->template->presentationId = $presentationId;
-            $this->template->specParams = $this->presentationFacade->getSpecParams($presentationId);
+            $this->template->presentationId = $id;
+            $this->template->specParams = $this->presentationFacade->getSpecParams($id);
             $this->redrawControl('specParamsTableSnippet');
             $this->redrawControl('flashes');
         } else {
-            $this->redirect('edit#tab-spec-params', ['id' => $presentationId]);
+            $this->redirect('edit#tab-spec-params', ['id' => $id]);
         }
     }
 

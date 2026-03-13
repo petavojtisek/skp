@@ -31,10 +31,39 @@ class BaseMapper extends AMapper
 
     public function save(IEntity $entity, bool $withTranslation = false): IEntity
     {
+
         $entity = parent::save($entity, $withTranslation);
         $this->logChanges($entity, 'save');
+
+
+        if(isset($this->translateTableName) && $entity->getId() and $entity->hasTranslates())
+        {
+            $this->deleteTranslations($entity->getId());
+            foreach ($entity->getTranslates() as $langId => $translationEntity)
+            {
+                $this->saveTranslation($entity->getId(), $langId, $translationEntity->getValue());
+            }
+        }
+
         return $entity;
     }
+
+
+
+    public function saveTranslation(int $primaryId, int $langId, string $item): void
+    {
+        $this->db->query("REPLACE INTO {$this->translateTableName}", [
+            $this->translatePrimaryKey=>$primaryId,
+            $this->translateLangId => $langId,
+            $this->translateValueKey => $item,
+        ]);
+    }
+
+    public function deleteTranslations(int $primaryId): void
+    {
+        $this->db->delete($this->translateTableName)->where( $this->translatePrimaryKey.' = %i', $primaryId)->execute();
+    }
+
 
     public function delete(mixed $id): mixed
     {
@@ -77,10 +106,15 @@ class BaseMapper extends AMapper
            }
        }
 
+       $reflection = new \ReflectionClass($this);
+       $module = str_replace('Mapper', '', $reflection->getShortName());
+       $name = ($module . ' ID: ' . $id);
+
        $data = [
-           'name'                => get_class($this),
+           'module'                => $module,
+           'name'                  => $name,
            'action'                => 'delete',
-           'element_id' =>           $id,
+           'element_id' =>         $id,
            'admin_id'              => $userId,
            'before'                => json_encode($before),
            'created_dt'            => new DateTime(),
@@ -91,7 +125,7 @@ class BaseMapper extends AMapper
 
        $logMapper = $this->container->getByType(\App\Model\Log\LogMapper::class);
        $this->db->insert($logMapper->tableName, $data)->execute();
-       $lastInsertId = $this->db->getInsertId();
+
    }
 
     public function logChanges(IEntity $entity,?string $action = null): void
@@ -129,8 +163,20 @@ class BaseMapper extends AMapper
             }
         }
 
+
+        if ($entity) {
+            $reflection = new \ReflectionClass($entity);
+            $module = str_replace('Entity', '', $reflection->getShortName());
+            $fullData = $entity->getEntityData();
+        } else {
+            $reflection = new \ReflectionClass($this);
+            $module = str_replace('Mapper', '', $reflection->getShortName());
+        }
+        $name = $fullData['user_name'] ?? $fullData['name'] ?? $fullData['title'] ?? $fullData['item'] ?? ($module . ' ID: ' . $id);
+
         $data = [
-            'name'                => get_class($entity),
+            'module'                => $module,
+            'name'                => $name,
             'action'                => $action,
             'element_id' =>          $entity->getId(),
             'admin_id'              => $userId,
@@ -152,7 +198,20 @@ class BaseMapper extends AMapper
 
     protected function getDiffData(IEntity $entity): ?array
     {
-        return $entity->getDiffData();
+        $diffs  = $entity->getDiffData();
+
+        if($entity->hasTranslates()){
+            $diffs =  $entity->getDiffData();
+            foreach ($entity->getTranslates() as $langId => $translationEntity)
+            {
+               $d  = $translationEntity->getDiffData();
+               if(!empty($d['before']) || !empty($d['after']))
+                {
+                    $diffs['translates'][$langId] = $d;
+                }
+            }
+        }
+        return $diffs;
     }
 
 }

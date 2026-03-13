@@ -34,6 +34,10 @@ services:
 	- App\Model\Install\InstallMapper
 	- App\Model\Log\LogMapper
 	- App\Model\Admin\AdminMapper
+	- App\Model\AdminGroup\AdminGroupMapper
+	- App\Model\AdminModulePermission\AdminModulePermissionMapper
+	- App\Model\AdminPageGroup\AdminPageGroupMapper
+	- App\Model\Object\ObjectMapper
 
 	# DAO
 	- App\Model\Page\PageDao
@@ -47,6 +51,10 @@ services:
 	- App\Model\Install\InstallDao
 	- App\Model\Log\LogDao
 	- App\Model\Admin\AdminDao
+	- App\Model\AdminGroup\AdminGroupDao
+	- App\Model\AdminModulePermission\AdminModulePermissionDao
+	- App\Model\AdminPageGroup\AdminPageGroupDao
+	- App\Model\Object\ObjectDao
 
 	# AUTH
 	authenticator:
@@ -68,6 +76,10 @@ services:
 	- App\Model\Install\InstallService
 	- App\Model\Log\LogService
 	- App\Model\Admin\AdminService
+	- App\Model\AdminGroup\AdminGroupService
+	- App\Model\AdminModulePermission\AdminModulePermissionService
+	- App\Model\AdminPageGroup\AdminPageGroupService
+	- App\Model\Object\ObjectService
 
 	# FACADE
 	- App\Model\Page\PageFacade
@@ -79,5 +91,9 @@ services:
 	- App\Model\Install\InstallFacade
 	- App\Model\Log\LogFacade
 	- App\Model\Admin\AdminFacade
+	- App\Model\AdminGroup\AdminGroupFacade
+	- App\Model\AdminModulePermission\AdminModulePermissionFacade
+	- App\Model\AdminPageGroup\AdminPageGroupFacade
+	- App\Model\Object\ObjectFacade
 
 	# Register other ebcar-like services here

@@ -11,6 +11,8 @@ class SpecParamEntity extends BaseEntity
     public ?string $name = null;
     public ?string $value = null;
 
+
+
     public function getId(): mixed
     {
         return $this->spec_param_id;

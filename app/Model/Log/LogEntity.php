@@ -14,18 +14,42 @@ class LogEntity extends BaseEntity
     public ?string $name = null;
     public mixed $element_id = null;
     public mixed $component_id = null;
-    public mixed $send_data = null;
-    public mixed $before_data = null;
+    public mixed $after = null;
+    public mixed $before = null;
     public mixed $inserted = null;
+
+
+
+    protected ?string $admin_name;
+
+
+    public function setAdminName($admin_name): void
+    {
+        $this->admin_name = $admin_name;
+    }
+
+    public function getAdminName(): ?string
+    {
+        return $this->admin_name;
+    }
+
 
     public function getId(): mixed { return $this->id; }
     public function setId(mixed $id): void { $this->setVariable('id', $id, self::VALUE_TYPE_INTEGER); }
 
-    public function setSendData(mixed $data): void { $this->setVariable('send_data', $data, self::VALUE_TYPE_JSON); }
-    public function getSend_data(mixed $format = null): mixed { return $this->getJSON('send_data', $format); }
+    public function setBefore(mixed $data): void { $this->setVariable('before', $data, self::VALUE_TYPE_JSON); }
+    public function setAfter(mixed $data): void { $this->setVariable('after', $data, self::VALUE_TYPE_JSON); }
 
-    public function setBeforeData(mixed $data): void { $this->setVariable('before_data', $data, self::VALUE_TYPE_JSON); }
-    public function getBefore_data(mixed $format = null): mixed { return $this->getJSON('before_data', $format); }
+    public function getBefore(mixed $key = null) : mixed
+    {
+        return $this->getJSON('before', $key);
+    }
 
-    public function setInserted(mixed $inserted): void { $this->setVariable('inserted', $inserted, self::VALUE_TYPE_DATE); }
+    public function getAfter(mixed $key = null) : mixed
+    {
+        return $this->getJSON('after', $key);
+    }
+
+
+
 }

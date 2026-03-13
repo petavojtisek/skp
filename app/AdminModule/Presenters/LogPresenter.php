@@ -11,7 +11,9 @@ final class LogPresenter extends AdminPresenter
 
     public function renderDefault(): void
     {
+
         $this->template->title = 'Systémový log';
+        //todo pagination
         $this->template->logs = $this->logFacade->getAllLogs();
     }
 

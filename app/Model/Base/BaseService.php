@@ -9,6 +9,7 @@
 namespace App\Model\Base;
 
 
+
 class BaseService extends AService
 {
 

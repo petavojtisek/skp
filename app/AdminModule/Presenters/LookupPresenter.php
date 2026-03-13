@@ -2,6 +2,7 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\Model\Base\BaseTranslateEntity;
 use App\Model\Lookup\LookupFacade;
 use App\Model\Lookup\LookupEntity;
 use Nette\Application\UI\Form;
@@ -10,6 +11,9 @@ final class LookupPresenter extends AdminPresenter
 {
     /** @var LookupFacade @inject */
     public $lookupFacade;
+
+    /** @var int|null @persistent */
+    public $id;
 
     public function renderDefault(): void
     {
@@ -24,7 +28,7 @@ final class LookupPresenter extends AdminPresenter
             $this->redirect('default');
         }
         $this->template->title = $id ? 'Editace položky' : 'Nová položka';
-        
+
         // Get languages for translations (excluding CS)
         $languages = $this->lookupFacade->getLookupList(500);
         $this->template->languages = array_filter($languages, fn($l) => $l->lookup_id != C_LANGUAGE_CS);
@@ -32,10 +36,10 @@ final class LookupPresenter extends AdminPresenter
         if ($id) {
             $lookup = $this->lookupFacade->getLookup($id);
             if (!$lookup) $this->error('Položka nebyla nalezena');
-            
+
             $defaults = $lookup->getEntityData();
-            foreach ($lookup->getTranslations() as $langId => $val) {
-                $defaults['item_' . $langId] = $val;
+            foreach ($lookup->getTranslates() as $langId => $translateEntity) {
+                $defaults['item_' . $langId] = $translateEntity->getValue();
             }
             $this['lookupForm']->setDefaults($defaults);
         } elseif ($parentId) {
@@ -81,19 +85,13 @@ final class LookupPresenter extends AdminPresenter
 
     public function lookupFormSucceeded(Form $form, \stdClass $values): void
     {
-        $lookup = new LookupEntity();
-        $lookup->fillEntity((array) $values);
-        
-        // Extract translations
-        $translations = [];
-        $languages = $this->lookupFacade->getLookupList(500);
-        foreach ($languages as $lang) {
-            $key = 'item_' . $lang->lookup_id;
-            if (isset($values->$key)) {
-                $translations[$lang->lookup_id] = $values->$key;
-            }
-        }
-        $lookup->setTranslations($translations);
+
+        $lookup = $this->lookupFacade->getLookup($values->lookup_id) ?? new LookupEntity();
+        $languages = $this->lookupFacade->getLookupList(C_LANGUAGE);
+        $lookup->fillEntity((array) $values, true, $languages);
+
+
+
 
         $this->lookupFacade->saveLookup($lookup);
         $this->flashMessage('Položka byla uložena.');

@@ -16,9 +16,14 @@ class LogDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getLogs()
+    public function getLogs(?int $limit = 10, ?int  $offset = 0) : array
     {
-        return [];
+        $res = [];
+        $logs = $this->mapper->getLogsWithAdmin($limit, $offset = 0);
+        foreach ($logs as $log) {
+            $res[] = $this->getEntity($this->entityName, (array)$log);
+        }
+        return $res;
     }
 
 }

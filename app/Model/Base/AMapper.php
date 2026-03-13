@@ -34,8 +34,11 @@ abstract class AMapper implements IMapper
 	/** @var string */
 	protected string $primaryKey;
 
-    protected string $translateKey;
-    protected string $translateTableName;
+
+    public string $translateTableName;
+    public string $translatePrimaryKey;
+    public string $translateLangId = 'lang_id';
+    public string $translateValueKey = 'value';
 
     /** @var \Nette\DI\Container */
     protected \Nette\DI\Container $container;
@@ -220,7 +223,6 @@ abstract class AMapper implements IMapper
 	}
 
 	public function save(IEntity $entity, bool $withTranslation = false): IEntity {
-
 		if ($entity->getId()) {
 			$this->update($entity, $withTranslation);
 		} else {

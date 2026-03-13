@@ -19,7 +19,7 @@
             <tbody>
                 {foreach $logs as $log}
                 <tr>
-                    <td>{$log->inserted|date:'d.m.Y H:i:s'}</td>
+                    <td>{$log->created_dt|date:'d.m.Y H:i:s'}</td>
                     <td><span class="badge badge-info">{$log->admin_name}</span></td>
                     <td><code>{$log->module}</code></td>
                     <td>{$log->action}</td>
@@ -36,11 +36,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <strong>Odeslaná data:</strong>
-                                <pre class="small">{$log->send_data ? json_encode(json_decode($log->send_data), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
+                                <pre class="small">{!empty($log->after) ? json_encode(json_decode($log->getAfter()), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
                             </div>
                             <div class="col-md-6">
                                 <strong>Původní data:</strong>
-                                <pre class="small">{$log->before_data ? json_encode(json_decode($log->before_data), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
+                                <pre class="small">{!empty($log->before) ? json_encode(json_decode($log->getBefore()), \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE) : ''}</pre>
                             </div>
                         </div>
                     </td>

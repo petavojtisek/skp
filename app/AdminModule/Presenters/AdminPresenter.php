@@ -12,9 +12,6 @@ abstract class AdminPresenter extends BasePresenter
     /** @var int|null */
     protected $adminId;
 
-    /** @var int|null @persistent */
-    public $id;
-
     /** @var LoggedUserEntity @inject */
     public $loggedUserEntity;
 

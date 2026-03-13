@@ -15,6 +15,9 @@ final class ConfigPresenter extends AdminPresenter
     /** @var LookupFacade @inject */
     public $lookupFacade;
 
+    /** @var int|null @persistent */
+    public $id;
+
     public function renderDefault(): void
     {
         $this->template->title = 'Nastavení systému';

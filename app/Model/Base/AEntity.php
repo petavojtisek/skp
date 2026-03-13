@@ -142,7 +142,7 @@ abstract class AEntity implements IEntity
 	 * @param bool $setDefaults
 	 * @return IEntity
 	 */
-    public function fillEntity(array $data = [], bool $setDefaults = true): IEntity
+    public function fillEntity(array $data = [], bool $setDefaults = true, array $languages = []): IEntity
     {
         if ($setDefaults) {
             $this->setDefaultsProperty();
@@ -166,9 +166,14 @@ abstract class AEntity implements IEntity
                         }
                     }
                 } else {
+
                     $methodName = 'set' . ucfirst((string)$key);
+                    $pascalCase = str_replace('_', '', ucwords($key, '_'));
+                    $methodName2 = 'set' .$pascalCase;
                     if (method_exists($this, $methodName)) {
                         $this->$methodName($value);
+                    }elseif (method_exists($this, $methodName2)) {
+                            $this->$methodName2($value);
                     } else {
                         if (property_exists($this, (string)$key)) {
                             $this->setVariable((string)$key, $value);
@@ -176,6 +181,11 @@ abstract class AEntity implements IEntity
                     }
                 }
             }
+        }
+
+
+        if(!empty($languages) && !empty($data)){
+            $this->createTranslates($languages, $data);
         }
 
         return $this;
@@ -192,9 +202,35 @@ abstract class AEntity implements IEntity
         return $this->translates;
     }
 
+    public function getTranslate(int $langId)
+    {
+        return $this->translates[$langId] ?? new BaseTranslateEntity();
+    }
+
     public function addTranslate(BaseTranslateEntity $translateEntity): void
     {
         $this->translates[$translateEntity->getLangId()] = $translateEntity;
+    }
+
+
+    public function createTranslates($languages, $values)
+    {
+        // Extract translations
+        $translations =  $this->getTranslates();
+        foreach ($languages as $lang) {
+            $key = 'item_' . $lang->lookup_id;
+           
+            if (isset($values[$key]) and $lang->lookup_id !== C_LANGUAGE_CS) {
+                $translateEntity = $this->getTranslate($lang->lookup_id);
+                $translateEntity->fillEntity([
+                    'entity_id' => $this->getId(),
+                    'lang_id' => $lang->lookup_id,
+                    'value' => $values[$key]
+                ]);
+                $translations[$lang->lookup_id] = $translateEntity;
+            }
+        }
+        $this->setTranslates($translations);
     }
 
 	/**

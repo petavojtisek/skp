@@ -64,15 +64,18 @@ class LookupService extends BaseService
                     }
                 }
             }
+
             return $tree;
         }, ['lookup']);
     }
 
     public function getLookup(int $id): ?LookupEntity
     {
+
         $lookup = $this->lookupDao->find($id);
         if ($lookup) {
-            $lookup->setTranslations($this->lookupDao->getTranslations($id));
+            $translates = $this->lookupDao->getTranslations($id);
+            $lookup->setTranslates($translates);
         }
         return $lookup ?: null;
     }
@@ -88,10 +91,12 @@ class LookupService extends BaseService
 
         $id = (int) $this->lookupDao->save($lookup)->getId();
 
+        /*
         foreach ($lookup->getTranslations() as $langId => $item) {
             if (defined('C_LANGUAGE_CS') && $langId == C_LANGUAGE_CS) continue;
             $this->lookupDao->saveTranslation((int)$id, (int)$langId, (string)$item);
         }
+        */
 
         $this->invalidateCache();
         return (int)$id;

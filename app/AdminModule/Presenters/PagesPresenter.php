@@ -4,6 +4,9 @@ namespace App\AdminModule\Presenters;
 
 final class PagesPresenter extends AdminPresenter
 {
+    /** @var int|null @persistent */
+    public $id;
+
     public function renderDefault(): void
     {
         $this->template->title = 'Stránky';

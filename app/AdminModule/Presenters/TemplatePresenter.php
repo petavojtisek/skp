@@ -2,9 +2,9 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\Model\Entity\CodeNameEntity;
 use App\Model\Template\TemplateFacade;
 use App\Model\Template\TemplateEntity;
-use App\Model\Template\CodeNameEntity;
 use App\Model\Presentation\PresentationFacade;
 use Nette\Application\UI\Form;
 
@@ -30,6 +30,10 @@ final class TemplatePresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null): void
     {
+        if ($id === null && $this->id !== null) {
+            $id = (int)$this->id;
+        }
+
         $this->template->title = $id ? 'Editace šablony' : 'Nová šablona';
         $this->template->templateId = $id;
         $this->template->code_name_id = $this->code_name_id;
@@ -37,10 +41,13 @@ final class TemplatePresenter extends AdminPresenter
         if ($id) {
             $template = $this->templateFacade->getTemplate($id);
             if (!$template) {
+                if ($this->isAjax()) {
+                    return;
+                }
                 $this->error('Šablona nebyla nalezena');
             }
             $this['templateForm']->setDefaults($template->getEntityData());
-            
+
             // CodeNames
             $this->template->codeNames = $this->templateFacade->getCodeNames($id);
 
@@ -93,17 +100,18 @@ final class TemplatePresenter extends AdminPresenter
     /**
      * Signal for deleting code name (AJAX supported)
      */
-    public function handleDeleteCodeName(int $id, int $templateId): void
+    public function handleDeleteCodeName(int $codeNameId, int $id): void
     {
-        $this->templateFacade->deleteCodeName($id);
+        $this->templateFacade->deleteCodeName($codeNameId);
         $this->flashMessage('Kódové označení bylo smazáno.');
-        
+        $this->id = $id;
+
         if ($this->isAjax()) {
-            $this->template->codeNames = $this->templateFacade->getCodeNames($templateId);
+            $this->template->codeNames = $this->templateFacade->getCodeNames($id);
             $this->redrawControl('codeNamesTableSnippet');
             $this->redrawControl('flashes');
         } else {
-            $this->redirect('edit#tab-code-names', ['id' => $templateId]);
+            $this->redirect('edit#tab-code-names', ['id' => $id]);
         }
     }
 
@@ -140,10 +148,10 @@ final class TemplatePresenter extends AdminPresenter
     {
         $entity = new TemplateEntity();
         $entity->fillEntity((array) $values);
-        
+
         $newId = $this->templateFacade->saveTemplate($entity);
         $this->flashMessage('Šablona byla uložena.');
-        
+
         if (!$values->template_id) {
             $this->redirect('edit', ['id' => $newId]);
         }
@@ -172,13 +180,13 @@ final class TemplatePresenter extends AdminPresenter
     public function codeNameFormSucceeded(Form $form, \stdClass $values): void
     {
         $templateId = (int) $values->template_id;
-        
+
         $entity = new CodeNameEntity();
         $entity->fillEntity((array) $values);
-        
+
         $this->templateFacade->saveCodeName($entity);
         $this->flashMessage('Kódové označení bylo uloženo.');
-        
+
         if ($this->isAjax()) {
             $this->code_name_id = null; // Reset edit state
             $form->setValues([], true); // Clear form

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Template;
+namespace App\Model\Entity;
 
 use App\Model\Base\BaseEntity;
 
