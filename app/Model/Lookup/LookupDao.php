@@ -4,13 +4,14 @@ namespace App\Model\Lookup;
 
 use App\Model\Base\BaseDao;
 use App\Model\Base\BaseTranslateEntity;
+use App\Model\Base\IMapper;
 
 class LookupDao extends BaseDao
 {
     protected string $entityName = 'Lookup\LookupEntity';
 
     /** @var LookupMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(LookupMapper $mapper)
     {

@@ -91,13 +91,9 @@ final class LookupPresenter extends AdminPresenter
     public function lookupFormSucceeded(Form $form, \stdClass $values): void
     {
 
-        xdebug_break();
         $lookup = $this->lookupFacade->getLookup((int)$values->lookup_id) ?? new LookupEntity();
         $languages = $this->lookupFacade->getLookupList(C_LANGUAGE);
         $lookup->fillEntity((array) $values, true, $languages);
-
-
-
 
         $this->lookupFacade->saveLookup($lookup);
         $this->flashMessage('Položka byla uložena.');

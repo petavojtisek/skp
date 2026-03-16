@@ -3,19 +3,19 @@
 namespace App\AdminModule\Presenters;
 
 use App\Model\AdminGroup\AdminGroupFacade;
-use App\Model\ModulePermission\ModulePermissionFacade;
+use App\Model\ModuleRights\ModuleRightsFacade;
 use Nette\Application\UI\Form;
 
-final class ModulePermissionsPresenter extends AdminPresenter
+final class ModuleRightsPresenter extends AdminPresenter
 {
-    /** @var AdminGroupFacade @inject */
-    public $groupFacade;
+    /** @inject */
+    public AdminGroupFacade $groupFacade;
 
-    /** @var ModulePermissionFacade @inject */
-    public $modulePermissionFacade;
+    /** @inject */
+    public ModuleRightsFacade $moduleRightsFacade;
 
-    /** @var int|null @persistent */
-    public $id;
+    /** @persistent */
+    public ?int $id;
 
     public function actionDefault(): void
     {
@@ -25,7 +25,7 @@ final class ModulePermissionsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Práva modulů';
-        $this->template->permissions = $this->modulePermissionFacade->getPermissions();
+        $this->template->rights = $this->moduleRightsFacade->getRights();
     }
 
     public function renderEdit(?int $id = null): void
@@ -36,7 +36,7 @@ final class ModulePermissionsPresenter extends AdminPresenter
         foreach ($this->groupFacade->getGroups() as $g) {
             $groups[$g->admin_group_id] = $g->admin_group_name;
         }
-        $this['permissionForm']['admin_group_id']->setItems($groups);
+        $this['rightsForm']['admin_group_id']->setItems($groups);
 
         // Skeleton
     }
@@ -48,10 +48,10 @@ final class ModulePermissionsPresenter extends AdminPresenter
         $this->redirect('default');
     }
 
-    protected function createComponentPermissionForm(): Form
+    protected function createComponentRightsForm(): Form
     {
         $form = new Form;
-        $form->addHidden('permission_id');
+        $form->addHidden('rights_id');
         $form->addSelect('admin_group_id', 'Skupina')
             ->setPrompt('Zvolte skupinu')
             ->setRequired('Zvolte skupinu');
@@ -61,11 +61,11 @@ final class ModulePermissionsPresenter extends AdminPresenter
         $form->addCheckbox('is_allowed', 'Povoleno')->setDefaultValue(true);
 
         $form->addSubmit('send', 'Uložit');
-        $form->onSuccess[] = [$this, 'permissionFormSucceeded'];
+        $form->onSuccess[] = [$this, 'rightsFormSucceeded'];
         return $form;
     }
 
-    public function permissionFormSucceeded(Form $form, \stdClass $values): void
+    public function rightsFormSucceeded(Form $form, \stdClass $values): void
     {
         // Skeleton
         $this->flashMessage('Oprávnění bylo uloženo.');

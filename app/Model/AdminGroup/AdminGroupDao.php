@@ -10,7 +10,7 @@ class AdminGroupDao extends BaseDao
     protected string $entityName = 'AdminGroup\\AdminGroupEntity';
 
     /** @var AdminGroupMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(AdminGroupMapper $mapper)
     {
@@ -20,5 +20,20 @@ class AdminGroupDao extends BaseDao
     public function getMapper(): IMapper
     {
         return $this->mapper;
+    }
+
+    public function getAdminGroups(): array
+    {
+        return $this->mapper->getAdminGroups();
+    }
+
+    public function getAdminInGroups(int $adminId): array
+    {
+        return $this->mapper->getAdminInGroups($adminId);
+    }
+
+    public function saveAdminGroups(int $adminId, array $groupIds): void
+    {
+        $this->mapper->saveAdminGroups($adminId, $groupIds);
     }
 }

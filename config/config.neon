@@ -36,7 +36,7 @@ services:
 	- App\Model\Admin\AdminMapper
 	- App\Model\AdminGroup\AdminGroupMapper
 	- App\Model\Object\ObjectMapper
-	- App\Model\ModulePermission\ModulePermissionMapper
+	- App\Model\ModuleRights\ModuleRightsMapper
 	- App\Model\PageGroup\PageGroupMapper
 	- App\Model\AdminRight\AdminRightMapper
 	- App\Model\AdminGroupRight\AdminGroupRightMapper
@@ -55,7 +55,7 @@ services:
 	- App\Model\Admin\AdminDao
 	- App\Model\AdminGroup\AdminGroupDao
 	- App\Model\Object\ObjectDao
-	- App\Model\ModulePermission\ModulePermissionDao
+	- App\Model\ModuleRights\ModuleRightsDao
 	- App\Model\PageGroup\PageGroupDao
 	- App\Model\AdminRight\AdminRightDao
 	- App\Model\AdminGroupRight\AdminGroupRightDao
@@ -82,8 +82,10 @@ services:
 	- App\Model\Admin\AdminService
 	- App\Model\AdminGroup\AdminGroupService
 	- App\Model\Object\ObjectService
-	- App\Model\ModulePermission\ModulePermissionService
+	- App\Model\ModuleRights\ModuleRightsService
 	- App\Model\PageGroup\PageGroupService
+	- App\Model\AdminRight\AdminRightService
+	- App\Model\AdminGroupRight\AdminGroupRightService
 
 	# FACADE
 	- App\Model\Page\PageFacade
@@ -97,7 +99,7 @@ services:
 	- App\Model\Admin\AdminFacade
 	- App\Model\AdminGroup\AdminGroupFacade
 	- App\Model\Object\ObjectFacade
-	- App\Model\ModulePermission\ModulePermissionFacade
+	- App\Model\ModuleRights\ModuleRightsFacade
 	- App\Model\PageGroup\PageGroupFacade
 	- App\Model\AdminRight\AdminRightFacade
 

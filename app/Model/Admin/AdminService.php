@@ -7,8 +7,7 @@ use Dibi\DateTime;
 
 class AdminService extends BaseService
 {
-    /** @var AdminDao */
-    private $adminDao;
+    private AdminDao $adminDao;
 
     public function __construct(AdminDao $adminDao)
     {
@@ -40,58 +39,11 @@ class AdminService extends BaseService
         }
     }
 
-    public function getAdminGroups(): array { return $this->adminDao->getAdminGroups(); }
-    public function getAdminInGroups(int $adminId): array { return $this->adminDao->getAdminInGroups($adminId); }
-    public function saveAdminGroups(int $adminId, array $groupIds): void { $this->adminDao->saveAdminGroups($adminId, $groupIds); }
-
-    public function getAdminPresentations(int $adminId): array { return $this->adminDao->getAdminPresentations($adminId); }
-    public function saveAdminPresentations(int $adminId, array $presentationIds): void { $this->adminDao->saveAdminPresentations($adminId, $presentationIds); }
-
     public function loadLoggedUserEntity(int $adminId, LoggedUserEntity $entity): void
     {
         $admin = $this->getAdmin($adminId);
         if ($admin) {
             $entity->fillEntity($admin->getEntityData(), false);
-
-            $groups = $this->getAdminGroups();
-            $entity->setGroup(isset($groups[$admin->admin_group_id]) ? (array)$groups[$admin->admin_group_id] : null);
-
-            $userPresIds = $this->getAdminPresentations($adminId);
-            $presMap = [];
-            foreach ($userPresIds as $pid) {
-                $presMap[$pid] = 1;
-            }
-            $entity->setPresentations($presMap);
-            $entity->setRights($this->getLoggedUserRights($entity));
         }
-    }
-
-    public function getLoggedUserRights(LoggedUserEntity $entity): array
-    {
-
-        return [
-            'groups_right' => $this->getGroupsRight((int)$entity->getGroup()),
-            'module_rights' => $this->getModuleRights((int)$entity->getId()),
-            'page_rights' => $this->getPageRights((int)$entity->getGroup()),
-        ];
-    }
-
-    private function getGroupsRight(int $groupId): array
-    {
-        if (!$groupId) return [];
-
-        return $this->adminDao->getGroupsRight($groupId);
-    }
-
-    private function getModuleRights(int $adminId): array
-    {
-        return [];
-    }
-
-    private function getPageRights(int $groupId): array
-    {
-        if (!$groupId) return [];
-
-        return $this->adminDao->getPageRights($groupId);
     }
 }

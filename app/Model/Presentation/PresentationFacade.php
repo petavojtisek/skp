@@ -4,11 +4,9 @@ namespace App\Model\Presentation;
 
 class PresentationFacade
 {
-    /** @var PresentationService */
-    private $presentationService;
+    private PresentationService $presentationService;
 
-    /** @var SpecParamDao */
-    private $specParamDao;
+    private SpecParamDao $specParamDao;
 
     public function __construct(PresentationService $presentationService, SpecParamDao $specParamDao)
     {
@@ -59,5 +57,15 @@ class PresentationFacade
     public function getComponentActions(int $presentationId): array
     {
         return $this->presentationService->getComponentActions($presentationId);
+    }
+
+    public function getAdminPresentations(int $adminId): array
+    {
+        return $this->presentationService->getAdminPresentations($adminId);
+    }
+
+    public function saveAdminPresentations(int $adminId, array $presentationIds): void
+    {
+        $this->presentationService->saveAdminPresentations($adminId, $presentationIds);
     }
 }

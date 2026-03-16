@@ -9,14 +9,14 @@ use Nette\Application\UI\Form;
 
 final class PageGroupsPresenter extends AdminPresenter
 {
-    /** @var PageGroupFacade @inject */
-    public $pageGroupFacade;
+    /** @inject */
+    public PageGroupFacade $pageGroupFacade;
 
-    /** @var AdminGroupFacade @inject */
-    public $adminGroupFacade;
+    /** @inject */
+    public AdminGroupFacade $adminGroupFacade;
 
-    /** @var int|null @persistent */
-    public $id;
+    /** @persistent */
+    public ?int $id;
 
     public function actionDefault(): void
     {
@@ -83,11 +83,17 @@ final class PageGroupsPresenter extends AdminPresenter
         }
     }
 
-    public function actionDelete(int $id): void
+    public function handleDelete(int $id): void
     {
         $this->pageGroupFacade->deletePageGroup($id);
         $this->flashMessage('Skupina stránek byla smazána.');
-        $this->redirect('default');
+        
+        if ($this->isAjax()) {
+            $this->redrawControl('flashes');
+            $this->redrawControl('pageGroupList');
+        } else {
+            $this->redirect('default');
+        }
     }
 
     protected function createComponentPageGroupForm(): Form

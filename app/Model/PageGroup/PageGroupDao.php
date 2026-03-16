@@ -10,7 +10,7 @@ class PageGroupDao extends BaseDao
     protected string $entityName = 'PageGroup\PageGroupEntity';
 
     /** @var PageGroupMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(PageGroupMapper $mapper)
     {

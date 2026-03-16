@@ -7,6 +7,7 @@
         </div>
     </div>
     <div class="card-body">
+        {snippet pageGroupList}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -23,7 +24,7 @@
                         <td>{$pg->name}</td>
                         <td>
                             <a n:href="edit id => $pg->id" class="btn btn-info btn-sm">Editovat</a>
-                            <a n:href="id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                            <a n:href="delete! id => $pg->id" class="btn btn-danger btn-sm ajax" data-confirm="Opravdu smazat?">Smazat</a>
                         </td>
                     </tr>
                 {else}
@@ -33,5 +34,16 @@
                 {/if}
             </tbody>
         </table>
+        {/snippet}
     </div>
 </div>
+
+{block scripts}
+<script>
+    naja.addEventListener('interaction', (event) => {
+        if (event.element.dataset.confirm && !confirm(event.element.dataset.confirm)) {
+            event.preventDefault();
+        }
+    });
+</script>
+{/block}

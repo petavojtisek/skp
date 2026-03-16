@@ -4,8 +4,7 @@ namespace App\Model\PageGroup;
 
 class PageGroupFacade
 {
-    /** @var PageGroupService */
-    private $pageGroupService;
+    private PageGroupService $pageGroupService;
 
     public function __construct(PageGroupService $pageGroupService)
     {

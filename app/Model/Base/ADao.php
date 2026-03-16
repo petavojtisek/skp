@@ -19,7 +19,7 @@ abstract class ADao
 	use SmartObject;
 
 	/** @var IMapper */
-	protected $mapper;
+	protected IMapper $mapper;
 
 	/** @var string */
 	protected string $entityName;

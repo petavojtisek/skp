@@ -6,8 +6,7 @@ use App\Model\Base\BaseService;
 
 class AdminGroupService extends BaseService
 {
-    /** @var AdminGroupDao */
-    private $adminGroupDao;
+    private AdminGroupDao $adminGroupDao;
 
     public function __construct(AdminGroupDao $adminGroupDao)
     {
@@ -32,6 +31,21 @@ class AdminGroupService extends BaseService
     public function delete(int $id): void
     {
         $this->adminGroupDao->delete($id);
+    }
+
+    public function getAdminGroups(): array
+    {
+        return $this->adminGroupDao->getAdminGroups();
+    }
+
+    public function getAdminInGroups(int $adminId): array
+    {
+        return $this->adminGroupDao->getAdminInGroups($adminId);
+    }
+
+    public function saveAdminGroups(int $adminId, array $groupIds): void
+    {
+        $this->adminGroupDao->saveAdminGroups($adminId, $groupIds);
     }
 
     /**

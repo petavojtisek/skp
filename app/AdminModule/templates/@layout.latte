@@ -118,8 +118,8 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModulePermissions') || $presenter->isPresenter('PageGroups')}menu-open{/if}">
-            <a href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModulePermissions') || $presenter->isPresenter('PageGroups')}active{/if}">
+          <li class="nav-item {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModuleRights') || $presenter->isPresenter('PageGroups')}menu-open{/if}">
+            <a href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModuleRights') || $presenter->isPresenter('PageGroups')}active{/if}">
               <i class="nav-icon fas fa-user-shield"></i>
               <p>
                 Práva
@@ -134,7 +134,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="ModulePermissions:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('ModulePermissions')}active{/if}">
+                <a n:href="ModuleRights:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('ModuleRights')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Práva modulů</p>
                 </a>

@@ -2,34 +2,32 @@
 
 namespace App\Model\AdminRight;
 
-use App\Model\AdminGroupRight\AdminGroupRightDao;
+use App\Model\AdminGroupRight\AdminGroupRightService;
 
 class AdminRightFacade
 {
-    /** @var AdminRightDao */
-    private $adminRightDao;
+    private AdminRightService $adminRightService;
 
-    /** @var AdminGroupRightDao */
-    private $adminGroupRightDao;
+    private AdminGroupRightService $adminGroupRightService;
 
-    public function __construct(AdminRightDao $adminRightDao, AdminGroupRightDao $adminGroupRightDao)
+    public function __construct(AdminRightService $adminRightService, AdminGroupRightService $adminGroupRightService)
     {
-        $this->adminRightDao = $adminRightDao;
-        $this->adminGroupRightDao = $adminGroupRightDao;
+        $this->adminRightService = $adminRightService;
+        $this->adminGroupRightService = $adminGroupRightService;
     }
 
     public function getAllRights(): array
     {
-        return $this->adminRightDao->findAll();
+        return $this->adminRightService->findAll();
     }
 
     public function getGroupRightsIds(int $groupId): array
     {
-        return $this->adminGroupRightDao->getGroupRightsIds($groupId);
+        return $this->adminGroupRightService->getGroupRightsIds($groupId);
     }
 
     public function toggleGroupRight(int $groupId, int $rightId, bool $state): void
     {
-        $this->adminGroupRightDao->toggleRight($groupId, $rightId, $state);
+        $this->adminGroupRightService->toggleRight($groupId, $rightId, $state);
     }
 }

@@ -18,14 +18,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr n:foreach="$permissions as $perm">
-                    <td>{$perm->permission_id}</td>
-                    <td>{$perm->module_name}</td>
-                    <td>{$perm->action_name}</td>
-                    <td>{$perm->is_allowed ? 'Ano' : 'Ne'}</td>
+                <tr n:foreach="$rights as $right">
+                    <td>{$right->rights_id}</td>
+                    <td>{$right->module_name}</td>
+                    <td>{$right->action_name}</td>
+                    <td>{$right->is_allowed ? 'Ano' : 'Ne'}</td>
                     <td>
-                        <a n:href="edit, $perm->permission_id" class="btn btn-info btn-sm">Editovat</a>
-                        <a n:href="delete, $perm->permission_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                        <a n:href="edit, $right->rights_id" class="btn btn-info btn-sm">Editovat</a>
+                        <a n:href="delete, $right->rights_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
                     </td>
                 </tr>
             </tbody>

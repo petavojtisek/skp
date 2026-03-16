@@ -3,13 +3,14 @@
 namespace App\Model\Log;
 
 use App\Model\Base\BaseDao;
+use App\Model\Base\IMapper;
 
 class LogDao extends BaseDao
 {
     protected string $entityName = 'Log\\LogEntity';
 
     /** @var LogMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(LogMapper $mapper)
     {

@@ -3,3 +3,4 @@ app_broken_last_version
 vendor
 /temp/cache
 /log
+/node_modules

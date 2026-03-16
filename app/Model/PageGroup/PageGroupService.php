@@ -6,8 +6,7 @@ use App\Model\Base\BaseService;
 
 class PageGroupService extends BaseService
 {
-    /** @var PageGroupDao */
-    private $pageGroupDao;
+    private PageGroupDao $pageGroupDao;
 
     public function __construct(PageGroupDao $pageGroupDao)
     {

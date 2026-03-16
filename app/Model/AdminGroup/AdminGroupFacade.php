@@ -4,8 +4,7 @@ namespace App\Model\AdminGroup;
 
 class AdminGroupFacade
 {
-    /** @var AdminGroupService */
-    private $adminGroupService;
+    private AdminGroupService $adminGroupService;
 
     public function __construct(AdminGroupService $adminGroupService)
     {
@@ -35,5 +34,20 @@ class AdminGroupFacade
     public function getGroupTree(): array
     {
         return $this->adminGroupService->getGroupTree();
+    }
+
+    public function getAdminGroups(): array
+    {
+        return $this->adminGroupService->getAdminGroups();
+    }
+
+    public function getAdminInGroups(int $adminId): array
+    {
+        return $this->adminGroupService->getAdminInGroups($adminId);
+    }
+
+    public function saveAdminGroups(int $adminId, array $groupIds): void
+    {
+        $this->adminGroupService->saveAdminGroups($adminId, $groupIds);
     }
 }

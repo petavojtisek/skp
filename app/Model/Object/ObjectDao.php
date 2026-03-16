@@ -10,7 +10,7 @@ class ObjectDao extends BaseDao
     protected string $entityName = 'Object\\ObjectEntity';
 
     /** @var ObjectMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(ObjectMapper $mapper)
     {

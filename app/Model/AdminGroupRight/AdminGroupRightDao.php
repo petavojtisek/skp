@@ -10,7 +10,7 @@ class AdminGroupRightDao extends BaseDao
     protected string $entityName = 'AdminGroupRight\AdminGroupRightEntity';
 
     /** @var AdminGroupRightMapper */
-    protected $mapper;
+    protected IMapper $mapper;
 
     public function __construct(AdminGroupRightMapper $mapper)
     {

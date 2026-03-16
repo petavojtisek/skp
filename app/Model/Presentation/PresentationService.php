@@ -6,14 +6,11 @@ use App\Model\Base\BaseService;
 
 class PresentationService extends BaseService
 {
-    /** @var PresentationDao */
-    private $presentationDao;
+    private PresentationDao $presentationDao;
 
-    /** @var SpecParamDao */
-    private $specParamDao;
+    private SpecParamDao $specParamDao;
 
-    /** @var ComponentActionDao */
-    private $componentActionDao;
+    private ComponentActionDao $componentActionDao;
 
     public function __construct(
         PresentationDao $presentationDao,
@@ -56,5 +53,15 @@ class PresentationService extends BaseService
     public function getComponentActions(int $presentationId): array
     {
         return $this->componentActionDao->findAllBy(['presentation_id' => $presentationId]) ?: [];
+    }
+
+    public function getAdminPresentations(int $adminId): array
+    {
+        return $this->presentationDao->getAdminPresentations($adminId);
+    }
+
+    public function saveAdminPresentations(int $adminId, array $presentationIds): void
+    {
+        $this->presentationDao->saveAdminPresentations($adminId, $presentationIds);
     }
 }
