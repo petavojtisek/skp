@@ -21,17 +21,9 @@
 {block scripts}
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+	<script src="{$basePath}/assets/js/main.js"></script>
 
-	{asset? 'main.js'}
-
-	<script>
-		const swiper = new Swiper('.news-slider', {
-			slidesPerView: 3,
-			spaceBetween: 30,
-			pagination: { el: '.swiper-pagination', clickable: true },
-		});
-	</script>
-
+{*asset? 'front/main.js'*}
 {/block}
 </body>
 </html>

@@ -29,6 +29,10 @@ body {
   overflow-x: hidden;
   width: 100%;
   position: relative;
+
+  .menu-open {
+    overflow: hidden;
+  }
 }
 
 .container {
@@ -97,6 +101,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
+    flex-direction: row !important;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -104,6 +109,57 @@ body {
       text-align: center;
     }
   }
+
+  // Tlačítko hamburgeru (na desktopu schované)
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 10px;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+
+    .hamburger-box {
+      display: block; // Nutné, aby držel rozměry
+      width: 25px;
+      height: 18px;
+      position: relative;
+    }
+
+    .hamburger-inner {
+      width: 100%;
+      height: 3px;
+      background-color: $primary-green; // Tato čára ti chybí
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: all 0.3s ease;
+
+      &::before, &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background-color: $primary-green;
+        left: 0;
+        transition: all 0.3s ease;
+      }
+      &::before { top: -8px; }
+      &::after { bottom: -8px; }
+    }
+  }
+
+  // Navigace na mobilu
+
+
 
   .logo {
     display: flex;
@@ -138,6 +194,29 @@ body {
     .btn {
       @media (max-width: 768px) {
         display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      position: fixed;
+      top: 0;
+      right: -100%; // Schované vpravo mimo obrazovku
+      width: 80%;
+      height: 100vh;
+      background: $white;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+      transition: right 0.3s ease-in-out;
+      z-index: 90;
+      padding: 100px 40px;
+
+      &.is-open {
+        right: 0; // Vysune se dovnitř
+      }
+
+      ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
       }
     }
   }

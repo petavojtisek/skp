@@ -1,21 +1,29 @@
 <header class="main-header">
     <div class="container header-flex">
         <div class="logo">
-            <img src="{$basePath}/images/logo.png" alt="SKP Krajina Polabí">
+            <img src="{$basePath}/images/logo-v1-spolek.jpeg" alt="Logo">
             <div class="logo-text">
                 <span class="brand">SKP</span>
                 <span class="subtext">Krajina Polabí</span>
             </div>
         </div>
+
+        {* TLAČÍTKO HAMBURGERU *}
+        <button class="menu-toggle" aria-label="Otevřít menu">
+            <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+            </span>
+        </button>
+
         <nav class="main-nav">
-            <ul>
+            <ul class="nav-list">
                 <li><a n:href="Home:default">Home</a></li>
                 <li><a href="#">O nás</a></li>
                 <li><a href="#">Cíle</a></li>
                 <li><a href="#">Dokumenty</a></li>
                 <li><a href="#">Kontakt</a></li>
+                <li class="mobile-only"><a href="#join" class="btn btn-primary">Přidejte se</a></li>
             </ul>
-            <a href="#join" class="btn btn-primary">Přidejte se k nám</a>
         </nav>
     </div>
 </header>
