@@ -40,7 +40,7 @@ class ModuleGroupRightService extends BaseService
 
     public function togglePermission(int $moduleId, int $groupId, int $permissionId, bool $state): void
     {
-        xdebug_break();
+
         if ($state) {
             $entity = new ModuleGroupRightEntity([
                 'module_id' => $moduleId,

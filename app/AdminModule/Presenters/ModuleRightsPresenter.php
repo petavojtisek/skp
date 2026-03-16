@@ -85,7 +85,7 @@ final class ModuleRightsPresenter extends AdminPresenter
     {
         $this->id = $id;
         $this->groupId = $groupId;
-        xdebug_break();
+      
         $this->moduleFacade->togglePermission($id, $groupId, $permissionId, (bool)$state);
 
         if ($this->isAjax()) {
