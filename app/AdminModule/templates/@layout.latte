@@ -32,10 +32,10 @@
       {ifset $availablePresentations}
       <li class="nav-item d-flex align-items-center">
         <label class="text-muted mr-2 mb-0 d-none d-sm-inline">Aktivní prezentace:</label>
-        <select class="form-control form-control-sm" style="width: auto; min-width: 150px;" 
+        <select class="form-control form-control-sm" style="width: auto; min-width: 150px;"
                 onchange="window.location.href = this.value">
-          <option n:foreach="$availablePresentations as $pid => $pres" 
-                  value="{link switchPresentation!, id => $pid}" 
+          <option n:foreach="$availablePresentations as $pid => $pres"
+                  value="{link switchPresentation!, id => $pid}"
                   n:attr="selected => $loggedUserEntity->active_presentation_id == $pid">
             {$pres->presentation_name} ({$pres->domain})
           </option>
@@ -118,8 +118,8 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item {if $presenter->isPresenter('Groups') || $presenter->isPresenter('Permissions') || $presenter->isPresenter('PageGroups')}menu-open{/if}">
-            <a href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('Permissions') || $presenter->isPresenter('PageGroups')}active{/if}">
+          <li class="nav-item {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModulePermissions') || $presenter->isPresenter('PageGroups')}menu-open{/if}">
+            <a href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModulePermissions') || $presenter->isPresenter('PageGroups')}active{/if}">
               <i class="nav-icon fas fa-user-shield"></i>
               <p>
                 Práva
@@ -134,7 +134,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="Permissions:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Permissions')}active{/if}">
+                <a n:href="ModulePermissions:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('ModulePermissions')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Práva modulů</p>
                 </a>

@@ -1,0 +1,30 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Seznam skupin stránek</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm">Nová skupina</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Název</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$pageGroups as $pg">
+                    <td>{$pg->page_group_id}</td>
+                    <td>{$pg->page_group_name}</td>
+                    <td>
+                        <a n:href="edit, id:$pg->page_group_id" class="btn btn-info btn-sm">Editovat</a>
+                        <a n:href="delete, id:$pg->page_group_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

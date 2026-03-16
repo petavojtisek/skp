@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Model\PageGroup;
+
+use App\Model\Base\BaseEntity;
+
+class PageGroupEntity extends BaseEntity
+{
+    public mixed $id = null;
+    public ?string $name = null;
+
+    public function getId(): mixed { return $this->id; }
+    public function setId(mixed $id): void { $this->setVariable('id', $id, self::VALUE_TYPE_INTEGER); }
+}

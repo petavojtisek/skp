@@ -1,0 +1,94 @@
+{block content}
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">{$title}</h3>
+    </div>
+    <form n:name="groupForm">
+        <div class="card-body">
+            <div class="form-group">
+                <label n:name="pid">Nadřazená skupina</label>
+                <select n:name="pid" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label n:name="admin_group_name">Název skupiny</label>
+                <input n:name="admin_group_name" class="form-control" placeholder="Např. Redaktoři">
+            </div>
+            <div class="form-group">
+                <label n:name="code_name">Kódové označení</label>
+                <input n:name="code_name" class="form-control" placeholder="ROLE_EDITOR">
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <button n:name="send" class="btn btn-success"><i class="fas fa-save"></i> Uložit skupinu</button>
+        </div>
+    </form>
+</div>
+
+<div n:if="$id" class="card card-secondary card-outline mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Oprávnění skupiny</h3>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Název práva</th>
+                    <th>Kód</th>
+                    <th style="width: 100px" class="text-center">Povolené</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$allRights as $right">
+                    <td>{$right->name}</td>
+                    <td><code>{$right->right_code_name}</code></td>
+                    <td class="text-center">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input ajax-right-toggle" 
+                                   id="right-{$right->admin_right_id}"
+                                   data-right-id="{$right->admin_right_id}"
+                                   data-url="{link toggleRight!}"
+                                   n:attr="checked => isset($activeRightIds[$right->admin_right_id])">
+                            <label class="custom-control-label" for="right-{$right->admin_right_id}"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr n:if="!$allRights">
+                    <td colspan="3" class="text-center text-muted py-3">Nejsou definována žádná globální práva.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{/block}
+
+{block scripts}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ajax-right-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const rightId = this.dataset.rightId;
+            const url = this.dataset.url;
+            const state = this.checked ? 1 : 0;
+
+            naja.makeRequest('GET', url, {
+                rightId: rightId,
+                state: state
+            }).then(() => {
+                // Flash message is handled by redrawControl('flashes') in presenter
+            }).catch(error => {
+                console.error('Error toggling right:', error);
+                this.checked = !this.checked; // Revert UI if failed
+                alert('Nepodařilo se uložit změnu.');
+            });
+        });
+    });
+});
+</script>
+{/block}

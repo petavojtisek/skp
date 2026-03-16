@@ -1,0 +1,59 @@
+{block content}
+<div class="mb-3">
+    <a n:href="edit, parentId => 0" class="btn btn-primary"><i class="fas fa-plus"></i> Nová hlavní skupina</a>
+</div>
+
+<div class="card card-outline card-secondary">
+    <div class="card-header">
+        <h3 class="card-title">Struktura skupin</h3>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="width: 80px">ID</th>
+                        <th>Název skupiny</th>
+                        <th>Kódové označení</th>
+                        <th style="width: 150px" class="text-right">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {include groupTree, nodes => $tree}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{define groupTree}
+    <tr n:foreach="$nodes as $node">
+        <td><small class="text-muted">#{$node[entity]->admin_group_id}</small></td>
+        <td>
+            <div style="padding-left: {($node[level]-1) * 30}px">
+                <i n:if="$node[level] > 1" class="fas fa-level-up-alt fa-rotate-90 text-muted mr-2"></i>
+                <i class="fas fa-users {if $node[level] == 1}text-primary{else}text-secondary{/if} mr-1"></i>
+                <strong>{$node[entity]->admin_group_name}</strong>
+            </div>
+        </td>
+        <td><code n:if="$node[entity]->code_name">{$node[entity]->code_name}</code></td>
+        <td class="text-right">
+            <div class="btn-group">
+                <a n:if="$node[level] < 4" n:href="edit, parentId => $node[entity]->admin_group_id" class="btn btn-xs btn-outline-primary" title="Přidat podskupinu">
+                    <i class="fas fa-plus-circle"></i>
+                </a>
+                <a n:href="edit, id => $node[entity]->admin_group_id" class="btn btn-xs btn-info" title="Editovat">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a n:href="delete, id => $node[entity]->admin_group_id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat tuto skupinu? Pokud má podskupiny, mohou se odpojit.')" title="Smazat">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </td>
+        {if $node[items]}
+            {include groupTree, nodes => $node[items]}
+        {/if}
+    </tr>
+{/define}
+
+{/block}

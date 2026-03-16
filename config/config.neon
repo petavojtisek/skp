@@ -21,7 +21,7 @@ latte:
 
 services:
 	router: App\RouterFactory::createRouter
-	
+
 	# MAPPERS
 	- App\Model\Page\PageMapper
 	- App\Model\Lookup\LookupMapper
@@ -35,9 +35,9 @@ services:
 	- App\Model\Log\LogMapper
 	- App\Model\Admin\AdminMapper
 	- App\Model\AdminGroup\AdminGroupMapper
-	- App\Model\AdminModulePermission\AdminModulePermissionMapper
-	- App\Model\AdminPageGroup\AdminPageGroupMapper
 	- App\Model\Object\ObjectMapper
+	- App\Model\ModulePermission\ModulePermissionMapper
+	- App\Model\PageGroup\PageGroupMapper
 	- App\Model\AdminRight\AdminRightMapper
 	- App\Model\AdminGroupRight\AdminGroupRightMapper
 
@@ -54,9 +54,9 @@ services:
 	- App\Model\Log\LogDao
 	- App\Model\Admin\AdminDao
 	- App\Model\AdminGroup\AdminGroupDao
-	- App\Model\AdminModulePermission\AdminModulePermissionDao
-	- App\Model\AdminPageGroup\AdminPageGroupDao
 	- App\Model\Object\ObjectDao
+	- App\Model\ModulePermission\ModulePermissionDao
+	- App\Model\PageGroup\PageGroupDao
 	- App\Model\AdminRight\AdminRightDao
 	- App\Model\AdminGroupRight\AdminGroupRightDao
 
@@ -81,9 +81,9 @@ services:
 	- App\Model\Log\LogService
 	- App\Model\Admin\AdminService
 	- App\Model\AdminGroup\AdminGroupService
-	- App\Model\AdminModulePermission\AdminModulePermissionService
-	- App\Model\AdminPageGroup\AdminPageGroupService
 	- App\Model\Object\ObjectService
+	- App\Model\ModulePermission\ModulePermissionService
+	- App\Model\PageGroup\PageGroupService
 
 	# FACADE
 	- App\Model\Page\PageFacade
@@ -96,9 +96,9 @@ services:
 	- App\Model\Log\LogFacade
 	- App\Model\Admin\AdminFacade
 	- App\Model\AdminGroup\AdminGroupFacade
-	- App\Model\AdminModulePermission\AdminModulePermissionFacade
-	- App\Model\AdminPageGroup\AdminPageGroupFacade
 	- App\Model\Object\ObjectFacade
+	- App\Model\ModulePermission\ModulePermissionFacade
+	- App\Model\PageGroup\PageGroupFacade
 	- App\Model\AdminRight\AdminRightFacade
 
 	# Register other ebcar-like services here

@@ -1,0 +1,34 @@
+{block content}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Seznam objektů</h3>
+        <div class="card-tools">
+            <a n:href="edit" class="btn btn-primary btn-sm">Nový objekt</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Název</th>
+                    <th>Kód</th>
+                    <th>Typ</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$objects as $object">
+                    <td>{$object->object_id}</td>
+                    <td>{$object->object_name}</td>
+                    <td><code>{$object->object_code}</code></td>
+                    <td>{$object->object_type}</td>
+                    <td>
+                        <a n:href="edit, $object->object_id" class="btn btn-info btn-sm">Editovat</a>
+                        <a n:href="delete, $object->object_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
