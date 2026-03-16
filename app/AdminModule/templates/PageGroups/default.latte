@@ -16,14 +16,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr n:foreach="$pageGroups as $pg">
-                    <td>{$pg->page_group_id}</td>
-                    <td>{$pg->page_group_name}</td>
-                    <td>
-                        <a n:href="edit, id:$pg->page_group_id" class="btn btn-info btn-sm">Editovat</a>
-                        <a n:href="delete, id:$pg->page_group_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
-                    </td>
-                </tr>
+                {if !empty($pageGroups)}
+                    <tr n:foreach="$pageGroups as $pg">
+
+                        <td>{$pg->id}</td>
+                        <td>{$pg->name}</td>
+                        <td>
+                            <a n:href="edit id => $pg->id" class="btn btn-info btn-sm">Editovat</a>
+                            <a n:href="id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                        </td>
+                    </tr>
+                {else}
+                    <tr>
+                        <td colspan="3" class="text-center">Žádné skupiny nenalezeny.</td>
+                    </tr>
+                {/if}
             </tbody>
         </table>
     </div>

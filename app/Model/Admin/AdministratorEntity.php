@@ -25,5 +25,8 @@ class AdministratorEntity extends SecurityEntity implements IEntity
     public function getId(): mixed { return $this->admin_id; }
     public function setId(mixed $id): void { $this->setVariable('admin_id', $id, self::VALUE_TYPE_INTEGER); }
 
+    public function getGroupId(): mixed { return $this->admin_group_id; }
+    public function setGroupId(mixed $id): void { $this->setVariable('admin_group_id', $id, self::VALUE_TYPE_INTEGER); }
+
     public function getUserPassword(): ?string { return $this->user_password; }
 }

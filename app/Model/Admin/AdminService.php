@@ -62,7 +62,36 @@ class AdminService extends BaseService
                 $presMap[$pid] = 1;
             }
             $entity->setPresentations($presMap);
-            $entity->setRights([]);
+            $entity->setRights($this->getLoggedUserRights($entity));
         }
+    }
+
+    public function getLoggedUserRights(LoggedUserEntity $entity): array
+    {
+
+        return [
+            'groups_right' => $this->getGroupsRight((int)$entity->getGroup()),
+            'module_rights' => $this->getModuleRights((int)$entity->getId()),
+            'page_rights' => $this->getPageRights((int)$entity->getGroup()),
+        ];
+    }
+
+    private function getGroupsRight(int $groupId): array
+    {
+        if (!$groupId) return [];
+
+        return $this->adminDao->getGroupsRight($groupId);
+    }
+
+    private function getModuleRights(int $adminId): array
+    {
+        return [];
+    }
+
+    private function getPageRights(int $groupId): array
+    {
+        if (!$groupId) return [];
+
+        return $this->adminDao->getPageRights($groupId);
     }
 }

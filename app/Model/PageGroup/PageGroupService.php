@@ -33,4 +33,14 @@ class PageGroupService extends BaseService
     {
         $this->pageGroupDao->delete($id);
     }
+
+    public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
+    {
+        $this->pageGroupDao->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
+    }
+
+    public function getAdminGroupIds(int $pageGroupId): array
+    {
+        return $this->pageGroupDao->getAdminGroupIds($pageGroupId);
+    }
 }

@@ -31,4 +31,14 @@ class PageGroupFacade
     {
         $this->pageGroupService->delete($id);
     }
+
+    public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
+    {
+        $this->pageGroupService->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
+    }
+
+    public function getAdminGroupIds(int $pageGroupId): array
+    {
+        return $this->pageGroupService->getAdminGroupIds($pageGroupId);
+    }
 }

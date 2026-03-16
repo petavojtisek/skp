@@ -21,4 +21,14 @@ class PageGroupDao extends BaseDao
     {
         return $this->mapper;
     }
+
+    public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
+    {
+        $this->mapper->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
+    }
+
+    public function getAdminGroupIds(int $pageGroupId): array
+    {
+        return $this->mapper->getAdminGroupIds($pageGroupId);
+    }
 }

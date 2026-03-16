@@ -1,9 +1,84 @@
 {block content}
-<div class="card">
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline">
     <div class="card-header">
         <h3 class="card-title">{$title}</h3>
     </div>
-    <div class="card-body">
-        {control pageGroupForm}
+    <form n:name="pageGroupForm">
+        <div class="card-body">
+            <div class="form-group">
+                <label n:name="name">Název skupiny stránek</label>
+                <input n:name="name" class="form-control" placeholder="Např. Veřejné stránky">
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <button n:name="send" class="btn btn-success"><i class="fas fa-save"></i> Uložit</button>
+        </div>
+    </form>
+</div>
+
+<div n:if="$id" class="card card-secondary card-outline mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Administrátorské skupiny s přístupem</h3>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Název skupiny</th>
+                    <th style="width: 100px" class="text-center">Přístup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$allAdminGroups as $adminGroup">
+                    <td>{$adminGroup->admin_group_name}</td>
+                    <td class="text-center">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input ajax-page-group-toggle" 
+                                   id="admin-group-{$adminGroup->admin_group_id}"
+                                   data-admin-group-id="{$adminGroup->admin_group_id}"
+                                   data-url="{link toggleAdminGroup!}"
+                                   n:attr="checked => isset($activeAdminGroupIds[$adminGroup->admin_group_id])">
+                            <label class="custom-control-label" for="admin-group-{$adminGroup->admin_group_id}"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr n:if="!$allAdminGroups">
+                    <td colspan="2" class="text-center text-muted py-3">Nejsou definovány žádné administrátorské skupiny.</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
+
+{/block}
+
+{block scripts}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ajax-page-group-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const adminGroupId = this.dataset.adminGroupId;
+            const url = this.dataset.url;
+            const state = this.checked ? 1 : 0;
+
+            naja.makeRequest('GET', url, {
+                adminGroupId: adminGroupId,
+                state: state
+            }).then(() => {
+                // Flash message is handled by redrawControl('flashes') in presenter
+            }).catch(error => {
+                console.error('Error toggling admin group:', error);
+                this.checked = !this.checked; // Revert UI if failed
+                alert('Nepodařilo se uložit změnu.');
+            });
+        });
+    });
+});
+</script>
+{/block}

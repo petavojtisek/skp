@@ -61,4 +61,21 @@ class AdminMapper extends BaseMapper
             ])->execute();
         }
     }
+
+    public function getGroupsRight(int $groupId): array
+    {
+        return $this->db->select('ar.right_code_name')
+            ->from('admin_right')->as('ar')
+            ->join('admin_group_right')->as('agr')->on('ar.admin_right_id = agr.admin_right_id')
+            ->where('agr.admin_group_id = %i', $groupId)
+            ->fetchPairs('right_code_name', 'right_code_name');
+    }
+
+    public function getPageRights(int $groupId): array
+    {
+        return $this->db->select('page_group_id')
+            ->from('page_group_admin_group')
+            ->where('admin_group_id = %i', $groupId)
+            ->fetchPairs('page_group_id', 'page_group_id');
+    }
 }
