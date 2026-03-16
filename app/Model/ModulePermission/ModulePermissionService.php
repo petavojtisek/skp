@@ -32,4 +32,9 @@ class ModulePermissionService extends BaseService
     {
         $this->modulePermissionDao->delete($id);
     }
+
+    public function getPermissionsByIds(array $ids): array
+    {
+        return $this->modulePermissionDao->getPermissionsByIds($ids);
+    }
 }

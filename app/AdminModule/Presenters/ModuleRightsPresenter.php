@@ -5,6 +5,7 @@ namespace App\AdminModule\Presenters;
 use App\Model\AdminGroup\AdminGroupFacade;
 use App\Model\Module\ModuleFacade;
 use App\Model\Install\InstallFacade;
+use App\Model\Module\ModuleEntity;
 use Nette\Application\UI\Form;
 
 final class ModuleRightsPresenter extends AdminPresenter
@@ -34,77 +35,77 @@ final class ModuleRightsPresenter extends AdminPresenter
     {
         $this->template->title = 'Práva modulů';
         $this->template->modules = $this->moduleFacade->getModulesForModuleRightsList();
-        $userAvailableGroups =  $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getGroupId());
-        $groupItems = [];
-        if(!empty($userAvailableGroups)){
-            foreach ($userAvailableGroups as $g) {
-                $groupItems[$g->getId()] = $g->getGroupName();
-            }
-        }
-        $this->template->userAvailableGroups  = $groupItems;
-
     }
 
-    public function renderEdit(int $id, ?int $groupId = null): void
+    public function renderEdit(int $id): void
     {
         $this->id = $id;
-        if ($groupId) {
-            $this->groupId = $groupId;
-        }
 
-
-        /*
-        // Get module details
-        $installed = $this->installFacade->getInstalledModules();
-        $module = null;
-        foreach ($installed as $inst) {
-            $m = $this->installFacade->getModuleByInstallId($inst->id);
-            if ($m && $m['module_id'] == $id) {
-                $module = $m;
-                break;
-            }
-        }
-
+        /** @var ModuleEntity|null $module */
+        $module = $this->moduleFacade->find($id);
         if (!$module) {
             $this->error('Modul nebyl nalezen.');
         }
 
-        $this->template->title = 'Editace práv modulu: ' . $module['module_name'];
+        $this->template->title = 'Editace práv modulu: ' . $module->getModuleName();
         $this->template->module = $module;
+        $this->template->moduleId = $this->id;
+        $this->template->groupId = $this->groupId;
 
-        // Hierarchical group selection for the current user
-        $availableGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getGroupId());
-        $groupItems = [];
-        foreach ($availableGroups as $g) {
-            $groupItems[$g->admin_group_id] = $g->admin_group_name;
-        }
-        $this['groupForm']['groupId']->setItems($groupItems);
+        $groups = $this->getAvailableGroupsAsOption();
+        $this->template->userAvailableGroups = $groups;
 
-        if ($this->groupId) {
+        // Load permissions matrix via Facade
+        $this->template->permissions = $this->groupId ? $this->moduleFacade->getModulePermissionsMatrix($this->id, $this->groupId) : [];
+
+        $this['groupForm']['groupId']->setItems($groups);        if ($this->groupId) {
             $this['groupForm']->setDefaults(['groupId' => $this->groupId]);
-            $this->template->permissions = $this->moduleRightsFacade->getModulePermissions($this->id, $this->groupId);
-        } else {
-            $this->template->permissions = [];
         }
-        */
+    }
+
+    /**
+     * Reusable method for getting available groups [id => name]
+     */
+    protected function getAvailableGroupsAsOption(): array
+    {
+        $userAvailableGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getGroupId());
+        $groupItems = [];
+        if (!empty($userAvailableGroups)) {
+            foreach ($userAvailableGroups as $g) {
+                $groupItems[$g->getId()] = $g->getGroupName();
+            }
+        }
+        return $groupItems;
     }
 
     /**
      * AJAX signal to toggle module permission for a group
      */
-    public function handleTogglePermission(int $permissionId, bool $state): void
+    public function handleTogglePermission(int $id, int $groupId, int $permissionId, int $state): void
     {
-        if (!$this->id || !$this->groupId) {
-            $this->error('Parametry modulu nebo skupiny chybí.');
-        }
-
-       // $this->moduleRightsFacade->toggleModuleGroupRight($this->groupId, $this->id, $permissionId, $state);
+        $this->id = $id;
+        $this->groupId = $groupId;
+        xdebug_break();
+        $this->moduleFacade->togglePermission($id, $groupId, $permissionId, (bool)$state);
 
         if ($this->isAjax()) {
             $this->flashMessage('Právo bylo aktualizováno.');
             $this->redrawControl('flashes');
         } else {
             $this->redirect('this');
+        }
+    }
+
+    /**
+     * AJAX signal for group selection change
+     */
+    public function handleSelectGroup(?int $groupId = null): void
+    {
+        $this->groupId = $groupId;
+        if ($this->isAjax()) {
+            $this->redrawControl('permissionsSnippet');
+        } else {
+            $this->redirect('this', ['groupId' => $groupId]);
         }
     }
 
@@ -115,15 +116,29 @@ final class ModuleRightsPresenter extends AdminPresenter
             ->setPrompt('-- Vyberte skupinu --')
             ->setRequired('Vyberte skupinu pro editaci práv');
 
-        $form->addSubmit('send', 'Načíst práva')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-sm');
-
         $form->onSuccess[] = [$this, 'groupFormSucceeded'];
         return $form;
     }
 
     public function groupFormSucceeded(Form $form, \stdClass $values): void
     {
-        $this->redirect('this', ['groupId' => $values->groupId]);
+        $this->groupId = $values->groupId;
+        if ($this->isAjax()) {
+            $this->redrawControl('permissionsSnippet');
+        } else {
+            $this->redirect('this', ['groupId' => $this->groupId]);
+        }
+    }
+
+    /**
+     * Mock permissions for the blind table
+     */
+    private function getMockPermissions(): array
+    {
+        return [
+            (object)['module_permission_id' => 1, 'name' => 'Zobrazení', 'is_active' => true],
+            (object)['module_permission_id' => 2, 'name' => 'Editace', 'is_active' => false],
+            (object)['module_permission_id' => 3, 'name' => 'Mazání', 'is_active' => true],
+        ];
     }
 }

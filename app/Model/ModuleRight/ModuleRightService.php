@@ -32,4 +32,9 @@ class ModuleRightService extends BaseService
     {
         $this->moduleRightDao->delete($id);
     }
+
+    public function getPermissionsByModule(int $moduleId): array
+    {
+        return $this->moduleRightDao->getPermissionsByModule($moduleId);
+    }
 }

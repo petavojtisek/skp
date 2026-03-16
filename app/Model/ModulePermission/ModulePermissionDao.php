@@ -21,4 +21,10 @@ class ModulePermissionDao extends BaseDao
     {
         return $this->mapper;
     }
+
+    public function getPermissionsByIds(array $ids): array
+    {
+        $data = $this->mapper->getPermissionsByIds($ids);
+        return $this->getEntities($this->entityName, $data);
+    }
 }

@@ -56,6 +56,16 @@ class ModuleFacade
         return $this->installService->getInstalledModules();
     }
 
+    public function getModulePermissionsMatrix(int $moduleId, int $groupId): array
+    {
+        return $this->moduleService->getModulePermissionsMatrix($moduleId, $groupId);
+    }
+
+    public function togglePermission(int $moduleId, int $groupId, int $permissionId, bool $state): void
+    {
+        $this->moduleService->togglePermission($moduleId, $groupId, $permissionId, $state);
+    }
+
     public function getAvailableGroups(int $startGroupId): array
     {
         return $this->adminGroupService->getAvailableGroups($startGroupId);

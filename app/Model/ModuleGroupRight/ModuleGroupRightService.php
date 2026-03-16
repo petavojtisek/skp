@@ -32,4 +32,24 @@ class ModuleGroupRightService extends BaseService
     {
         $this->moduleGroupRightDao->delete($id);
     }
+
+    public function getPermissionsForGroupAndModule(int $groupId, int $moduleId): array
+    {
+        return $this->moduleGroupRightDao->getPermissionsForGroupAndModule($groupId, $moduleId);
+    }
+
+    public function togglePermission(int $moduleId, int $groupId, int $permissionId, bool $state): void
+    {
+        xdebug_break();
+        if ($state) {
+            $entity = new ModuleGroupRightEntity([
+                'module_id' => $moduleId,
+                'admin_group_id' => $groupId,
+                'permission_id' => $permissionId
+            ]);
+            $this->save($entity);
+        } else {
+            $this->moduleGroupRightDao->deleteBy($moduleId, $groupId, $permissionId);
+        }
+    }
 }

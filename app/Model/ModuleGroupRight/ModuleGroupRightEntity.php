@@ -19,4 +19,34 @@ class ModuleGroupRightEntity extends BaseEntity
     {
         $this->setVariable('admin_group_id', $id, self::VALUE_TYPE_INTEGER);
     }
+
+    public function getAdminGroupId(): ?int
+    {
+        return $this->admin_group_id;
+    }
+
+    public function setAdminGroupId(?int $admin_group_id): void
+    {
+        $this->setVariable('admin_group_id', $admin_group_id, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getModuleId(): ?int
+    {
+        return $this->module_id;
+    }
+
+    public function setModuleId(?int $module_id): void
+    {
+        $this->setVariable('module_id', $module_id, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getPermissionId(): ?int
+    {
+        return $this->permission_id;
+    }
+
+    public function setPermissionId(?int $permission_id): void
+    {
+        $this->setVariable('permission_id', $permission_id, self::VALUE_TYPE_INTEGER);
+    }
 }

@@ -19,4 +19,24 @@ class AdminRightEntity extends BaseEntity
     {
         $this->setVariable('admin_right_id', $id, self::VALUE_TYPE_INTEGER);
     }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->setVariable('name', $name, self::VALUE_TYPE_STRING);
+    }
+
+    public function getRightCodeName(): ?string
+    {
+        return $this->right_code_name;
+    }
+
+    public function setRightCodeName(?string $right_code_name): void
+    {
+        $this->setVariable('right_code_name', $right_code_name, self::VALUE_TYPE_STRING);
+    }
 }

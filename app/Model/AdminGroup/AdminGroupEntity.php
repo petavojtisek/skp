@@ -20,4 +20,14 @@ class AdminGroupEntity extends BaseEntity
     {
         $this->setVariable('admin_group_id', $id, self::VALUE_TYPE_INTEGER);
     }
+
+    public function getGroupName(): ?string
+    {
+        return $this->admin_group_name;
+    }
+
+    public function setGroupName(?string $name): void
+    {
+        $this->setVariable('admin_group_name', $name, self::VALUE_TYPE_STRING);
+    }
 }
