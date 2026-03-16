@@ -31,9 +31,4 @@ class InstallFacade
     {
         return $this->installService->getAvailableModules();
     }
-
-    public function getModuleByInstallId(int $installId): ?array
-    {
-        return $this->installService->getModuleByInstallId($installId);
-    }
 }

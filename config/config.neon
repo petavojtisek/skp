@@ -36,10 +36,13 @@ services:
 	- App\Model\Admin\AdminMapper
 	- App\Model\AdminGroup\AdminGroupMapper
 	- App\Model\Object\ObjectMapper
-	- App\Model\ModuleRights\ModuleRightsMapper
 	- App\Model\PageGroup\PageGroupMapper
 	- App\Model\AdminRight\AdminRightMapper
 	- App\Model\AdminGroupRight\AdminGroupRightMapper
+	- App\Model\Module\ModuleMapper
+	- App\Model\ModulePermission\ModulePermissionMapper
+	- App\Model\ModuleGroupRight\ModuleGroupRightMapper
+	- App\Model\ModuleRight\ModuleRightMapper
 
 	# DAO
 	- App\Model\Page\PageDao
@@ -55,10 +58,13 @@ services:
 	- App\Model\Admin\AdminDao
 	- App\Model\AdminGroup\AdminGroupDao
 	- App\Model\Object\ObjectDao
-	- App\Model\ModuleRights\ModuleRightsDao
 	- App\Model\PageGroup\PageGroupDao
 	- App\Model\AdminRight\AdminRightDao
 	- App\Model\AdminGroupRight\AdminGroupRightDao
+	- App\Model\Module\ModuleDao
+	- App\Model\ModulePermission\ModulePermissionDao
+	- App\Model\ModuleGroupRight\ModuleGroupRightDao
+	- App\Model\ModuleRight\ModuleRightDao
 
 	# AUTH
 	authenticator:
@@ -82,10 +88,13 @@ services:
 	- App\Model\Admin\AdminService
 	- App\Model\AdminGroup\AdminGroupService
 	- App\Model\Object\ObjectService
-	- App\Model\ModuleRights\ModuleRightsService
 	- App\Model\PageGroup\PageGroupService
 	- App\Model\AdminRight\AdminRightService
 	- App\Model\AdminGroupRight\AdminGroupRightService
+	- App\Model\Module\ModuleService
+	- App\Model\ModulePermission\ModulePermissionService
+	- App\Model\ModuleGroupRight\ModuleGroupRightService
+	- App\Model\ModuleRight\ModuleRightService
 
 	# FACADE
 	- App\Model\Page\PageFacade
@@ -99,8 +108,11 @@ services:
 	- App\Model\Admin\AdminFacade
 	- App\Model\AdminGroup\AdminGroupFacade
 	- App\Model\Object\ObjectFacade
-	- App\Model\ModuleRights\ModuleRightsFacade
 	- App\Model\PageGroup\PageGroupFacade
 	- App\Model\AdminRight\AdminRightFacade
+	- App\Model\Module\ModuleFacade
+	- App\Model\ModulePermission\ModulePermissionFacade
+	- App\Model\ModuleGroupRight\ModuleGroupRightFacade
+	- App\Model\ModuleRight\ModuleRightFacade
 
 	# Register other ebcar-like services here

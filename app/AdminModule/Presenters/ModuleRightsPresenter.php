@@ -3,7 +3,7 @@
 namespace App\AdminModule\Presenters;
 
 use App\Model\AdminGroup\AdminGroupFacade;
-use App\Model\ModuleRights\ModuleRightsFacade;
+use App\Model\Module\ModuleFacade;
 use App\Model\Install\InstallFacade;
 use Nette\Application\UI\Form;
 
@@ -13,7 +13,7 @@ final class ModuleRightsPresenter extends AdminPresenter
     public AdminGroupFacade $groupFacade;
 
     /** @inject */
-    public ModuleRightsFacade $moduleRightsFacade;
+    public ModuleFacade $moduleFacade;
 
     /** @inject */
     public InstallFacade $installFacade;
@@ -33,17 +33,16 @@ final class ModuleRightsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Práva modulů';
-
-        $installed = $this->installFacade->getInstalledModules();
-        $modules = [];
-        foreach ($installed as $install) {
-            $moduleData = $this->installFacade->getModuleByInstallId($install->id);
-            if ($moduleData) {
-                $modules[] = $moduleData;
+        $this->template->modules = $this->moduleFacade->getModulesForModuleRightsList();
+        $userAvailableGroups =  $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getGroupId());
+        $groupItems = [];
+        if(!empty($userAvailableGroups)){
+            foreach ($userAvailableGroups as $g) {
+                $groupItems[$g->getId()] = $g->getGroupName();
             }
         }
+        $this->template->userAvailableGroups  = $groupItems;
 
-        $this->template->modules = $modules;
     }
 
     public function renderEdit(int $id, ?int $groupId = null): void
@@ -53,6 +52,8 @@ final class ModuleRightsPresenter extends AdminPresenter
             $this->groupId = $groupId;
         }
 
+
+        /*
         // Get module details
         $installed = $this->installFacade->getInstalledModules();
         $module = null;
@@ -85,6 +86,7 @@ final class ModuleRightsPresenter extends AdminPresenter
         } else {
             $this->template->permissions = [];
         }
+        */
     }
 
     /**
@@ -96,7 +98,7 @@ final class ModuleRightsPresenter extends AdminPresenter
             $this->error('Parametry modulu nebo skupiny chybí.');
         }
 
-        $this->moduleRightsFacade->toggleModuleGroupRight($this->groupId, $this->id, $permissionId, $state);
+       // $this->moduleRightsFacade->toggleModuleGroupRight($this->groupId, $this->id, $permissionId, $state);
 
         if ($this->isAjax()) {
             $this->flashMessage('Právo bylo aktualizováno.');

@@ -13,11 +13,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr n:foreach="$modules as $m">
-                    <td>{$m['module_id']}</td>
-                    <td><strong>{$m['module_name']}</strong></td>
+                <tr n:foreach="$modules as $moduleId=>$m">
+                    <td>{$m->getId()}</td>
+                    <td><strong>{$m->getModuleName()}</strong></td>
                     <td class="text-right">
-                        <a n:href="edit, id => $m['module_id']" class="btn btn-info btn-xs">
+                        <a n:href="edit, id => $m->getId()" class="btn btn-info btn-xs">
                             <i class="fas fa-edit"></i> Editovat práva
                         </a>
                     </td>

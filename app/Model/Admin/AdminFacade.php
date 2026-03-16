@@ -5,9 +5,10 @@ namespace App\Model\Admin;
 use App\Model\Log\LogFacade;
 use App\Model\AdminGroup\AdminGroupService;
 use App\Model\AdminGroupRight\AdminGroupRightService;
+use App\Model\Module\ModuleService;
 use App\Model\Presentation\PresentationService;
 use App\Model\PageGroup\PageGroupService;
-use App\Model\ModuleRights\ModuleRightsService;
+
 
 class AdminFacade
 {
@@ -16,7 +17,7 @@ class AdminFacade
     private AdminGroupRightService $adminGroupRightService;
     private PresentationService $presentationService;
     private PageGroupService $pageGroupService;
-    private ModuleRightsService $moduleRightsService;
+    private ModuleService $moduleService;
     private LogFacade $logFacade;
 
     public function __construct(
@@ -25,7 +26,7 @@ class AdminFacade
         AdminGroupRightService $adminGroupRightService,
         PresentationService $presentationService,
         PageGroupService $pageGroupService,
-        ModuleRightsService $moduleRightsService,
+        ModuleService $moduleService,
         LogFacade $logFacade
     ) {
         $this->adminService = $adminService;
@@ -33,7 +34,7 @@ class AdminFacade
         $this->adminGroupRightService = $adminGroupRightService;
         $this->presentationService = $presentationService;
         $this->pageGroupService = $pageGroupService;
-        $this->moduleRightsService = $moduleRightsService;
+        $this->moduleService = $moduleService;
         $this->logFacade = $logFacade;
     }
 
@@ -105,7 +106,7 @@ class AdminFacade
 
         return [
             'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
-            'module_rights' => $this->moduleRightsService->getModuleRights($adminId),
+            'module_rights' => $this->moduleService->getModuleRights($adminId),
             'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
         ];
     }

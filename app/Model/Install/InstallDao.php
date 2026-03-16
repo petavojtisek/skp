@@ -24,9 +24,4 @@ class InstallDao extends BaseDao
     {
         return $this->mapper;
     }
-
-    public function getModuleByInstallId(int $installId): ?array
-    {
-        return $this->mapper->getModuleByInstallId($installId);
-    }
 }

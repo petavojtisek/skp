@@ -3,6 +3,7 @@ namespace App\Model\Base;
 
 
 use Dibi\DateTime;
+use Dibi\Row;
 use Nette\Utils\ArrayHash;
 
 abstract class AEntity implements IEntity
@@ -39,8 +40,13 @@ abstract class AEntity implements IEntity
 	 * @param array $data
 	 * @param bool $new
 	 */
-	public function __construct(array $data = [], bool $new = true)
+	public function __construct(array|Row|\ArrayObject $data = [], bool $new = true)
 	{
+
+        if($data instanceof Row){
+            $data = (array) $data;
+        }
+
 		if($new){
 			$this->setDefaultsProperty();
 		}
