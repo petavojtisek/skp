@@ -53,6 +53,10 @@ class AdminGroupFacade
 
     public function getAvailableGroups(int $startGroupId): array
     {
+      
+        if($startGroupId == 0) {
+            throw new \InvalidArgumentException("Group with ID $startGroupId does not exist.");
+        }
         return $this->adminGroupService->getAvailableGroups($startGroupId);
     }
 }

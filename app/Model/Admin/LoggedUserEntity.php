@@ -23,6 +23,7 @@ class LoggedUserEntity extends AdministratorEntity
         $this->group = $group;
     }
 
+
     public function getPresentations(): array
     {
         return $this->presentations;

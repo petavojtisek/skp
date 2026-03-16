@@ -68,13 +68,15 @@ final class ModuleRightsPresenter extends AdminPresenter
      */
     protected function getAvailableGroupsAsOption(): array
     {
-        $userAvailableGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getGroupId());
+
+        $userAvailableGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getAdminGroupId());
         $groupItems = [];
         if (!empty($userAvailableGroups)) {
             foreach ($userAvailableGroups as $g) {
                 $groupItems[$g->getId()] = $g->getGroupName();
             }
         }
+
         return $groupItems;
     }
 
@@ -85,7 +87,7 @@ final class ModuleRightsPresenter extends AdminPresenter
     {
         $this->id = $id;
         $this->groupId = $groupId;
-      
+
         $this->moduleFacade->togglePermission($id, $groupId, $permissionId, (bool)$state);
 
         if ($this->isAjax()) {

@@ -85,7 +85,9 @@ class AdminFacade
         $this->adminService->loadLoggedUserEntity($adminId, $entity);
 
         if($entity->getId() > 0){
-            $groupId = (int)$entity->getGroupId();
+            $groupId = (int)$entity->getAdminGroupId();
+
+
             $groups = $this->getAdminGroups();
             $entity->setGroup(isset($groups[$groupId]) ? (array)$groups[$groupId] : null);
 
@@ -101,7 +103,7 @@ class AdminFacade
 
     protected function getLoggedUserRights(LoggedUserEntity $entity): array
     {
-        $groupId = (int)$entity->getGroupId();
+        $groupId = (int)$entity->getAdminGroupId();
         $adminId = (int)$entity->getId();
 
         return [

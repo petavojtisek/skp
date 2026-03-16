@@ -29,7 +29,7 @@ class ModuleGroupRightDao extends BaseDao
 
     public function deleteBy(int $moduleId, int $groupId, int $permissionId): void
     {
-    
+
         $this->mapper->deleteBy(['module_id' => $moduleId, 'admin_group_id' => $groupId, 'permission_id' => $permissionId]);
     }
 }
