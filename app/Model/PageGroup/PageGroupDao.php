@@ -31,4 +31,14 @@ class PageGroupDao extends BaseDao
     {
         return $this->mapper->getAdminGroupIds($pageGroupId);
     }
+
+    public function getAccessiblePageGroupIds(int $adminGroupId): array
+    {
+        return $this->mapper->getAccessiblePageGroupIds($adminGroupId);
+    }
+
+    public function getAccessiblePageGroupNames(int $adminGroupId): array
+    {
+        return $this->mapper->getAccessiblePageGroupNames($adminGroupId);
+    }
 }

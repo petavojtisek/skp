@@ -49,4 +49,9 @@ class InstallService extends BaseService
         $installed = array_map(fn($m) => $m->module_name, $this->getInstalledModules());
         return array_diff($modules, $installed);
     }
+
+    public function getModuleByInstallId(int $installId): ?array
+    {
+        return $this->installDao->getModuleByInstallId($installId);
+    }
 }

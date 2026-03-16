@@ -50,4 +50,9 @@ class AdminGroupFacade
     {
         $this->adminGroupService->saveAdminGroups($adminId, $groupIds);
     }
+
+    public function getAvailableGroups(int $startGroupId): array
+    {
+        return $this->adminGroupService->getAvailableGroups($startGroupId);
+    }
 }

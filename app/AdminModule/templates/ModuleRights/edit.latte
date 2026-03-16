@@ -1,9 +1,84 @@
 {block content}
-<div class="card">
+<div class="row mb-3">
+    <div class="col-12">
+        <a n:href="default" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+</div>
+
+<div class="card card-primary card-outline">
     <div class="card-header">
         <h3 class="card-title">{$title}</h3>
     </div>
     <div class="card-body">
-        {control rightsForm}
+        <form n:name="groupForm" class="form-inline ajax">
+            <div class="form-group mr-2">
+                <label n:name="groupId" class="mr-2">Vyberte skupinu:</label>
+                <select n:name="groupId" class="form-control form-control-sm"></select>
+            </div>
+            <button n:name="send" class="btn btn-primary btn-sm">Zobrazit práva</button>
+        </form>
     </div>
 </div>
+
+<div n:if="$groupId" class="card card-secondary card-outline mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Dostupná oprávnění pro modul</h3>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 80px">ID</th>
+                    <th>Název oprávnění</th>
+                    <th style="width: 100px" class="text-center">Stav</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$permissions as $perm">
+                    <td>{$perm->module_permission_id}</td>
+                    <td>{$perm->name}</td>
+                    <td class="text-center">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input ajax-module-right-toggle" 
+                                   id="perm-{$perm->module_permission_id}"
+                                   data-permission-id="{$perm->module_permission_id}"
+                                   data-url="{link togglePermission!}"
+                                   n:attr="checked => $perm->is_active">
+                            <label class="custom-control-label" for="perm-{$perm->module_permission_id}"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr n:if="!$permissions">
+                    <td colspan="3" class="text-center text-muted py-3">Pro tento modul nejsou definována žádná oprávnění.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{/block}
+
+{block scripts}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ajax-module-right-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const permissionId = this.dataset.permissionId;
+            const url = this.dataset.url;
+            const state = this.checked ? 1 : 0;
+
+            naja.makeRequest('GET', url, {
+                permissionId: permissionId,
+                state: state
+            }).then(() => {
+                // Flash message is handled by redrawControl('flashes') in presenter
+            }).catch(error => {
+                console.error('Error toggling module right:', error);
+                this.checked = !this.checked; // Revert UI if failed
+                alert('Nepodařilo se uložit změnu.');
+            });
+        });
+    });
+});
+</script>
+{/block}

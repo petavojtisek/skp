@@ -42,4 +42,14 @@ class PageGroupService extends BaseService
     {
         return $this->pageGroupDao->getAdminGroupIds($pageGroupId);
     }
+
+    public function getAccessiblePageGroupIds(int $adminGroupId): array
+    {
+        return $this->pageGroupDao->getAccessiblePageGroupIds($adminGroupId);
+    }
+
+    public function getAccessiblePageGroupNames(int $adminGroupId): array
+    {
+        return $this->pageGroupDao->getAccessiblePageGroupNames($adminGroupId);
+    }
 }

@@ -49,6 +49,38 @@ class AdminGroupService extends BaseService
     }
 
     /**
+     * Returns all groups available to a user starting from their own group and its descendants.
+     */
+    public function getAvailableGroups(int $startGroupId): array
+    {
+        $allGroups = $this->findAll();
+        $availableIds = $this->getAvailableGroupIds($startGroupId, $allGroups);
+        
+        $availableGroups = [];
+        foreach ($allGroups as $group) {
+            if (in_array($group->admin_group_id, $availableIds)) {
+                $availableGroups[] = $group;
+            }
+        }
+        return $availableGroups;
+    }
+
+    public function getAvailableGroupIds(int $startGroupId, ?array $allGroups = null): array
+    {
+        if ($allGroups === null) {
+            $allGroups = $this->findAll();
+        }
+
+        $ids = [$startGroupId];
+        foreach ($allGroups as $group) {
+            if ($group->pid == $startGroupId) {
+                $ids = array_merge($ids, $this->getAvailableGroupIds($group->admin_group_id, $allGroups));
+            }
+        }
+        return array_unique($ids);
+    }
+
+    /**
      * @return array
      */
     public function getGroupTree(): array

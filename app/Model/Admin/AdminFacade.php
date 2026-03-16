@@ -95,7 +95,6 @@ class AdminFacade
             }
             $entity->setPresentations($presMap);
             $entity->setRights($this->getLoggedUserRights($entity));
-            xdebug_break();
         }
     }
 
@@ -105,9 +104,9 @@ class AdminFacade
         $adminId = (int)$entity->getId();
 
         return [
-            'groups_right' => $this->adminGroupRightService->getGroupRightsIds($groupId),
+            'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
             'module_rights' => $this->moduleRightsService->getModuleRights($adminId),
-            'page_rights' => $this->pageGroupService->getAdminGroupIds($groupId),
+            'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
         ];
     }
 }

@@ -30,4 +30,14 @@ class ModuleRightsFacade
     {
         $this->moduleRightsService->delete($id);
     }
+
+    public function getModulePermissions(int $moduleId, int $adminGroupId): array
+    {
+        return $this->moduleRightsService->getModulePermissions($moduleId, $adminGroupId);
+    }
+
+    public function toggleModuleGroupRight(int $adminGroupId, int $moduleId, int $permissionId, bool $state): void
+    {
+        $this->moduleRightsService->toggleModuleGroupRight($adminGroupId, $moduleId, $permissionId, $state);
+    }
 }

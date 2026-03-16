@@ -31,4 +31,21 @@ class PageGroupMapper extends BaseMapper
             ->where('page_group_id = ?', $pageGroupId)
             ->fetchPairs('admin_group_id', 'admin_group_id');
     }
+
+    public function getAccessiblePageGroupIds(int $adminGroupId): array
+    {
+        return $this->db->select('page_group_id, 1 as val')
+            ->from('page_group_admin_group')
+            ->where('admin_group_id = ?', $adminGroupId)
+            ->fetchPairs('page_group_id', 'val');
+    }
+
+    public function getAccessiblePageGroupNames(int $adminGroupId): array
+    {
+        return $this->db->select('pg.name, 1 as val')
+            ->from($this->tableName)->as('pg')
+            ->join('page_group_admin_group')->as('pgag')->on('pg.id = pgag.page_group_id')
+            ->where('pgag.admin_group_id = ?', $adminGroupId)
+            ->fetchPairs('name', 'val');
+    }
 }

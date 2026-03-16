@@ -31,4 +31,9 @@ class AdminGroupRightDao extends BaseDao
     {
         return $this->mapper->getGroupRightsIds($groupId);
     }
+
+    public function getGroupRightsCodes(int $groupId): array
+    {
+        return $this->mapper->getGroupRightsCodes($groupId);
+    }
 }

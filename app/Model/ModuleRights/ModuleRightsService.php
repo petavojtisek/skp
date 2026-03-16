@@ -37,4 +37,14 @@ class ModuleRightsService extends BaseService
     {
         return []; // To be implemented later with Install module logic
     }
+
+    public function getModulePermissions(int $moduleId, int $adminGroupId): array
+    {
+        return $this->moduleRightsDao->getModulePermissions($moduleId, $adminGroupId);
+    }
+
+    public function toggleModuleGroupRight(int $adminGroupId, int $moduleId, int $permissionId, bool $state): void
+    {
+        $this->moduleRightsDao->toggleModuleGroupRight($adminGroupId, $moduleId, $permissionId, $state);
+    }
 }

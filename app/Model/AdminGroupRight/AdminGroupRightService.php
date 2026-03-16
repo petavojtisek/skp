@@ -22,4 +22,9 @@ class AdminGroupRightService extends BaseService
     {
         return $this->adminGroupRightDao->getGroupRightsIds($groupId);
     }
+
+    public function getGroupRightsCodes(int $groupId): array
+    {
+        return $this->adminGroupRightDao->getGroupRightsCodes($groupId);
+    }
 }

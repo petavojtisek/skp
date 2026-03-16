@@ -21,4 +21,14 @@ class ModuleRightsDao extends BaseDao
     {
         return $this->mapper;
     }
+
+    public function getModulePermissions(int $moduleId, int $adminGroupId): array
+    {
+        return $this->mapper->getModulePermissions($moduleId, $adminGroupId);
+    }
+
+    public function toggleModuleGroupRight(int $adminGroupId, int $moduleId, int $permissionId, bool $state): void
+    {
+        $this->mapper->toggleModuleGroupRight($adminGroupId, $moduleId, $permissionId, $state);
+    }
 }

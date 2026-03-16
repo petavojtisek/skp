@@ -31,4 +31,13 @@ class AdminGroupRightMapper extends BaseMapper
             ->where('admin_group_id = ?', $groupId)
             ->fetchPairs('admin_right_id', 'admin_right_id');
     }
+
+    public function getGroupRightsCodes(int $groupId): array
+    {
+        return $this->db->select('ar.right_code_name, 1 as val')
+            ->from('admin_right')->as('ar')
+            ->join($this->tableName)->as('agr')->on('ar.admin_right_id = agr.admin_right_id')
+            ->where('agr.admin_group_id = ?', $groupId)
+            ->fetchPairs('right_code_name', 'val');
+    }
 }
