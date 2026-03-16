@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    alert('click');
     // 1. HAMBURGER MENU
     const toggle = document.querySelector('.menu-toggle');
     const nav = document.querySelector('.main-nav');
 
     if (toggle && nav) { // Pojistka, aby to neházelo chyby na stránkách bez menu
-
         toggle.addEventListener('click', () => {
 
             nav.classList.toggle('is-open');

@@ -96,7 +96,8 @@ body .menu-open {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 20px;
+  min-height: 80px;
   flex-direction: row !important;
 }
 @media (max-width: 768px) {
@@ -159,7 +160,7 @@ body .menu-open {
   gap: 12px;
 }
 .main-header .logo img {
-  height: 45px;
+  height: 100px;
   width: auto;
 }
 .main-header .logo .logo-text {
@@ -181,7 +182,6 @@ body .menu-open {
 .main-header .main-nav {
   display: flex;
   align-items: center;
-  gap: 40px;
 }
 .main-header .main-nav ul {
   display: flex;
@@ -189,6 +189,11 @@ body .menu-open {
   gap: 25px;
   margin: 0;
   padding: 0;
+  align-items: center;
+}
+.main-header .main-nav ul li {
+  display: flex;
+  align-items: center;
 }
 @media (max-width: 768px) {
   .main-header .main-nav ul {

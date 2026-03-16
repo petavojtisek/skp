@@ -100,7 +100,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 20px;
+    min-height: 80px;
     flex-direction: row !important;
 
     @media (max-width: 768px) {
@@ -166,7 +167,7 @@ body {
     align-items: center;
     gap: 12px;
     img {
-      height: 45px;
+      height: 100px;
       width: auto;
     }
     .logo-text {
@@ -177,10 +178,19 @@ body {
   }
 
   .main-nav {
-    display: flex; align-items: center; gap: 40px;
+    display: flex;
+    align-items: center;
 
     ul {
-      display: flex; list-style: none; gap: 25px; margin: 0; padding: 0;
+      display: flex;
+      list-style: none;
+      gap: 25px;
+      margin: 0; padding: 0;
+      align-items: center;
+      li {
+        display: flex;
+        align-items: center;
+      }
 
       @media (max-width: 768px) {
         gap: 15px;
