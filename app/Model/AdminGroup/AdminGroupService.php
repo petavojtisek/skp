@@ -81,6 +81,16 @@ class AdminGroupService extends BaseService
     }
 
     /**
+     * @param int $parentId
+     * @return array
+     */
+    public function getGroupSubtree(int $parentId): array
+    {
+        $groups = $this->findAll();
+        return $this->buildTree($groups, $parentId);
+    }
+
+    /**
      * @param int $startId
      * @return array
      */

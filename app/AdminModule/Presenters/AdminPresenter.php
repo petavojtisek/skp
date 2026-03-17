@@ -91,16 +91,42 @@ abstract class AdminPresenter extends BasePresenter
 
     public function isAllowedGroup(int $id): bool
     {
+        return $this->canEditGroup($id);
+    }
+
+    public function canEditGroup(int $id): bool
+    {
         if ($id === 0) return (int)$this->loggedUserEntity->getAdminGroupId() === 1;
-        
         $allowedGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getAdminGroupId());
         return isset($allowedGroups[$id]);
+    }
+
+    public function canDeleteGroup(int $id): bool
+    {
+        $myGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        if ($id === $myGroupId) return false; // Cannot delete self
+        
+        $allowedGroups = $this->groupFacade->getAvailableGroups($myGroupId);
+        return isset($allowedGroups[$id]);
+    }
+
+    public function canAddChildTo(int $parentId): bool
+    {
+        $myGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        $userGroup = $this->groupFacade->getGroup($myGroupId);
+        $myParentId = $userGroup ? $userGroup->pid : 0;
+
+        // I can add child to my group, my descendants, OR my immediate parent (to create siblings)
+        if ($parentId === $myParentId) return true;
+        
+        $allowedGroups = $this->groupFacade->getAvailableGroups($myGroupId);
+        return isset($allowedGroups[$parentId]);
     }
 
     public function isAllowedAdmin(int $adminId): bool
     {
         $admin = $this->adminFacade->getAdmin($adminId);
         if (!$admin) return false;
-        return $this->isAllowedGroup((int)$admin->getAdminGroupId());
+        return $this->canEditGroup((int)$admin->getAdminGroupId());
     }
 }

@@ -30,4 +30,39 @@ class LogService extends BaseService
 
     }
 
+
+    public function addLog(LogEntity $log): int
+    {
+
+        if (!$log->getAdminId()) {
+            if ($this->user->isLoggedIn()) {
+                $log->setVariable('admin_id', (int)$this->user->getId());
+            } elseif ($this->loggedUser->admin_id) {
+                $log->setVariable('admin_id', (int)$this->loggedUser->admin_id);
+            } else {
+                $log->setVariable('admin_id', 0);
+            }
+        }
+
+        return (int) $this->logDao->insert($log);
+    }
+
+    public function logAction(string $module, string $action, string $name, $elementId = null, ?array $sendData = null, ?array $beforeData = null, ?string $codeName = null): void
+    {
+        /* TODO */
+        /*
+        $log = new LogEntity();
+        $log->setVariable('module', $module);
+        $log->setVariable('action', $action);
+        $log->setVariable('name', $name);
+        $log->setVariable('code_name', $codeName);
+        $log->setVariable('element_id', $elementId ? (int)$elementId : null);
+
+        if ($sendData) $log->setAfter($sendData);
+        if ($beforeData) $log->setBefore($beforeData);
+
+        $this->addLog($log);
+        */
+    }
+
 }

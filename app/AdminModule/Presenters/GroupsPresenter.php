@@ -23,7 +23,7 @@ final class GroupsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Skupiny uživatelů';
-        $this->template->tree = $this->groupFacade->getGroupTree((int)$this->loggedUserEntity->getAdminGroupId());
+        $this->template->tree = $this->groupFacade->getGroupTree(0);
     }
 
     public function renderEdit(?int $id = null, ?int $parentId = null): void
@@ -32,7 +32,7 @@ final class GroupsPresenter extends AdminPresenter
             $id = (int)$this->id;
         }
 
-        if ($id && !$this->isAllowedGroup($id)) {
+        if ($id && !$this->canEditGroup($id)) {
             $this->flashMessage('Nemáte oprávnění k editaci této skupiny.', 'error');
             $this->redirect('default');
         }
@@ -50,8 +50,8 @@ final class GroupsPresenter extends AdminPresenter
             // Rights for the group
             $this->template->allRights = $this->rightFacade->getAllRights();
             $this->template->activeRightIds = $this->rightFacade->getGroupRightsIds($id);
-        } elseif ($parentId) {
-            if (!$this->isAllowedGroup($parentId)) {
+        } elseif ($parentId !== null) {
+            if (!$this->canAddChildTo((int)$parentId)) {
                 $this->flashMessage('Nemáte oprávnění vytvářet podskupinu v této skupině.', 'error');
                 $this->redirect('default');
             }
@@ -66,10 +66,11 @@ final class GroupsPresenter extends AdminPresenter
 
     public function actionDelete(int $id): void
     {
-        if (!$this->isAllowedGroup($id)) {
+        if (!$this->canDeleteGroup($id)) {
             $this->flashMessage('Nemáte oprávnění ke smazání této skupiny.', 'error');
             $this->redirect('default');
         }
+
         $this->groupFacade->deleteGroup($id);
         $this->flashMessage('Skupina byla smazána.');
         $this->redirect('default', ['id' => null]);
@@ -84,7 +85,7 @@ final class GroupsPresenter extends AdminPresenter
             $this->error('ID skupiny nebylo předáno.');
         }
 
-        if (!$this->isAllowedGroup((int)$this->id)) {
+        if (!$this->canEditGroup((int)$this->id)) {
             $this->error('Nemáte oprávnění k úpravě této skupiny.');
         }
         
@@ -116,16 +117,33 @@ final class GroupsPresenter extends AdminPresenter
         $form->addHidden('admin_group_id');
         
         $groups = [];
-        $userGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
-        
-        // Only allow root if user is in group 1 (Superadmin)
-        if ($userGroupId === 1) {
-            $groups[0] = '-- Hlavní skupina --';
-        }
+        $myGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        $userGroup = $this->groupFacade->getGroup($myGroupId);
+        $myParentId = $userGroup ? $userGroup->pid : 0;
 
-        foreach ($this->groupFacade->getAvailableGroups($userGroupId) as $g) {
+        // Populate groups based on "canAddChildTo" logic
+        // 1. All available groups from the subtree
+        $available = $this->groupFacade->getAvailableGroups($myGroupId);
+        foreach ($available as $g) {
             if ($this->id && $g->admin_group_id == $this->id) continue;
             $groups[$g->admin_group_id] = $g->admin_group_name;
+        }
+
+        // 2. Immediate parent (allows creating siblings)
+        if (!isset($groups[$myParentId])) {
+            $p = $this->groupFacade->getGroup($myParentId);
+            if ($p) $groups[$p->admin_group_id] = $p->admin_group_name;
+            elseif ($myParentId === 0) $groups[0] = '-- Hlavní skupina --';
+        }
+
+        // 3. Current parent of edited entity (always allow no-change)
+        if ($this->id) {
+            $entity = $this->groupFacade->getGroup((int)$this->id);
+            if ($entity && !isset($groups[$entity->pid])) {
+                $p = $this->groupFacade->getGroup($entity->pid);
+                if ($p) $groups[$p->admin_group_id] = $p->admin_group_name;
+                elseif ($entity->pid === 0) $groups[0] = '-- Hlavní skupina --';
+            }
         }
 
         $form->addSelect('pid', 'Nadřazená skupina', $groups)
@@ -147,14 +165,24 @@ final class GroupsPresenter extends AdminPresenter
     {
         $id = (int)$values->admin_group_id;
         
-        if ($id && !$this->isAllowedGroup($id)) {
+        if ($id && !$this->canEditGroup($id)) {
             $this->flashMessage('Nemáte oprávnění k úpravě této skupiny.', 'error');
             $this->redirect('default');
         }
 
-        if (!$this->isAllowedGroup((int)$values->pid) && (int)$values->pid !== 0) {
-            $this->flashMessage('Zvolená nadřazená skupina není povolena.', 'error');
-            $this->redirect('default');
+        $pid = (int)$values->pid;
+        if (!$this->canAddChildTo($pid)) {
+            // Check if it's the current parent (safety fallback)
+            if ($id) {
+                $current = $this->groupFacade->getGroup($id);
+                if ($current && $current->pid !== $pid) {
+                    $this->flashMessage('Zvolená nadřazená skupina není povolena.', 'error');
+                    $this->redirect('default');
+                }
+            } else {
+                $this->flashMessage('Zvolená nadřazená skupina není povolena.', 'error');
+                $this->redirect('default');
+            }
         }
 
         $entity = $id ? $this->groupFacade->getGroup($id) : new AdminGroupEntity();

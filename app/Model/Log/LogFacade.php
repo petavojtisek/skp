@@ -17,4 +17,9 @@ class LogFacade
         return $this->logService->getLogs($limit, $offset);
     }
 
+    public function logAction(string $module, string $action, string $name, $elementId = null, ?array $sendData = null, ?array $beforeData = null, ?string $codeName = null): void
+    {
+        $this->logService->logAction($module, $action, $name, $elementId, $sendData, $beforeData, $codeName);
+    }
+
 }

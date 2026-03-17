@@ -36,6 +36,11 @@ class AdminGroupFacade
         return $this->adminGroupService->getGroupTree($startId);
     }
 
+    public function getGroupSubtree(int $parentId): array
+    {
+        return $this->adminGroupService->getGroupSubtree($parentId);
+    }
+
     public function getAdminGroups(): array
     {
         return $this->adminGroupService->getAdminGroups();
