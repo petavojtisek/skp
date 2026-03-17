@@ -77,6 +77,7 @@ services:
 
 	# SERVICE
 	- App\Model\System\Cache
+	- App\Model\System\ModelEventManager
 	- App\Model\Login\LoginService
 	- App\Model\Page\PageService
 	- App\Model\Lookup\LookupService

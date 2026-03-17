@@ -3,14 +3,17 @@
 namespace App\Model\ModuleGroupRight;
 
 use App\Model\Base\BaseService;
+use App\Model\System\ModelEventManager;
 
 class ModuleGroupRightService extends BaseService
 {
     private ModuleGroupRightDao $moduleGroupRightDao;
+    private ModelEventManager $eventManager;
 
-    public function __construct(ModuleGroupRightDao $moduleGroupRightDao)
+    public function __construct(ModuleGroupRightDao $moduleGroupRightDao, ModelEventManager $eventManager)
     {
         $this->moduleGroupRightDao = $moduleGroupRightDao;
+        $this->eventManager = $eventManager;
     }
 
     public function findAll(): array
@@ -56,5 +59,6 @@ class ModuleGroupRightService extends BaseService
         } else {
             $this->moduleGroupRightDao->deleteBy($moduleId, $groupId, $permissionId);
         }
+        $this->eventManager->trigger('rights_changed', $groupId);
     }
 }

@@ -3,14 +3,17 @@
 namespace App\Model\PageGroup;
 
 use App\Model\Base\BaseService;
+use App\Model\System\ModelEventManager;
 
 class PageGroupService extends BaseService
 {
     private PageGroupDao $pageGroupDao;
+    private ModelEventManager $eventManager;
 
-    public function __construct(PageGroupDao $pageGroupDao)
+    public function __construct(PageGroupDao $pageGroupDao, ModelEventManager $eventManager)
     {
         $this->pageGroupDao = $pageGroupDao;
+        $this->eventManager = $eventManager;
     }
 
     public function findAll(): array
@@ -36,6 +39,7 @@ class PageGroupService extends BaseService
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
         $this->pageGroupDao->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
+        $this->eventManager->trigger('rights_changed', $adminGroupId);
     }
 
     public function getAdminGroupIds(int $pageGroupId): array

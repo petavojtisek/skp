@@ -8,6 +8,8 @@ use App\Model\AdminGroupRight\AdminGroupRightService;
 use App\Model\Module\ModuleService;
 use App\Model\Presentation\PresentationService;
 use App\Model\PageGroup\PageGroupService;
+use App\Model\System\Cache;
+use App\Model\System\ModelEventManager;
 
 
 class AdminFacade
@@ -19,6 +21,8 @@ class AdminFacade
     private PageGroupService $pageGroupService;
     private ModuleService $moduleService;
     private LogFacade $logFacade;
+    private Cache $cache;
+    private ModelEventManager $eventManager;
 
     public function __construct(
         AdminService $adminService,
@@ -27,7 +31,9 @@ class AdminFacade
         PresentationService $presentationService,
         PageGroupService $pageGroupService,
         ModuleService $moduleService,
-        LogFacade $logFacade
+        LogFacade $logFacade,
+        Cache $cache,
+        ModelEventManager $eventManager
     ) {
         $this->adminService = $adminService;
         $this->adminGroupService = $adminGroupService;
@@ -36,6 +42,8 @@ class AdminFacade
         $this->pageGroupService = $pageGroupService;
         $this->moduleService = $moduleService;
         $this->logFacade = $logFacade;
+        $this->cache = $cache;
+        $this->eventManager = $eventManager;
     }
 
     public function getActiveAdmins(?array $groupIds = null): array
@@ -104,11 +112,14 @@ class AdminFacade
     protected function getLoggedUserRights(LoggedUserEntity $entity): array
     {
         $groupId = (int)$entity->getAdminGroupId();
+        $cacheKey = 'user_rights_group_' . $groupId;
 
-        return [
-            'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
-            'module_rights' => $this->moduleService->getModuleRights($groupId),
-            'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
-        ];
+        return $this->cache->load($cacheKey, function() use ($groupId) {
+            return [
+                'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
+                'module_rights' => $this->moduleService->getModuleRights($groupId),
+                'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
+            ];
+        }, ['rights_group_' . $groupId]);
     }
 }
