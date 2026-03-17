@@ -2,6 +2,7 @@
 
 parameters:
 	domain: skp.dev
+	storageDir: %appDir%/../storage
 	# Paths or other global parameters like in ebcar
 
 application:
@@ -43,6 +44,7 @@ services:
 	- App\Model\ModulePermission\ModulePermissionMapper
 	- App\Model\ModuleGroupRight\ModuleGroupRightMapper
 	- App\Model\ModuleRight\ModuleRightMapper
+	- App\Model\FileManager\FileManagerMapper
 
 	# DAO
 	- App\Model\Page\PageDao
@@ -65,6 +67,7 @@ services:
 	- App\Model\ModulePermission\ModulePermissionDao
 	- App\Model\ModuleGroupRight\ModuleGroupRightDao
 	- App\Model\ModuleRight\ModuleRightDao
+	- App\Model\FileManager\FileManagerDao
 
 	# AUTH
 	authenticator:
@@ -96,6 +99,7 @@ services:
 	- App\Model\ModulePermission\ModulePermissionService
 	- App\Model\ModuleGroupRight\ModuleGroupRightService
 	- App\Model\ModuleRight\ModuleRightService
+	- App\Model\FileManager\FileManagerService(%storageDir%)
 
 	# FACADE
 	- App\Model\Page\PageFacade
@@ -115,5 +119,6 @@ services:
 	- App\Model\ModulePermission\ModulePermissionFacade
 	- App\Model\ModuleGroupRight\ModuleGroupRightFacade
 	- App\Model\ModuleRight\ModuleRightFacade
+	- App\Model\FileManager\FileManagerFacade
 
 	# Register other ebcar-like services here
