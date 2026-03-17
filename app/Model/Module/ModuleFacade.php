@@ -58,6 +58,8 @@ class ModuleFacade
 
     public function getModulePermissionsMatrix(int $moduleId, int $groupId): array
     {
+
+
         return $this->moduleService->getModulePermissionsMatrix($moduleId, $groupId);
     }
 

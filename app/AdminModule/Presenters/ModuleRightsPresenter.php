@@ -11,9 +11,6 @@ use Nette\Application\UI\Form;
 final class ModuleRightsPresenter extends AdminPresenter
 {
     /** @inject */
-    public AdminGroupFacade $groupFacade;
-
-    /** @inject */
     public ModuleFacade $moduleFacade;
 
     /** @inject */
@@ -85,6 +82,10 @@ final class ModuleRightsPresenter extends AdminPresenter
      */
     public function handleTogglePermission(int $id, int $groupId, int $permissionId, int $state): void
     {
+        if (!$this->isAllowedGroup($groupId)) {
+            $this->error('Nemáte oprávnění k úpravě této skupiny.');
+        }
+
         $this->id = $id;
         $this->groupId = $groupId;
 

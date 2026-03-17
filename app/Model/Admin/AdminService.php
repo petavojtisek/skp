@@ -14,9 +14,9 @@ class AdminService extends BaseService
         $this->adminDao = $adminDao;
     }
 
-    public function getActiveAdmins(): array
+    public function getActiveAdmins(?array $groupIds = null): array
     {
-        return $this->adminDao->getActiveAdmins();
+        return $this->adminDao->getActiveAdmins($groupIds);
     }
 
     public function getAdmin(int $id): ?AdministratorEntity

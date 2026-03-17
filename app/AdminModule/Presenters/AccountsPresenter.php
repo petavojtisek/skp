@@ -10,9 +10,6 @@ use Nette\Application\UI\Form;
 
 final class AccountsPresenter extends AdminPresenter
 {
-    /** @var AdminFacade @inject */
-    public $adminFacade;
-
     /** @var LookupFacade @inject */
     public $lookupFacade;
 
@@ -30,11 +27,18 @@ final class AccountsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Účty';
-        $this->template->accounts = $this->adminFacade->getActiveAdmins();
+        $userGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        $allowedGroupIds = array_keys($this->groupFacade->getAvailableGroups($userGroupId));
+        $this->template->accounts = $this->adminFacade->getActiveAdmins($allowedGroupIds);
     }
 
     public function renderEdit(?int $id = null): void
     {
+        if ($id && !$this->isAllowedAdmin($id)) {
+            $this->flashMessage('Nemáte oprávnění k editaci tohoto účtu.', 'error');
+            $this->redirect('default');
+        }
+
         $this->template->title = $id ? 'Editace účtu' : 'Nový účet';
         $this->template->accountId = $id;
 
@@ -52,6 +56,10 @@ final class AccountsPresenter extends AdminPresenter
 
     public function actionDelete(int $id): void
     {
+        if (!$this->isAllowedAdmin($id)) {
+            $this->flashMessage('Nemáte oprávnění ke smazání tohoto účtu.', 'error');
+            $this->redirect('default');
+        }
         $this->adminFacade->softDelete($id);
         $this->flashMessage('Účet byl odstraněn.');
         $this->redirect('default');
@@ -108,6 +116,11 @@ final class AccountsPresenter extends AdminPresenter
     {
         $id = (int) $values->admin_id;
         
+        if ($id && !$this->isAllowedAdmin($id)) {
+            $this->flashMessage('Nemáte oprávnění k úpravě tohoto účtu.', 'error');
+            $this->redirect('default');
+        }
+
         $admin = $id ? $this->adminFacade->getAdmin($id) : new AdministratorEntity();
         
         if (empty($values->user_password)) {
@@ -131,10 +144,12 @@ final class AccountsPresenter extends AdminPresenter
     protected function createComponentGroupsForm(): Form
     {
         $form = new Form;
-        $groups = $this->adminFacade->getAdminGroups();
+        $userGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        $allowedGroups = $this->groupFacade->getAvailableGroups($userGroupId);
+        
         $groupOptions = [];
-        foreach ($groups as $g) {
-            $groupOptions[$g['admin_group_id']] = $g['admin_group_name'];
+        foreach ($allowedGroups as $g) {
+            $groupOptions[$g->admin_group_id] = $g->admin_group_name;
         }
 
         $form->addRadioList('admin_group_id', 'Skupina', $groupOptions)
@@ -152,6 +167,16 @@ final class AccountsPresenter extends AdminPresenter
 
         $form->onSuccess[] = function(Form $form, $values) {
             if ($this->id) {
+                if (!$this->isAllowedAdmin((int)$this->id)) {
+                    $this->flashMessage('Nemáte oprávnění k úpravě tohoto účtu.', 'error');
+                    $this->redirect('default');
+                }
+
+                if (!$this->isAllowedGroup((int)$values->admin_group_id)) {
+                    $this->flashMessage('Zvolená skupina není povolena.', 'error');
+                    $this->redirect('this');
+                }
+
                 $admin = $this->adminFacade->getAdmin((int)$this->id);
                 if ($admin) {
                     $admin->admin_group_id = (int)$values->admin_group_id;
@@ -184,6 +209,10 @@ final class AccountsPresenter extends AdminPresenter
 
         $form->onSuccess[] = function(Form $form, $values) {
             if ($this->id) {
+                if (!$this->isAllowedAdmin((int)$this->id)) {
+                    $this->flashMessage('Nemáte oprávnění k úpravě tohoto účtu.', 'error');
+                    $this->redirect('default');
+                }
                 $this->adminFacade->saveAdminPresentations((int)$this->id, (array)$values->presentations);
                 $this->flashMessage('Přístupy k prezentacím byly uloženy.');
             }

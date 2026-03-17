@@ -17,9 +17,9 @@ class AdminDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getActiveAdmins(): array
+    public function getActiveAdmins(?array $groupIds = null): array
     {
-        $data = $this->mapper->getActiveAdmins();
+        $data = $this->mapper->getActiveAdmins($groupIds);
         return $this->getEntities($this->entityName, $data);
     }
 

@@ -6,6 +6,7 @@ use App\Presenters\BasePresenter;
 use App\Model\Admin\AdminFacade;
 use App\Model\Admin\LoggedUserEntity;
 use App\Model\Presentation\PresentationFacade;
+use App\Model\AdminGroup\AdminGroupFacade;
 
 abstract class AdminPresenter extends BasePresenter
 {
@@ -20,6 +21,9 @@ abstract class AdminPresenter extends BasePresenter
 
     /** @var PresentationFacade @inject */
     public $presentationFacade;
+
+    /** @var AdminGroupFacade @inject */
+    public $groupFacade;
 
     public function startup(): void
     {
@@ -83,5 +87,20 @@ abstract class AdminPresenter extends BasePresenter
     public function isPresenter(string $presenter): bool
     {
         return $this->getName() === 'Admin:' . $presenter;
+    }
+
+    public function isAllowedGroup(int $id): bool
+    {
+        if ($id === 0) return (int)$this->loggedUserEntity->getAdminGroupId() === 1;
+        
+        $allowedGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getAdminGroupId());
+        return isset($allowedGroups[$id]);
+    }
+
+    public function isAllowedAdmin(int $adminId): bool
+    {
+        $admin = $this->adminFacade->getAdmin($adminId);
+        if (!$admin) return false;
+        return $this->isAllowedGroup((int)$admin->getAdminGroupId());
     }
 }

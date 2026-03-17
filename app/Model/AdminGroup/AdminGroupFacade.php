@@ -31,9 +31,9 @@ class AdminGroupFacade
         $this->adminGroupService->delete($id);
     }
 
-    public function getGroupTree(): array
+    public function getGroupTree(int $startId = 0): array
     {
-        return $this->adminGroupService->getGroupTree();
+        return $this->adminGroupService->getGroupTree($startId);
     }
 
     public function getAdminGroups(): array

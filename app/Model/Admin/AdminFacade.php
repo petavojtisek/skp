@@ -38,9 +38,9 @@ class AdminFacade
         $this->logFacade = $logFacade;
     }
 
-    public function getActiveAdmins(): array
+    public function getActiveAdmins(?array $groupIds = null): array
     {
-        return $this->adminService->getActiveAdmins();
+        return $this->adminService->getActiveAdmins($groupIds);
     }
 
     public function getAdmin(int $id): ?AdministratorEntity

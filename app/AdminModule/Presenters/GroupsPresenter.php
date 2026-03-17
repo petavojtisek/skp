@@ -9,9 +9,6 @@ use Nette\Application\UI\Form;
 
 final class GroupsPresenter extends AdminPresenter
 {
-    /** @var AdminGroupFacade @inject */
-    public $groupFacade;
-
     /** @var AdminRightFacade @inject */
     public $rightFacade;
 
@@ -26,13 +23,18 @@ final class GroupsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Skupiny uživatelů';
-        $this->template->tree = $this->groupFacade->getGroupTree();
+        $this->template->tree = $this->groupFacade->getGroupTree((int)$this->loggedUserEntity->getAdminGroupId());
     }
 
     public function renderEdit(?int $id = null, ?int $parentId = null): void
     {
         if ($id === null && $this->id !== null) {
             $id = (int)$this->id;
+        }
+
+        if ($id && !$this->isAllowedGroup($id)) {
+            $this->flashMessage('Nemáte oprávnění k editaci této skupiny.', 'error');
+            $this->redirect('default');
         }
 
         $this->template->title = $id ? 'Editace skupiny' : 'Nová skupina';
@@ -49,6 +51,10 @@ final class GroupsPresenter extends AdminPresenter
             $this->template->allRights = $this->rightFacade->getAllRights();
             $this->template->activeRightIds = $this->rightFacade->getGroupRightsIds($id);
         } elseif ($parentId) {
+            if (!$this->isAllowedGroup($parentId)) {
+                $this->flashMessage('Nemáte oprávnění vytvářet podskupinu v této skupině.', 'error');
+                $this->redirect('default');
+            }
             $this['groupForm']->setDefaults(['pid' => $parentId]);
             $this->template->allRights = [];
             $this->template->activeRightIds = [];
@@ -60,6 +66,10 @@ final class GroupsPresenter extends AdminPresenter
 
     public function actionDelete(int $id): void
     {
+        if (!$this->isAllowedGroup($id)) {
+            $this->flashMessage('Nemáte oprávnění ke smazání této skupiny.', 'error');
+            $this->redirect('default');
+        }
         $this->groupFacade->deleteGroup($id);
         $this->flashMessage('Skupina byla smazána.');
         $this->redirect('default', ['id' => null]);
@@ -74,6 +84,10 @@ final class GroupsPresenter extends AdminPresenter
             $this->error('ID skupiny nebylo předáno.');
         }
 
+        if (!$this->isAllowedGroup((int)$this->id)) {
+            $this->error('Nemáte oprávnění k úpravě této skupiny.');
+        }
+        
         // If not in URL, try to get from request (AJAX data)
         if ($rightId === null) {
             $rightId = (int)$this->getHttpRequest()->getQuery('rightId');
@@ -86,7 +100,7 @@ final class GroupsPresenter extends AdminPresenter
             $this->error('ID práva nebylo předáno.');
         }
 
-        $this->rightFacade->toggleGroupRight($this->id, $rightId, $state);
+        $this->rightFacade->toggleGroupRight((int)$this->id, $rightId, $state);
         
         if ($this->isAjax()) {
             $this->flashMessage('Právo bylo aktualizováno.');
@@ -101,8 +115,15 @@ final class GroupsPresenter extends AdminPresenter
         $form = new Form;
         $form->addHidden('admin_group_id');
         
-        $groups = [0 => '-- Hlavní skupina --'];
-        foreach ($this->groupFacade->getGroups() as $g) {
+        $groups = [];
+        $userGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
+        
+        // Only allow root if user is in group 1 (Superadmin)
+        if ($userGroupId === 1) {
+            $groups[0] = '-- Hlavní skupina --';
+        }
+
+        foreach ($this->groupFacade->getAvailableGroups($userGroupId) as $g) {
             if ($this->id && $g->admin_group_id == $this->id) continue;
             $groups[$g->admin_group_id] = $g->admin_group_name;
         }
@@ -125,6 +146,17 @@ final class GroupsPresenter extends AdminPresenter
     public function groupFormSucceeded(Form $form, \stdClass $values): void
     {
         $id = (int)$values->admin_group_id;
+        
+        if ($id && !$this->isAllowedGroup($id)) {
+            $this->flashMessage('Nemáte oprávnění k úpravě této skupiny.', 'error');
+            $this->redirect('default');
+        }
+
+        if (!$this->isAllowedGroup((int)$values->pid) && (int)$values->pid !== 0) {
+            $this->flashMessage('Zvolená nadřazená skupina není povolena.', 'error');
+            $this->redirect('default');
+        }
+
         $entity = $id ? $this->groupFacade->getGroup($id) : new AdminGroupEntity();
         $entity->fillEntity((array)$values);
         
