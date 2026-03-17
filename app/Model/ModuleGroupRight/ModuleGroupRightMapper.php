@@ -18,5 +18,13 @@ class ModuleGroupRightMapper extends BaseMapper
             ->fetchPairs('permission_id', 'permission_id');
     }
 
+    public function getPermissionsForGroup(int $groupId): array
+    {
+        return $this->db->select('module_id, permission_id')
+            ->from($this->tableName)
+            ->where('admin_group_id = %i', $groupId)
+            ->fetchAll();
+    }
+
 
 }

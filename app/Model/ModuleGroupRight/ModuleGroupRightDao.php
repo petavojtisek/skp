@@ -27,6 +27,11 @@ class ModuleGroupRightDao extends BaseDao
         return $this->mapper->getPermissionsForGroupAndModule($groupId, $moduleId);
     }
 
+    public function getPermissionsForGroup(int $groupId): array
+    {
+        return $this->mapper->getPermissionsForGroup($groupId);
+    }
+
     public function deleteBy(int $moduleId, int $groupId, int $permissionId): void
     {
 

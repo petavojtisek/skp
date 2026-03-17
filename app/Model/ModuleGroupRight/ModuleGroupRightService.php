@@ -38,6 +38,11 @@ class ModuleGroupRightService extends BaseService
         return $this->moduleGroupRightDao->getPermissionsForGroupAndModule($groupId, $moduleId);
     }
 
+    public function getPermissionsForGroup(int $groupId): array
+    {
+        return $this->moduleGroupRightDao->getPermissionsForGroup($groupId);
+    }
+
     public function togglePermission(int $moduleId, int $groupId, int $permissionId, bool $state): void
     {
 

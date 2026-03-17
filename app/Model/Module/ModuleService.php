@@ -89,8 +89,46 @@ class ModuleService extends BaseService
         $this->moduleGroupRightService->togglePermission($moduleId, $groupId, $permissionId, $state);
     }
 
-    public function getModuleRights(int $adminId)
+    /**
+     * Vrací pole oprávnění pro danou skupinu s použitím existujících služeb
+     * Formát: ['module_code' => ['permission_code' => 1, ...]]
+     */
+    public function getModuleRights(int $groupId): array
     {
-        return [];
+        // 1. Získáme všechna přidělená práva pro skupinu
+        $rawRights = $this->moduleGroupRightService->getPermissionsForGroup($groupId);
+        if (empty($rawRights)) {
+            return [];
+        }
+
+        // 2. Seskupíme si ID práv podle ID modulů
+        $modulePermIds = [];
+        $allPermIds = [];
+        foreach ($rawRights as $row) {
+            $modulePermIds[$row->module_id][] = $row->permission_id;
+            $allPermIds[] = $row->permission_id;
+        }
+
+        // 3. Hromadně načteme detaily práv
+        $permissions = $this->modulePermissionService->getPermissionsByIds(array_unique($allPermIds));
+
+        $matrix = [];
+        foreach ($modulePermIds as $moduleId => $pIds) {
+            // Načteme entitu modulu pro získání code_name
+            $module = $this->find($moduleId);
+            if (!$module) continue;
+
+            $moduleCode = $module->getModuleCodeName();
+            $matrix[$moduleCode] = [];
+
+            foreach ($pIds as $pId) {
+                if (isset($permissions[$pId])) {
+                    $rightCode = $permissions[$pId]->getRightCodeName();
+                    $matrix[$moduleCode][$rightCode] = 1;
+                }
+            }
+        }
+
+        return $matrix;
     }
 }

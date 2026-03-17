@@ -104,11 +104,10 @@ class AdminFacade
     protected function getLoggedUserRights(LoggedUserEntity $entity): array
     {
         $groupId = (int)$entity->getAdminGroupId();
-        $adminId = (int)$entity->getId();
 
         return [
             'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
-            'module_rights' => $this->moduleService->getModuleRights($adminId),
+            'module_rights' => $this->moduleService->getModuleRights($groupId),
             'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
         ];
     }
