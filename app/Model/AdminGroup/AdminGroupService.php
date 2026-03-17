@@ -55,11 +55,11 @@ class AdminGroupService extends BaseService
     {
         $allGroups = $this->findAll();
         $availableIds = $this->getAvailableGroupIds($startGroupId, $allGroups);
-        
+
         $availableGroups = [];
         foreach ($allGroups as $group) {
             if (in_array($group->admin_group_id, $availableIds)) {
-                $availableGroups[] = $group;
+                $availableGroups[$group->admin_group_id] = $group;
             }
         }
         return $availableGroups;

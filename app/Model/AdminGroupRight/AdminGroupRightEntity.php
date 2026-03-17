@@ -6,17 +6,28 @@ use App\Model\Base\BaseEntity;
 
 class AdminGroupRightEntity extends BaseEntity
 {
+    public mixed $admin_group_right_id = null;
     public mixed $admin_group_id = null;
     public mixed $admin_right_id = null;
 
     public function getId(): mixed
     {
-        return $this->admin_group_id; // Usually one of them or null for junction tables
+        return $this->admin_group_right_id;
     }
 
     public function setId(mixed $id): void
     {
-        $this->setVariable('admin_group_id', $id, self::VALUE_TYPE_INTEGER);
+        $this->setVariable('admin_group_right_id', $id, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getAdminGroupRightId(): mixed
+    {
+        return $this->admin_group_right_id;
+    }
+
+    public function setAdminGroupRightId(mixed $admin_group_right_id): void
+    {
+        $this->setVariable('admin_group_right_id', $admin_group_right_id, self::VALUE_TYPE_INTEGER);
     }
 
     public function getAdminGroupId(): ?int

@@ -12,7 +12,7 @@ class PageGroupMapper extends BaseMapper
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
         if ($state) {
-            $exists = $this->db->fetch('SELECT 1 FROM page_group_admin_group WHERE page_group_id = ? AND admin_group_id = ?', $pageGroupId, $adminGroupId);
+            $exists = $this->db->fetch('SELECT 1 FROM page_group_admin_group WHERE page_group_id = %i AND admin_group_id = %i', $pageGroupId, $adminGroupId);
             if (!$exists) {
                 $this->db->query('INSERT INTO page_group_admin_group', [
                     'page_group_id' => $pageGroupId,
@@ -20,7 +20,7 @@ class PageGroupMapper extends BaseMapper
                 ]);
             }
         } else {
-            $this->db->query('DELETE FROM page_group_admin_group WHERE page_group_id = ? AND admin_group_id = ?', $pageGroupId, $adminGroupId);
+            $this->db->query('DELETE FROM page_group_admin_group WHERE page_group_id = %i AND admin_group_id = %i', $pageGroupId, $adminGroupId);
         }
     }
 
@@ -28,7 +28,7 @@ class PageGroupMapper extends BaseMapper
     {
         return $this->db->select('admin_group_id')
             ->from('page_group_admin_group')
-            ->where('page_group_id = ?', $pageGroupId)
+            ->where('page_group_id = %i', $pageGroupId)
             ->fetchPairs('admin_group_id', 'admin_group_id');
     }
 
@@ -36,7 +36,7 @@ class PageGroupMapper extends BaseMapper
     {
         return $this->db->select('page_group_id, 1 as val')
             ->from('page_group_admin_group')
-            ->where('admin_group_id = ?', $adminGroupId)
+            ->where('admin_group_id = %i', $adminGroupId)
             ->fetchPairs('page_group_id', 'val');
     }
 
@@ -45,7 +45,7 @@ class PageGroupMapper extends BaseMapper
         return $this->db->select('pg.name, 1 as val')
             ->from($this->tableName)->as('pg')
             ->join('page_group_admin_group')->as('pgag')->on('pg.id = pgag.page_group_id')
-            ->where('pgag.admin_group_id = ?', $adminGroupId)
+            ->where('pgag.admin_group_id = %i', $adminGroupId)
             ->fetchPairs('name', 'val');
     }
 }

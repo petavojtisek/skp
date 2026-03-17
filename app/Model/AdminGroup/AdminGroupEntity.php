@@ -30,4 +30,10 @@ class AdminGroupEntity extends BaseEntity
     {
         $this->setVariable('admin_group_name', $name, self::VALUE_TYPE_STRING);
     }
+
+    public function getPid(): mixed { return $this->pid; }
+    public function setPid(mixed $pid): void { $this->setVariable('pid', $pid, self::VALUE_TYPE_INTEGER); }
+
+    public function getCodeName(): ?string { return $this->code_name; }
+    public function setCodeName(?string $code_name): void { $this->setVariable('code_name', $code_name, self::VALUE_TYPE_STRING); }
 }
