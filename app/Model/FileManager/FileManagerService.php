@@ -48,8 +48,38 @@ class FileManagerService extends BaseService
         return $this->fileManagerDao->getFilesByElement($sourceType, $elementId);
     }
 
+    public function getFilesByPath(string $baseType, string $subDir): array
+    {
+        return $this->fileManagerDao->getFilesByPath($baseType, $subDir);
+    }
+
     public function getPhysicalPath(FileManagerEntity $file): string
     {
         return $this->storageDir . DIRECTORY_SEPARATOR . $file->getPath() . DIRECTORY_SEPARATOR . $file->getFileName();
+    }
+
+    public function createDirectory(string $baseType, string $path): bool
+    {
+        $fullPath = $this->storageDir . DIRECTORY_SEPARATOR . $baseType . DIRECTORY_SEPARATOR . $path;
+        if (!file_exists($fullPath)) {
+            return FileSystem::createDir($fullPath);
+        }
+        return true;
+    }
+
+    public function getDirectories(string $baseType, string $subPath = ''): array
+    {
+        $dir = $this->storageDir . DIRECTORY_SEPARATOR . $baseType . ($subPath ? DIRECTORY_SEPARATOR . $subPath : '');
+        if (!is_dir($dir)) return [];
+
+        $items = scandir($dir);
+        $dirs = [];
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            if (is_dir($dir . DIRECTORY_SEPARATOR . $item)) {
+                $dirs[] = $item;
+            }
+        }
+        return $dirs;
     }
 }

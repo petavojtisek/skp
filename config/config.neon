@@ -3,6 +3,7 @@
 parameters:
 	domain: skp.dev
 	storageDir: %appDir%/../storage
+	tempDir: %tempDir%
 	# Paths or other global parameters like in ebcar
 
 application:

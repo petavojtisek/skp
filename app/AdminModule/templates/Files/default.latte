@@ -1,97 +1,148 @@
 {block content}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="btn-group">
+            <a n:href="switchBase!, type => 'images'" class="btn {if $baseType == 'images'}btn-primary{else}btn-outline-primary{/if}">
+                <i class="fas fa-images"></i> Obrázky
+            </a>
+            <a n:href="switchBase!, type => 'documents'" class="btn {if $baseType == 'documents'}btn-primary{else}btn-outline-primary{/if}">
+                <i class="fas fa-file-alt"></i> Dokumenty
+            </a>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">Nahrát nové soubory</h3>
+                <h3 class="card-title">
+                    <i class="fas fa-folder-open text-warning mr-2"></i>
+                    Úložiště: <strong>{$baseType}</strong> 
+                    {if $subDir} / <small>{$subDir}</small>{/if}
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" onclick="var name = prompt('Název nové složky:'); if(name) window.location.href = {link createFolder!, name => 'REPLACE'}.replace('REPLACE', encodeURIComponent(name));">
+                        <i class="fas fa-folder-plus"></i> Nová složka
+                    </button>
+                </div>
             </div>
             <div class="card-body">
-                <form n:href="upload!" class="dropzone" id="file-dropzone">
-                    <div class="dz-message">
-                        <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
-                        <p>Přetáhněte soubory sem nebo klikněte pro výběr.</p>
-                        <small class="text-muted">(Podpora velkých souborů - nahrávání po částech)</small>
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div id="file-dropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 5px; min-height: 150px; background: #f8f9fa; cursor: pointer;">
+                            <div class="dz-message">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i><br>
+                                <strong>Přetáhněte soubory sem nebo klikněte pro výběr.</strong><br>
+                                <span class="text-muted">Soubory budou nahrány do aktuální složky.</span>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Název</th>
+                                <th>Velikost</th>
+                                <th>Datum</th>
+                                <th class="text-right">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {* Tlačítko zpět *}
+                            <tr n:if="$subDir">
+                                <td>
+                                    <a n:href="goUp!" class="text-warning">
+                                        <i class="fas fa-level-up-alt fa-rotate-90 mr-2"></i> ..
+                                    </a>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            {* Složky *}
+                            <tr n:foreach="$directories as $dir">
+                                <td>
+                                    <a n:href="openFolder!, name => $dir" class="text-warning">
+                                        <i class="fas fa-folder mr-2"></i> <strong>{$dir}</strong>
+                                    </a>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td class="text-right"></td>
+                            </tr>
+
+                            {* Soubory *}
+                            <tr n:foreach="$files as $file">
+                                <td>
+                                    <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if} mr-2"></i>
+                                    {$file->original_name}
+                                </td>
+                                <td><small class="text-muted">{$file->size|bytes}</small></td>
+                                <td><small class="text-muted">{$file->getCreatedDt('j.n.Y H:i')}</small></td>
+                                <td class="text-right">
+                                    <div class="btn-group">
+                                        <a n:href=":File:detail, id => $file->file_id" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>
+                                        <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger" onclick="return confirm('Smazat soubor?')"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr n:if="!$directories && !$files">
+                                <td colspan="4" class="text-center p-4 text-muted">Složka je prázdná.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{/block}
 
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Seznam souborů</h3>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-striped table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Typ</th>
-                            <th>Název souboru</th>
-                            <th>Velikost</th>
-                            <th>Datum nahrání</th>
-                            <th class="text-right">Akce</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr n:foreach="$files as $file">
-                            <td><small>#{$file->file_id}</small></td>
-                            <td>
-                                <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if}"></i>
-                                <span class="badge badge-secondary ml-1">{$file->extension}</span>
-                            </td>
-                            <td>
-                                <strong>{$file->original_name}</strong><br>
-                                <small class="text-muted">{$file->path}/{$file->file_name}</small>
-                            </td>
-                            <td>{$file->size|bytes}</td>
-                            <td>{$file->getCreatedDt('j.n.Y H:i')}</td>
-                            <td class="text-right">
-                                <div class="btn-group">
-                                    <a n:href=":File:detail, id => $file->file_id" class="btn btn-xs btn-info" title="Zobrazit" target="_blank"><i class="fas fa-eye"></i></a>
-                                    <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr n:if="!$files">
-                            <td colspan="6" class="text-center p-4 text-muted">V této sekci zatím nejsou žádné soubory.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
+{block head}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+<style>
+    .dropzone .dz-preview .dz-error-message { top: 150px; }
+</style>
+{/block}
 
+{block scripts}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 <script>
-    Dropzone.options.fileDropzone = {
-        paramName: "file",
-        maxFilesize: 2048, // 2GB
-        chunking: true,
-        forceChunking: true,
-        chunkSize: 2000000, // 2MB chunky
-        parallelChunkUploads: false,
-        retryChunks: true,
-        retryChunksLimit: 3,
-        init: function() {
-            this.on("success", function(file, response) {
-                if (response.status === 'success' && !file.upload.chunked) {
-                    // Refresh po nahrání (pouze pokud není chunked, u chunked to řešíme na konci)
-                    location.reload();
-                }
-            });
-            this.on("queuecomplete", function() {
-                // Refresh po dokončení všech nahrávání
-                setTimeout(function() {
-                    location.reload();
-                }, 500);
-            });
-        }
-    };
+    Dropzone.autoDiscover = false;
+
+    $(function() {
+        var dropzoneElement = $("#file-dropzone");
+        if (dropzoneElement.length === 0) return;
+
+        var myDropzone = new Dropzone("#file-dropzone", {
+            url: {link upload!|noescape},
+            paramName: "file",
+            maxFilesize: 2048,
+            chunking: true,
+            forceChunking: true,
+            chunkSize: 2000000,
+            parallelChunkUploads: false,
+            retryChunks: true,
+            retryChunksLimit: 3,
+            dictDefaultMessage: "Přetáhněte soubory sem",
+            init: function() {
+                this.on("queuecomplete", function() {
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                });
+                this.on("error", function(file, message) {
+                    var errorMessage = typeof message === "string" ? message : (message.message || "Neznámá chyba");
+                    console.error("Dropzone Error:", errorMessage, message);
+                    alert("Chyba při nahrávání: " + errorMessage);
+                });
+            }
+        });
+    });
 </script>
+{/block}

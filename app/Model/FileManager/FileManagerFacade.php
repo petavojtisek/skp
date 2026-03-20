@@ -31,8 +31,23 @@ class FileManagerFacade
         return $this->fileManagerService->getFilesByElement($sourceType, $elementId);
     }
 
+    public function getFilesByPath(string $baseType, string $subDir): array
+    {
+        return $this->fileManagerService->getFilesByPath($baseType, $subDir);
+    }
+
     public function getPhysicalPath(FileManagerEntity $file): string
     {
         return $this->fileManagerService->getPhysicalPath($file);
+    }
+
+    public function createDirectory(string $baseType, string $path): bool
+    {
+        return $this->fileManagerService->createDirectory($baseType, $path);
+    }
+
+    public function getDirectories(string $baseType, string $subPath = ''): array
+    {
+        return $this->fileManagerService->getDirectories($baseType, $subPath);
     }
 }

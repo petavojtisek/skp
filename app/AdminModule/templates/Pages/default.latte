@@ -7,28 +7,113 @@
         </div>
     </div>
     <div class="card-body">
-        <ul class="todo-list" data-widget="todo-list">
-            <!-- Simplified tree representation for MVP -->
-            <li n:foreach="$pages as $page">
-                <span class="handle"><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i></span>
-                <span class="text">{$page['name']}</span>
-                <small class="badge badge-{$page['active'] ? 'success' : 'secondary'}">{$page['url']}</small>
-                <div class="tools">
-                    <a n:href="edit $page['id']"><i class="fas fa-edit"></i></a>
-                    <a href="#" class="text-danger"><i class="fas fa-trash"></i></a>
-                </div>
-                <ul n:if="isset($page['children'])" class="ml-4 mt-2 mb-2">
-                    <li n:foreach="$page['children'] as $child" style="list-style: none;">
-                        <span class="handle"><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i></span>
-                        <span class="text">{$child['name']}</span>
-                        <small class="badge badge-{$child['active'] ? 'success' : 'secondary'}">{$child['url']}</small>
-                        <div class="tools">
-                            <a n:href="edit $child['id']"><i class="fas fa-edit"></i></a>
-                            <a href="#" class="text-danger"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+        <div id="page-tree-container">
+            {snippet pageTree}
+                <ul class="todo-list page-tree-root" data-parent-id="0">
+                    {define page-node}
+                        <li class="page-item" data-id="{$page->id}" data-url="{link move! id => $page->id}">
+                            <span class="handle">
+                                <i class="fas fa-ellipsis-v"></i>
+                                <i class="fas fa-ellipsis-v"></i>
+                            </span>
+                            <span class="text">{$page->name}</span>
+                            <small class="badge badge-{$page->active ? 'success' : 'secondary'}">{$page->url}</small>
+                            
+                            <div class="tools visible">
+                                <a n:href="edit $page->id"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="text-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                            </div>
+
+                            <ul class="todo-list page-tree-child" data-parent-id="{$page->id}">
+                                {if !empty($page->children)}
+                                    {foreach $page->children as $child}
+                                        {include page-node, page => $child}
+                                    {/foreach}
+                                {/if}
+                            </ul>
+                        </li>
+                    {/define}
+
+                    {foreach $pages as $page}
+                        {include page-node, page => $page}
+                    {/foreach}
                 </ul>
-            </li>
-        </ul>
+            {/snippet}
+        </div>
     </div>
 </div>
+
+<style>
+    .todo-list > li .tools.visible {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    .page-tree-child {
+        min-height: 15px;
+        padding-left: 30px;
+        margin-top: 5px;
+        border-left: 1px dashed #ccc;
+    }
+
+    .page-item {
+        margin-bottom: 5px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        list-style: none;
+    }
+    
+    .handle {
+        cursor: move;
+        margin-right: 10px;
+        color: #888;
+    }
+</style>
+
+{/block}
+
+{block scripts}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const initSortable = () => {
+            const trees = document.querySelectorAll('.todo-list');
+            trees.forEach(el => {
+                new Sortable(el, {
+                    group: 'nested',
+                    handle: '.handle',
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const newParentEl = evt.to;
+                        const url = itemEl.getAttribute('data-url');
+                        const newParentId = newParentEl.getAttribute('data-parent-id');
+                        const newIndex = evt.newIndex;
+
+                        console.log('Moved to parent', newParentId, 'at index', newIndex, 'using URL:', url);
+
+                        // Odeslání požadavku na server přes Naja s doplněním ostatních parametrů
+                        naja.makeRequest('GET', url, {
+                            parentId: newParentId,
+                            position: newIndex
+                        });
+                    }
+                });
+            });
+        };
+
+        initSortable();
+
+        naja.addEventListener('success', (evt) => {
+            if (evt.detail.payload && evt.detail.payload.snippets) {
+                initSortable();
+            }
+        });
+    });
+</script>
+{/block}

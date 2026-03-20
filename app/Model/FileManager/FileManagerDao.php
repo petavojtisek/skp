@@ -22,6 +22,12 @@ class FileManagerDao extends BaseDao
         return $this->mapper;
     }
 
+    public function getFilesByPath(string $baseType, string $subDir): array
+    {
+        $data = $this->mapper->getFilesByPath($baseType, $subDir);
+        return $this->getEntities($this->entityName, $data) ?: [];
+    }
+
     public function getFilesByElement(string $sourceType, int $elementId): array
     {
         $data = $this->mapper->getFilesByElement($sourceType, $elementId);

@@ -14,39 +14,93 @@ final class FilesPresenter extends AdminPresenter
     public FileManagerFacade $fileManagerFacade;
 
     /** @persistent */
-    public ?string $sourceType = 'general';
+    public string $baseType = 'images'; // images | documents
+
+    /** @persistent */
+    public string $subDir = '';
 
     /** @persistent */
     public ?int $elementId = null;
 
+    /** @persistent */
+    public ?string $sourceType = 'general';
+
     public function renderDefault(): void
     {
         $this->template->title = 'Správce souborů';
-        $this->template->files = $this->fileManagerFacade->getFilesByElement($this->sourceType, (int)$this->elementId);
+        
+        // Ensure base directories exist
+        $this->fileManagerFacade->createDirectory('images', '');
+        $this->fileManagerFacade->createDirectory('documents', '');
+
+        $this->template->baseType = $this->baseType;
+        $this->template->subDir = $this->subDir;
+        
+        // List directories in current path
+        $this->template->directories = $this->fileManagerFacade->getDirectories($this->baseType, $this->subDir);
+        
+        // List files in current path from DB
+        // We need a way to filter by path in DB
+        $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
     }
 
-    /**
-     * Zpracování nahrávání souborů přes Dropzone (včetně chunků)
-     */
+    public function handleSwitchBase(string $type): void
+    {
+        $this->baseType = $type;
+        $this->subDir = '';
+        $this->redirect('this');
+    }
+
+    public function handleOpenFolder(string $name): void
+    {
+        $this->subDir = ($this->subDir ? $this->subDir . '/' : '') . $name;
+        $this->redirect('this');
+    }
+
+    public function handleGoUp(): void
+    {
+        $parts = explode('/', $this->subDir);
+        array_pop($parts);
+        $this->subDir = implode('/', $parts);
+        $this->redirect('this');
+    }
+
+    public function handleCreateFolder(string $name): void
+    {
+        if (!$name) {
+            $this->flashMessage('Název složky nesmí být prázdný.', 'error');
+            $this->redirect('this');
+        }
+
+        $cleanName = \Nette\Utils\Strings::webalize($name);
+        $newPath = ($this->subDir ? $this->subDir . '/' : '') . $cleanName;
+        
+        $this->fileManagerFacade->createDirectory($this->baseType, $newPath);
+        $this->flashMessage('Složka byla vytvořena.');
+        $this->redirect('this');
+    }
+
     public function handleUpload(): void
     {
         $file = $this->getHttpRequest()->getFile('file');
-        if (!$file) {
-            $this->sendResponse(new JsonResponse(['status' => 'error', 'message' => 'Žádný soubor nebyl přijat.']));
-        }
-
-        // Dropzone parametry pro chunky
-        $chunkIndex = (int) $this->getHttpRequest()->getPost('dzchunkindex');
-        $totalChunks = (int) $this->getHttpRequest()->getPost('dztotalchunkcount');
         $uuid = $this->getHttpRequest()->getPost('dzuuid');
 
-        $tempDir = $this->context->getParameters()['tempDir'] . '/uploads/' . $uuid;
-        FileSystem::createDir($tempDir);
+        if (!$file || !$uuid) {
+            $this->sendResponse(new JsonResponse(['status' => 'error', 'message' => 'Chybějící data souboru nebo UUID.']));
+        }
 
-        // Uložíme chunk
+        $chunkIndex = (int) $this->getHttpRequest()->getPost('dzchunkindex');
+        $totalChunks = (int) $this->getHttpRequest()->getPost('dztotalchunkcount');
+
+        $params = $this->context->getParameters();
+        if (!isset($params['tempDir'])) {
+             $this->sendResponse(new JsonResponse(['status' => 'error', 'message' => 'Parametr tempDir není definován v konfiguraci.']));
+        }
+        
+        $tempDir = $params['tempDir'] . '/uploads/' . $uuid;
+        FileSystem::createDir($tempDir);
         $file->move($tempDir . '/' . $chunkIndex);
 
-        // Pokud jsou všechny chunky nahrané, poskládáme soubor
         if ($chunkIndex + 1 === $totalChunks) {
             $this->processCompleteUpload($tempDir, $totalChunks, $file->getUntrustedName());
         }
@@ -66,14 +120,19 @@ final class FilesPresenter extends AdminPresenter
         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
         $newFileName = sprintf('%s_%s.%s', date('Ymd_His'), Random::generate(8), $extension);
         
-        // Cílová cesta: storage/{sourceType}/{rok-mesic}/
-        $relativeDir = $this->sourceType . '/' . date('Y-m');
-        $finalDir = $this->context->getParameters()['storageDir'] . '/' . $relativeDir;
+        // Determine base type if not fixed
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        $detectedBaseType = in_array($extension, $imageExtensions) ? 'images' : 'documents';
+        
+        // If we are in a specific view, use that baseType, otherwise use detected
+        $targetBase = $this->baseType ?: $detectedBaseType;
+        $targetPath = $targetBase . ($this->subDir ? '/' . $this->subDir : '');
+        
+        $finalDir = $this->context->getParameters()['storageDir'] . '/' . $targetPath;
         FileSystem::createDir($finalDir);
 
         $finalPath = $finalDir . '/' . $newFileName;
 
-        // Poskládání souboru z chunků
         $out = fopen($finalPath, "wb");
         for ($i = 0; $i < $totalChunks; $i++) {
             $chunkFile = $tempDir . '/' . $i;
@@ -85,24 +144,19 @@ final class FilesPresenter extends AdminPresenter
         }
         fclose($out);
 
-        // Úklid tempu
         FileSystem::delete($tempDir);
 
-        // Zápis do DB
         $entity = new FileManagerEntity();
         $entity->setSourceType($this->sourceType);
         $entity->setElementId($this->elementId);
         $entity->setOriginalName($originalName);
         $entity->setFileName($newFileName);
-        $entity->setPath($relativeDir);
-        $entity->setExtension($extension); // Tuto metodu musím přidat do entity
+        $entity->setPath($targetPath);
+        $entity->setExtension($extension);
         $entity->setMimeType(mime_content_type($finalPath));
         $entity->setSize(filesize($finalPath));
         $entity->setAdminId($this->adminId);
-        
-        // Rozlišení typu
-        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $entity->setFileType(in_array($extension, $imageExtensions) ? 'image' : 'document');
+        $entity->setFileType($detectedBaseType === 'images' ? 'image' : 'document');
 
         $this->fileManagerFacade->saveFile($entity);
     }
