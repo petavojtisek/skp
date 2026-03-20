@@ -20,8 +20,5 @@ class InstallDao extends BaseDao
     /**
      * @return InstallMapper
      */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
+
 }

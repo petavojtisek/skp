@@ -17,8 +17,5 @@ class SpecParamPageDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getMapper(): IMapper
-    {
-        return $this->mapper;
-    }
+
 }

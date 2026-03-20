@@ -17,10 +17,7 @@ class AdminGroupRightDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getMapper(): IMapper
-    {
-        return $this->mapper;
-    }
+
 
     public function toggleRight(int $groupId, int $rightId, bool $state): void
     {

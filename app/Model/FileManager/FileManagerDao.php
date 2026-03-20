@@ -17,10 +17,7 @@ class FileManagerDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getMapper(): IMapper
-    {
-        return $this->mapper;
-    }
+
 
     public function getFilesByPath(string $baseType, string $subDir): array
     {

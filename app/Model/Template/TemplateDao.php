@@ -17,11 +17,5 @@ class TemplateDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    /**
-     * @return TemplateMapper
-     */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
+
 }

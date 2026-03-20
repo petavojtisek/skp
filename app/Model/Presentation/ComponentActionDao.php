@@ -17,11 +17,4 @@ class ComponentActionDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    /**
-     * @return ComponentActionMapper
-     */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
 }

@@ -17,11 +17,6 @@ class PageDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    /**
-     * @return PageMapper
-     */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
+
+
 }

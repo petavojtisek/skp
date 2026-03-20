@@ -17,10 +17,7 @@ class ModulePermissionDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function getMapper(): IMapper
-    {
-        return $this->mapper;
-    }
+
 
     public function getPermissionsByIds(array $ids): array
     {

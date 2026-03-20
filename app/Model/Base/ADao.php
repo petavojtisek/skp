@@ -233,10 +233,7 @@ abstract class ADao
 		return $this->mapper->getTableFields();
 	}
 
-	public function getMapper(): IMapper
-	{
-		return $this->mapper;
-	}
+
 
 
 	/**

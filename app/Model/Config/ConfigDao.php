@@ -22,10 +22,5 @@ class ConfigDao extends BaseDao
 
 
     /**
-     * @return ConfigMapper
-     */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
+
 }

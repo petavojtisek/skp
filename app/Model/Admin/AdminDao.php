@@ -23,11 +23,4 @@ class AdminDao extends BaseDao
         return $this->getEntities($this->entityName, $data);
     }
 
-    /**
-     * @return AdminMapper
-     */
-    public function getMapper(): IMapper
-    {
-        return $this->mapper;
-    }
 }
