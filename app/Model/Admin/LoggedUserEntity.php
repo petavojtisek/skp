@@ -18,14 +18,11 @@ class LoggedUserEntity extends AdministratorEntity
      */
     public function initWithData(array $data): void
     {
-        // Fill base administrator properties
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
+        // Use fillEntity to ensure properties are tracked in valuesSet
+        // and can be exported back via getEntityData()
+        $this->fillEntity($data, false);
 
-        // Fill extended properties
+        // Fill non-DB extended properties manually (they aren't tracked by valuesSet)
         if (isset($data['group'])) $this->group = $data['group'];
         if (isset($data['presentations'])) $this->presentations = $data['presentations'];
         if (isset($data['rights'])) $this->rights = $data['rights'];

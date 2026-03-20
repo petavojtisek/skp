@@ -8,6 +8,7 @@ class PageEntity extends BaseEntity
 {
     public ?array $children = [];
     public ?array $page_groups = []; // page_in_group (Skupiny stránek)
+    public ?array $page_group_ids = []; // Flat array of page_group IDs for easy checking
     public ?array $user_groups = []; // page_in_group_user (Skupiny uživatelů)
     public ?array $admin_groups = []; // Derived admin_group IDs
     public ?array $components = [];

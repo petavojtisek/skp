@@ -7,6 +7,7 @@ use App\Model\Admin\AdminFacade;
 use App\Model\Admin\LoggedUserEntity;
 use App\Model\Presentation\PresentationFacade;
 use App\Model\AdminGroup\AdminGroupFacade;
+use App\Model\Login\LoginFacade;
 
 abstract class AdminPresenter extends BasePresenter
 {
@@ -19,6 +20,9 @@ abstract class AdminPresenter extends BasePresenter
     /** @var AdminFacade @inject */
     public $adminFacade;
 
+    /** @var LoginFacade @inject */
+    public $loginFacade;
+
     /** @var PresentationFacade @inject */
     public $presentationFacade;
 
@@ -28,7 +32,7 @@ abstract class AdminPresenter extends BasePresenter
     public function startup(): void
     {
         parent::startup();
-        
+
         if (!$this->getUser()->isLoggedIn() && !$this->isPresenter('Sign')) {
             $this->redirect('Sign:in');
         }
@@ -37,20 +41,25 @@ abstract class AdminPresenter extends BasePresenter
             $identity = $this->getUser()->getIdentity();
             if ($identity) {
                 $this->adminId = (int) $identity->getId();
-                
-                // Populate the entity directly from identity data stored in session
-                $this->loggedUserEntity->initWithData($identity->getData());
 
-                // Handle active presentation via identity
-                $activeId = $this->loggedUserEntity->active_presentation_id;
-                $userPresIds = array_keys($this->loggedUserEntity->presentations);
+                // VŽDY načítat aktuální data z DB (zrušeno cachování v session pro okamžitou odezvu na změny v DB)
+                $this->loginFacade->loadLoggedUserEntity($this->adminId, $this->loggedUserEntity);
                 
+                // Synchronizace entity zpět do identity v session
+                $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
+
+                // Handle active presentation via session (persistent within session)
+                $session = $this->getSession('admin_context');
+                $activeId = $session->active_presentation_id;
+
+                $userPresIds = array_keys($this->loggedUserEntity->presentations);
+
                 if (!$activeId || !in_array($activeId, $userPresIds)) {
                     $activeId = !empty($userPresIds) ? $userPresIds[0] : null;
-                    $this->loggedUserEntity->active_presentation_id = $activeId ? (int)$activeId : null;
-                    // Sync back to identity
-                    $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
+                    $session->active_presentation_id = $activeId;
                 }
+
+                $this->loggedUserEntity->active_presentation_id = $activeId ? (int)$activeId : null;
 
                 // Pass list of available presentations to template for switcher
                 if (!empty($userPresIds)) {
@@ -78,12 +87,8 @@ abstract class AdminPresenter extends BasePresenter
         $id = (int)$id;
         $userPresIds = array_keys($this->loggedUserEntity->presentations);
         if (in_array($id, $userPresIds)) {
-            // Update entity
-            $this->loggedUserEntity->active_presentation_id = $id;
-            
-            // Sync new state to session identity
-            $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
-            
+            $session = $this->getSession('admin_context');
+            $session->active_presentation_id = $id;
             $this->flashMessage('Prezentace byla přepnuta.');
         }
         $this->redirect('this');
@@ -110,7 +115,7 @@ abstract class AdminPresenter extends BasePresenter
     {
         $myGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
         if ($id === $myGroupId) return false; // Cannot delete self
-        
+
         $allowedGroups = $this->groupFacade->getAvailableGroups($myGroupId);
         return isset($allowedGroups[$id]);
     }
@@ -123,7 +128,7 @@ abstract class AdminPresenter extends BasePresenter
 
         // I can add child to my group, my descendants, OR my immediate parent (to create siblings)
         if ($parentId === $myParentId) return true;
-        
+
         $allowedGroups = $this->groupFacade->getAvailableGroups($myGroupId);
         return isset($allowedGroups[$parentId]);
     }

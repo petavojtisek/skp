@@ -11,7 +11,9 @@
             {snippet pageTree}
                 <ul class="todo-list page-tree-root" data-parent-id="0">
                     {define page-node}
-                        {var $canEdit = (int)$loggedUserEntity->getAdminGroupId() === 1 || in_array($loggedUserEntity->getAdminGroupId(), $page->admin_groups)}
+                        {var $myGroupId = (int)$loggedUserEntity->getAdminGroupId()}
+                        {var $userPageGroupIds = array_keys($loggedUserEntity->rights['page_rights'] ?? [])}
+                        {var $canEdit = $myGroupId === 1 || !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids))}
                         <li class="page-item {if !$canEdit}no-edit{/if}" data-id="{$page->getId()}" data-url="{link move! id => $page->getId()}">
                             <span class="handle">
                                 <i class="fas fa-ellipsis-v"></i>

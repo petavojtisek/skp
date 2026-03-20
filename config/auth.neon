@@ -1,0 +1,5 @@
+	# AUTH
+	authenticator:
+		class: App\Model\Admin\SystemAuthenticator
+		setup:
+			- addAuthenticator(admin, App\Model\Admin\AdminAuthenticator(@App\Model\Admin\AdminDao))

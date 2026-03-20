@@ -117,14 +117,11 @@ class LoginFacade
     protected function getLoggedUserRights(LoggedUserEntity $entity): array
     {
         $groupId = (int)$entity->getAdminGroupId();
-        $cacheKey = 'user_rights_group_' . $groupId;
 
-        return $this->cache->load($cacheKey, function() use ($groupId) {
-            return [
-                'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
-                'module_rights' => $this->moduleService->getModuleRights($groupId),
-                'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
-            ];
-        }, ['rights_group_' . $groupId]);
+        return [
+            'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
+            'module_rights' => $this->moduleService->getModuleRights($groupId),
+            'page_rights' => $this->pageGroupService->getAccessiblePageGroupIdsWithNames($groupId),
+        ];
     }
 }

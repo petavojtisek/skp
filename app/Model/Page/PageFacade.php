@@ -39,6 +39,9 @@ class PageFacade
             // Načtení "Skupin stránek" (page_in_group)
             $page->page_groups = $this->pageGroupService->getPageGroupsByPageId($id);
             
+            // Pro snazší kontrolu práv v šabloně přidáme i čisté pole ID skupin stránek
+            $page->page_group_ids = $this->pageGroupService->getPageGroupIds($id, 'user');
+            
             // Načtení "Skupin uživatelů" (page_in_group_user)
             $page->user_groups = $this->pageGroupService->getPageGroupIds($id, 'admin'); // 'admin' typ v service mapuje na page_in_group_user
             
