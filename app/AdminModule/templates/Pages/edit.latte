@@ -3,10 +3,10 @@
     <div class="card-header p-0 border-bottom-0">
         <ul class="nav nav-tabs" id="page-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní nastavení</a>
+                <a class="nav-link active" id="tab-objects-tab" data-toggle="pill" href="#tab-objects" role="tab" aria-controls="tab-objects" aria-selected="true">Objekty</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-objects-tab" data-toggle="pill" href="#tab-objects" role="tab" aria-controls="tab-objects" aria-selected="false">Objekty</a>
+                <a class="nav-link" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="false">Základní nastavení</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tab-params-tab" data-toggle="pill" href="#tab-params" role="tab" aria-controls="tab-params" aria-selected="false">Speciální parametry</a>
@@ -21,8 +21,40 @@
     </div>
     <div class="card-body">
         <div class="tab-content" id="page-tabs-content">
+            <!-- Objects -->
+            <div class="tab-pane fade show active" id="tab-objects" role="tabpanel" aria-labelledby="tab-objects-tab">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-object">
+                        <i class="fas fa-plus"></i> Přidat objekt
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Typ</th>
+                                <th>Kód</th>
+                                <th>Název</th>
+                                <th style="width: 100px">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr n:foreach="$pageObjects as $obj">
+                                <td>{$obj['type']}</td>
+                                <td><code>{$obj['code']}</code></td>
+                                <td>{$obj['title']}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Basic settings -->
-            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+            <div class="tab-pane fade" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
                 <form n:snippet="pageForm" method="post" action="{link save! id => $pageId, parentId => $parentId}">
                     <div class="row">
                         <div class="col-md-6">
@@ -123,13 +155,6 @@
                         <a n:href="default" class="btn btn-secondary">Zpět na seznam</a>
                     </div>
                 </form>
-            </div>
-
-            <!-- Objects -->
-            <div class="tab-pane fade" id="tab-objects" role="tabpanel" aria-labelledby="tab-objects-tab">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Správa objektů přiřazených k této stránce.
-                </div>
             </div>
 
             <!-- Special parameters -->
@@ -245,6 +270,83 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Add Object -->
+<div class="modal fade" id="modal-add-object" tabindex="-1" role="dialog" aria-labelledby="modal-add-object-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-object-label">Přidat nový objekt na stránku</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card card-primary card-outline card-tabs">
+                    <div class="card-header p-0 pt-1 border-bottom-0">
+                        <ul class="nav nav-tabs" id="modal-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="modal-tab1-tab" data-toggle="pill" href="#modal-tab1" role="tab" aria-controls="modal-tab1" aria-selected="true">Nový</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="modal-tab2-tab" data-toggle="pill" href="#modal-tab2" role="tab" aria-controls="modal-tab2" aria-selected="false">Existující</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="modal-tabs-content">
+                            <!-- Tab 1: Nový -->
+                            <div class="tab-pane fade show active" id="modal-tab1" role="tabpanel" aria-labelledby="modal-tab1-tab">
+                                <form id="form-add-object-1">
+                                    <div class="form-group">
+                                        <label>Typ (Modul)</label>
+                                        <select class="form-control select-module" data-type="tab1" data-url="{link getOptions!}">
+                                            <option value="">-- Vyberte modul --</option>
+                                            <option n:foreach="$tab1Modules as $mId => $mName" value="{$mId}">{$mName}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kódové označení</label>
+                                        <select class="form-control select-options" disabled>
+                                            <option value="">-- Nejdříve vyberte modul --</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Název</label>
+                                        <input type="text" class="form-control" placeholder="Zadejte název objektu...">
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Tab 2: Existující -->
+                            <div class="tab-pane fade" id="modal-tab2" role="tabpanel" aria-labelledby="modal-tab2-tab">
+                                <form id="form-add-object-2">
+                                    <div class="form-group">
+                                        <label>Typ (Modul)</label>
+                                        <select class="form-control select-module" data-type="tab2" data-url="{link getOptions!}">
+                                            <option value="">-- Vyberte modul --</option>
+                                            <option n:foreach="$tab2Modules as $mId => $mName" value="{$mId}">{$mName}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Jméno</label>
+                                        <select class="form-control select-options" disabled>
+                                            <option value="">-- Nejdříve vyberte modul --</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                <button type="button" class="btn btn-primary">Uložit objekt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {/block}
 
 {block scripts}
@@ -319,12 +421,44 @@
             });
         };
 
+        // --- AJAX Modální okno (Závislé selecty) ---
+        const initModalActions = () => {
+            document.querySelectorAll('.select-module').forEach(select => {
+                select.addEventListener('change', () => {
+                    const type = select.getAttribute('data-type');
+                    const moduleId = select.value;
+                    const url = select.getAttribute('data-url');
+                    const targetSelect = select.closest('form').querySelector('.select-options');
+
+                    if (!moduleId) {
+                        targetSelect.innerHTML = '<option value="">-- Nejdříve vyberte modul --</option>';
+                        targetSelect.disabled = true;
+                        return;
+                    }
+
+                    naja.makeRequest('GET', url, { type: type, moduleId: moduleId }, { history: false })
+                        .then(payload => {
+                            if (payload.options) {
+                                let html = '<option value="">-- Vyberte možnost --</option>';
+                                for (const [id, name] of Object.entries(payload.options)) {
+                                    html += `<option value="${ id }">${ name }</option>`;
+                                }
+                                targetSelect.innerHTML = html;
+                                targetSelect.disabled = false;
+                            }
+                        });
+                });
+            });
+        };
+
         initParamActions();
         initGroupActions();
+        initModalActions();
         
         naja.addEventListener('success', () => {
             initParamActions();
             initGroupActions();
+            initModalActions();
         });
     });
 </script>

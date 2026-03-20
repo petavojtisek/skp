@@ -75,6 +75,16 @@ class PageFacade
         return (int)$this->pageService->save($entity);
     }
 
+    public function movePage(int $pageId, int $parentId, int $position): void
+    {
+        $page = $this->find($pageId);
+        if ($page) {
+            $page->setPageParentId($parentId);
+            $page->setPosition($position);
+            $this->savePage($page);
+        }
+    }
+
     public function getPagesList(int $presentationId, ?int $excludeId = null): array
     {
         return $this->pageService->getPagesList($presentationId, $excludeId);

@@ -79,6 +79,44 @@ final class PagesPresenter extends AdminPresenter
             ['id' => 1, 'type' => 'Obsah', 'code' => 'content.about_us', 'title' => 'Hlavní text', 'content' => '<p>Jsme sdružení...</p>'],
             ['id' => 2, 'type' => 'Galerie', 'code' => 'gallery.about', 'title' => 'Fotky z akcí', 'content' => '[Galerie 5 obrázků]'],
         ];
+
+        // Dummy data for Add Object modal
+        $this->template->tab1Modules = [
+            'content' => 'Obsahové moduly',
+            'gallery' => 'Galerie a obrázky',
+            'news' => 'Aktuality a novinky'
+        ];
+
+        $this->template->tab2Modules = [
+            'form' => 'Kontaktní formuláře',
+            'map' => 'Mapové podklady',
+            'custom' => 'Vlastní skripty'
+        ];
+    }
+
+    /**
+     * AJAX signal to get dependent select options for objects modal
+     */
+    public function handleGetOptions(?string $type = null, ?string $moduleId = null): void
+    {
+        $options = [];
+        if ($type === 'tab1') {
+            $data = [
+                'content' => ['content.text' => 'Prostý text', 'content.html' => 'HTML blok'],
+                'gallery' => ['gallery.slider' => 'Slider fotek', 'gallery.grid' => 'Mřížka'],
+                'news' => ['news.list' => 'Seznam novinek', 'news.detail' => 'Detail článku']
+            ];
+            $options = $data[$moduleId] ?? [];
+        } elseif ($type === 'tab2') {
+            $data = [
+                'form' => ['form.contact' => 'Kontaktní formulář', 'form.order' => 'Objednávka'],
+                'map' => ['map.google' => 'Google Maps', 'map.seznam' => 'Mapy.cz'],
+                'custom' => ['custom.code' => 'Vlastní kód', 'custom.js' => 'JavaScript blok']
+            ];
+            $options = $data[$moduleId] ?? [];
+        }
+
+        $this->sendJson(['options' => $options]);
     }
 
     public function handleSave(?int $id = null, ?int $parentId = null): void
@@ -125,11 +163,24 @@ final class PagesPresenter extends AdminPresenter
     public function handleMove(?int $id = null, ?int $parentId = null, ?int $position = null): void
     {
         if ($id) {
-            $this->flashMessage("Stránka byla přesunuta (ID: $id, Parent: $parentId, Pos: $position).", 'success');
+            $page = $this->pageFacade->find($id);
+            if ($page) {
+                // Kontrola práv pro přesun (stejná logika jako v šabloně)
+                $userPageGroupIds = array_keys($this->loggedUserEntity->rights['page_rights'] ?? []);
+                $isMember = !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids));
+                
+                if ($this->loggedUserEntity->hasGroupRight('EDIT_PAGE') or $isMember) {
+                    $this->pageFacade->movePage($id, (int)$parentId, (int)$position);
+                    $this->flashMessage("Stránka '{$page->getPageName()}' byla přesunuta.", 'success');
+                } else {
+                    $this->flashMessage("Nemáte oprávnění k přesunu této stránky.", 'danger');
+                }
+            }
         }
 
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
+            $this->redrawControl('pageTree');
         } else {
             $this->redirect('this');
         }

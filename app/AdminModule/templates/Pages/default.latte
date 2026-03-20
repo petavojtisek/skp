@@ -29,9 +29,9 @@
 
 
                             <div class="tools visible">
-                                <a n:if="$canAdd" n:href="edit, parentId => $page->getId()" class="text-success mr-1" title="Přidat podstránku"><i class="fas fa-plus-circle"></i></a>
                                 <a n:if="$canEdit" n:href="edit, id => $page->getId()" title="Editovat stránku"><i class="fas fa-edit"></i></a>
                                 <a n:if="$canRemove" href="#" class="text-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                <a n:if="$canAdd" n:href="edit, parentId => $page->getId()" class="text-success ml-1" title="Přidat podstránku"><i class="fas fa-plus-circle"></i></a>
 
                                 <i n:if="!$canEdit && !$canAdd && !$canRemove" class="fas fa-lock text-muted" title="Nedostatečná práva"></i>
                             </div>
@@ -60,10 +60,27 @@
         display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
+        float: right;
     }
 
-    .page-tree-child {
-        min-height: 15px;
+    .todo-list > li .tools.visible a, 
+    .todo-list > li .tools.visible i.fas {
+        font-size: 1.2rem;
+        padding: 5px 10px;
+        margin-left: 5px;
+        display: inline-block;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .todo-list > li .tools.visible a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .todo-list > li .tools.visible a.text-success:hover { background-color: rgba(40, 167, 69, 0.1); }
+    .todo-list > li .tools.visible a.text-danger:hover { background-color: rgba(220, 53, 69, 0.1); }
+
+    .page-tree-child {        min-height: 15px;
         padding-left: 30px;
         margin-top: 5px;
         border-left: 1px dashed #ccc;
