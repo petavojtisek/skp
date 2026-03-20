@@ -25,6 +25,8 @@ services:
 	router: App\RouterFactory::createRouter
 
 	# MAPPERS
+	- App\Model\Page\SpecParamPageMapper
+	- App\Model\Component\ComponentMapper
 	- App\Model\Page\PageMapper
 	- App\Model\Lookup\LookupMapper
 	- App\Model\Presentation\PresentationMapper
@@ -48,6 +50,8 @@ services:
 	- App\Model\FileManager\FileManagerMapper
 
 	# DAO
+	- App\Model\Page\SpecParamPageDao
+	- App\Model\Component\ComponentDao
 	- App\Model\Page\PageDao
 	- App\Model\Lookup\LookupDao
 	- App\Model\Presentation\PresentationDao
@@ -80,6 +84,8 @@ services:
 	- App\Model\Admin\LoggedUserEntity
 
 	# SERVICE
+	- App\Model\Page\SpecParamPageService
+	- App\Model\Component\ComponentService
 	- App\Model\System\Cache
 	- App\Model\System\ModelEventManager
 	- App\Model\Login\LoginService

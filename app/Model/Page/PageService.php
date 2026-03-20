@@ -28,6 +28,11 @@ class PageService extends BaseService
         return $this->pageDao->find($id) ?: null;
     }
 
+    public function save(PageEntity $entity): int
+    {
+        return (int)$this->pageDao->save($entity)->getId();
+    }
+
     /**
      * @return array id => name
      */

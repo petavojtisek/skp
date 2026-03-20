@@ -7,8 +7,9 @@ use App\Model\Base\BaseEntity;
 class PageEntity extends BaseEntity
 {
     public ?array $children = [];
-    public ?array $page_groups = [];
-    public ?array $admin_groups = [];
+    public ?array $page_groups = []; // page_in_group (Skupiny stránek)
+    public ?array $user_groups = []; // page_in_group_user (Skupiny uživatelů)
+    public ?array $admin_groups = []; // Derived admin_group IDs
     public ?array $components = [];
 
     public mixed $page_id = null;

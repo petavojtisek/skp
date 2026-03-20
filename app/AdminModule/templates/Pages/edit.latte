@@ -23,7 +23,7 @@
         <div class="tab-content" id="page-tabs-content">
             <!-- Basic settings -->
             <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
-                <form n:snippet="pageForm">
+                <form n:snippet="pageForm" method="post" action="{link save! id => $pageId, parentId => $parentId}">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -134,8 +134,44 @@
 
             <!-- Special parameters -->
             <div class="tab-pane fade" id="tab-params" role="tabpanel" aria-labelledby="tab-params-tab">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Speciální parametry pro pokročilé nastavení stránky.
+                <div class="row" n:if="!$pageId">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            Pro správu speciálních parametrů musíte nejprve stránku uložit.
+                        </div>
+                    </div>
+                </div>
+                
+                <div n:if="$pageId">
+                    {snippet specParams}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Název parametru</th>
+                                        <th>Hodnota</th>
+                                        <th style="width: 100px">Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr n:foreach="$specParams as $param">
+                                        <td>{$param->getName()}</td>
+                                        <td>{$param->getValue()}</td>
+                                        <td class="text-center">
+                                            <a n:href="deleteParam!, paramId => $param->getId(), pageId => $pageId" class="btn btn-danger btn-sm ajax" title="Smazat"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td><input type="text" id="new-param-name" class="form-control form-control-sm" placeholder="Nový název..."></td>
+                                        <td><input type="text" id="new-param-value" class="form-control form-control-sm" placeholder="Nová hodnota..."></td>
+                                        <td class="text-center">
+                                            <button type="button" id="btn-add-param" class="btn btn-success btn-sm" data-url="{link addParam! pageId => $pageId}"><i class="fas fa-plus"></i> Přidat</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {/snippet}
                 </div>
             </div>
 
@@ -148,8 +184,62 @@
 
             <!-- Page groups -->
             <div class="tab-pane fade" id="tab-page-groups" role="tabpanel" aria-labelledby="tab-page-groups-tab">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Přiřazení stránky do skupin stránek a nastavení přístupových práv.
+                <div class="row" n:if="!$pageId">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            Pro správu skupin musíte nejprve stránku uložit.
+                        </div>
+                    </div>
+                </div>
+
+                <div n:if="$pageId" n:snippet="pageGroups">
+                    <div class="row">
+                        <!-- User Groups (page_in_group) -->
+                        <div class="col-md-6">
+                            <div class="card card-outline card-success">
+                                <div class="card-header">
+                                    <h3 class="card-title">Skupiny stránek</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <div n:foreach="$allPageGroups as $pg" class="list-group-item">
+                                            <div class="custom-control custom-switch">
+                                                {var $isActive = in_array($pg->getId(), $activeUserGroupIds)}
+                                                <input type="checkbox" class="custom-control-input ajax-group-toggle" 
+                                                       id="pg-user-{$pg->getId()}" 
+                                                       data-url="{link toggleGroup! pageId => $pageId, groupId => $pg->getId(), type => 'user'}"
+                                                       n:attr="checked => $isActive">
+                                                <label class="custom-control-label" for="pg-user-{$pg->getId()}">{$pg->getName()}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Groups (page_in_group_user) -->
+                        <div class="col-md-6">
+                            <div class="card card-outline card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Skupiny uživatelů</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <div n:foreach="$allPageGroups as $pg" class="list-group-item">
+                                            <div class="custom-control custom-switch">
+                                                {var $isActive = in_array($pg->getId(), $activeAdminGroupIds)}
+                                                <input type="checkbox" class="custom-control-input ajax-group-toggle" 
+                                                       id="pg-admin-{$pg->getId()}" 
+                                                       data-url="{link toggleGroup! pageId => $pageId, groupId => $pg->getId(), type => 'admin'}"
+                                                       n:attr="checked => $isActive">
+                                                <label class="custom-control-label" for="pg-admin-{$pg->getId()}">{$pg->getName()}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,10 +253,11 @@
         const pageNameInput = document.getElementById('page_name');
         const rewriteInput = document.getElementById('page_rewrite');
         const btnGenerate = document.getElementById('btn-generate-rewrite');
-        let isManualRewrite = rewriteInput.value !== '';
+        let isManualRewrite = false;
         let timeout = null;
 
         const generateRewrite = () => {
+            if (!pageNameInput || !rewriteInput) return;
             const name = pageNameInput.value;
             if (!name) return;
 
@@ -179,26 +270,62 @@
                 });
         };
 
-        // Reagovat na psaní v názvu
-        pageNameInput.addEventListener('input', () => {
-            if (isManualRewrite) return;
-            
-            clearTimeout(timeout);
-            timeout = setTimeout(generateRewrite, 300); // Debounce 300ms
-        });
+        if (pageNameInput) {
+            pageNameInput.addEventListener('input', () => {
+                if (isManualRewrite) return;
+                clearTimeout(timeout);
+                timeout = setTimeout(generateRewrite, 300);
+            });
+        }
 
-        // Pokud uživatel do rewrite sáhne ručně, přestaneme mu ho měnit
-        rewriteInput.addEventListener('input', () => {
-            isManualRewrite = true;
-        });
+        if (rewriteInput) {
+            rewriteInput.addEventListener('input', () => {
+                isManualRewrite = true;
+            });
+        }
 
-        // Tlačítko pro vynucení regenerace (i když se v něm uživatel vrtal)
         if (btnGenerate) {
             btnGenerate.addEventListener('click', () => {
                 isManualRewrite = false;
                 generateRewrite();
             });
         }
+
+        // --- AJAX Parametry ---
+        const initParamActions = () => {
+            const btnAddParam = document.getElementById('btn-add-param');
+            if (btnAddParam) {
+                btnAddParam.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const nameInput = document.getElementById('new-param-name');
+                    const valueInput = document.getElementById('new-param-value');
+                    const url = btnAddParam.getAttribute('data-url');
+
+                    naja.makeRequest('GET', url, { 
+                        name: nameInput.value, 
+                        value: valueInput.value 
+                    });
+                });
+            }
+        };
+
+        // --- AJAX Skupiny ---
+        const initGroupActions = () => {
+            document.querySelectorAll('.ajax-group-toggle').forEach(el => {
+                el.addEventListener('change', () => {
+                    const url = el.getAttribute('data-url');
+                    naja.makeRequest('GET', url, { state: el.checked ? 1 : 0 });
+                });
+            });
+        };
+
+        initParamActions();
+        initGroupActions();
+        
+        naja.addEventListener('success', () => {
+            initParamActions();
+            initGroupActions();
+        });
     });
 </script>
 {/block}

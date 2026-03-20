@@ -8,11 +8,16 @@ class PageFacade
 {
     private PageService $pageService;
     private PageGroupService $pageGroupService;
+    private SpecParamPageService $specParamPageService;
 
-    public function __construct(PageService $pageService, PageGroupService $pageGroupService)
-    {
+    public function __construct(
+        PageService $pageService, 
+        PageGroupService $pageGroupService,
+        SpecParamPageService $specParamPageService
+    ) {
         $this->pageService = $pageService;
         $this->pageGroupService = $pageGroupService;
+        $this->specParamPageService = $specParamPageService;
     }
 
     /**
@@ -31,12 +36,14 @@ class PageFacade
         foreach ($pages as $page) {
             $id = $page->getId();
             
-            // Load Page Groups
-            $groups = $this->pageGroupService->getPageGroupsByPageId($id);
-            $page->page_groups = $groups;
+            // Načtení "Skupin stránek" (page_in_group)
+            $page->page_groups = $this->pageGroupService->getPageGroupsByPageId($id);
             
-            // Load Admin Groups via Page Groups
-            $groupIDs = array_keys($groups);
+            // Načtení "Skupin uživatelů" (page_in_group_user)
+            $page->user_groups = $this->pageGroupService->getPageGroupIds($id, 'admin'); // 'admin' typ v service mapuje na page_in_group_user
+            
+            // Práva pro administrátory (vazba page_group -> admin_group)
+            $groupIDs = array_keys((array)$page->page_groups);
             $page->admin_groups = $this->pageGroupService->getAdminGroupIdsByPageGroups($groupIDs);
             
             $page->children = [];
@@ -60,11 +67,28 @@ class PageFacade
         return $this->pageService->find($id);
     }
 
-    /**
-     * @return array
-     */
+    public function savePage(PageEntity $entity): int
+    {
+        return (int)$this->pageService->save($entity);
+    }
+
     public function getPagesList(int $presentationId, ?int $excludeId = null): array
     {
         return $this->pageService->getPagesList($presentationId, $excludeId);
+    }
+
+    public function getSpecParams(int $pageId): array
+    {
+        return $this->specParamPageService->findByPage($pageId);
+    }
+
+    public function saveSpecParam(SpecParamPageEntity $entity): void
+    {
+        $this->specParamPageService->save($entity);
+    }
+
+    public function deleteSpecParam(int $id): void
+    {
+        $this->specParamPageService->delete($id);
     }
 }

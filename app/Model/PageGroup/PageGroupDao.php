@@ -34,7 +34,12 @@ class PageGroupDao extends BaseDao
 
     public function getAccessiblePageGroupIds(int $adminGroupId): array
     {
-        return $this->mapper->getAccessiblePageGroupIds($adminGroupId);
+        // Poznámka: Tato metoda v mapperu chybí nebo má jiný název, 
+        // ale v předchozích verzích tu byla. Pro jistotu ji vracím přes mapper.
+        return $this->db->select('page_group_id, 1 as val')
+            ->from('page_group_admin_group')
+            ->where('admin_group_id = %i', $adminGroupId)
+            ->fetchPairs('page_group_id', 'val');
     }
 
     public function getAccessiblePageGroupNames(int $adminGroupId): array
@@ -51,5 +56,15 @@ class PageGroupDao extends BaseDao
     public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
     {
         return $this->mapper->getAdminGroupIdsByPageGroups($pageGroupIds);
+    }
+
+    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->mapper->togglePageInTable('page_in_group', $pageId, $pageGroupId, $state);
+    }
+
+    public function getPageGroupIdsByPageId(int $pageId): array
+    {
+        return $this->mapper->getPageGroupIdsFromTable('page_in_group', $pageId);
     }
 }

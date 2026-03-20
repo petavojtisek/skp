@@ -9,6 +9,9 @@ class PageGroupMapper extends BaseMapper
     protected string $tableName = 'page_group';
     protected string $primaryKey = 'id';
 
+    /**
+     * Vazba skupiny stránek na administrátorskou skupinu (admin_group)
+     */
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
         if ($state) {
@@ -24,6 +27,9 @@ class PageGroupMapper extends BaseMapper
         }
     }
 
+    /**
+     * Získá ID administrátorských skupin pro danou skupinu stránek
+     */
     public function getAdminGroupIds(int $pageGroupId): array
     {
         return $this->db->select('admin_group_id')
@@ -32,21 +38,33 @@ class PageGroupMapper extends BaseMapper
             ->fetchPairs('admin_group_id', 'admin_group_id');
     }
 
-    public function getAccessiblePageGroupIds(int $adminGroupId): array
+    /**
+     * Obecná metoda pro toggle vazby stránky a skupiny v libovolné tabulce
+     */
+    public function togglePageInTable(string $table, int $pageId, int $pageGroupId, bool $state): void
     {
-        return $this->db->select('page_group_id, 1 as val')
-            ->from('page_group_admin_group')
-            ->where('admin_group_id = %i', $adminGroupId)
-            ->fetchPairs('page_group_id', 'val');
+        if ($state) {
+            $exists = $this->db->fetch('SELECT 1 FROM %n WHERE page_id = %i AND page_group_id = %i', $table, $pageId, $pageGroupId);
+            if (!$exists) {
+                $this->db->query('INSERT INTO %n', $table, [
+                    'page_id' => $pageId,
+                    'page_group_id' => $pageGroupId
+                ]);
+            }
+        } else {
+            $this->db->query('DELETE FROM %n WHERE page_id = %i AND page_group_id = %i', $table, $pageId, $pageGroupId);
+        }
     }
 
-    public function getAccessiblePageGroupNames(int $adminGroupId): array
+    /**
+     * Získá ID skupin pro danou stránku z konkrétní tabulky
+     */
+    public function getPageGroupIdsFromTable(string $table, int $pageId): array
     {
-        return $this->db->select('pg.name, 1 as val')
-            ->from($this->tableName)->as('pg')
-            ->join('page_group_admin_group')->as('pgag')->on('pg.id = pgag.page_group_id')
-            ->where('pgag.admin_group_id = %i', $adminGroupId)
-            ->fetchPairs('name', 'val');
+        return $this->db->select('page_group_id')
+            ->from($table)
+            ->where('page_id = %i', $pageId)
+            ->fetchPairs('page_group_id', 'page_group_id');
     }
 
     public function getPageGroupsByPageId(int $pageId): array
@@ -65,5 +83,14 @@ class PageGroupMapper extends BaseMapper
             ->from('page_group_admin_group')
             ->where('page_group_id IN (%i)', $pageGroupIds)
             ->fetchPairs('admin_group_id', 'admin_group_id');
+    }
+
+    public function getAccessiblePageGroupNames(int $adminGroupId): array
+    {
+        return $this->db->select('pg.name, 1 as val')
+            ->from($this->tableName)->as('pg')
+            ->join('page_group_admin_group')->as('pgag')->on('pg.id = pgag.page_group_id')
+            ->where('pgag.admin_group_id = %i', $adminGroupId)
+            ->fetchPairs('name', 'val');
     }
 }
