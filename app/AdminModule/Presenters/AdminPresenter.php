@@ -106,7 +106,7 @@ abstract class AdminPresenter extends BasePresenter
 
     public function canEditGroup(int $id): bool
     {
-        if ($id === 0) return (int)$this->loggedUserEntity->getAdminGroupId() === 1;
+        if ($this->loggedUserEntity->hasGroupRight('ALL')) return true;
         $allowedGroups = $this->groupFacade->getAvailableGroups((int)$this->loggedUserEntity->getAdminGroupId());
         return isset($allowedGroups[$id]);
     }

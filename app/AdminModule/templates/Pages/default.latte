@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Strom stránek</h3>
         <div class="card-tools">
-            <a n:href="edit, parentId => 0" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová stránka</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('ADD_PAGE')" n:href="edit, parentId => 0" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová stránka</a>
         </div>
     </div>
     <div class="card-body">
@@ -11,10 +11,14 @@
             {snippet pageTree}
                 <ul class="todo-list page-tree-root" data-parent-id="0">
                     {define page-node}
-                        {var $myGroupId = (int)$loggedUserEntity->getAdminGroupId()}
                         {var $userPageGroupIds = array_keys($loggedUserEntity->rights['page_rights'] ?? [])}
-                        {var $canEdit = $myGroupId === 1 || !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids))}
-                        <li class="page-item {if !$canEdit}no-edit{/if}" data-id="{$page->getId()}" data-url="{link move! id => $page->getId()}">
+                        {var $isMember = !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids))}
+                        
+                        {var $canEdit = $loggedUserEntity->hasGroupRight('EDIT_PAGE') || $isMember}
+                        {var $canAdd = $loggedUserEntity->hasGroupRight('ADD_PAGE') || $isMember}
+                        {var $canRemove = $loggedUserEntity->hasGroupRight('REMOVE_PAGE') || $isMember}
+
+                        <li class="page-item {if !$canEdit && !$canAdd && !$canRemove}no-edit{/if}" data-id="{$page->getId()}" data-url="{link move! id => $page->getId()}">
                             <span class="handle">
                                 <i class="fas fa-ellipsis-v"></i>
                                 <i class="fas fa-ellipsis-v"></i>
@@ -33,13 +37,12 @@
                                 </span>
                             </span>
 
-                            <div class="tools visible" n:if="$canEdit">
-                                <a n:href="edit, parentId => $page->getId()" class="text-success mr-1" title="Přidat podstránku"><i class="fas fa-plus-circle"></i></a>
-                                <a n:href="edit, id => $page->getId()" title="Editovat stránku"><i class="fas fa-edit"></i></a>
-                                <a href="#" class="text-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
-                            </div>
-                            <div class="tools visible" n:if="!$canEdit">
-                                <i class="fas fa-lock text-muted" title="Nedostatečná práva pro editaci"></i>
+                            <div class="tools visible">
+                                <a n:if="$canAdd" n:href="edit, parentId => $page->getId()" class="text-success mr-1" title="Přidat podstránku"><i class="fas fa-plus-circle"></i></a>
+                                <a n:if="$canEdit" n:href="edit, id => $page->getId()" title="Editovat stránku"><i class="fas fa-edit"></i></a>
+                                <a n:if="$canRemove" href="#" class="text-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                                
+                                <i n:if="!$canEdit && !$canAdd && !$canRemove" class="fas fa-lock text-muted" title="Nedostatečná práva"></i>
                             </div>
 
                             <ul class="todo-list page-tree-child" data-parent-id="{$page->getId()}">

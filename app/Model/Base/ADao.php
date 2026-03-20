@@ -49,9 +49,9 @@ abstract class ADao
 
 	/**
 	 * return all records from table
-	 * @return bool|IEntity[]|array
+	 * @return IEntity[]|array
 	 */
-	public function findAll(?string $lang = null): mixed {
+	public function findAll(?string $lang = null): array {
 		$data = $this->mapper->findAll();
 		if ($data) {
 			$entities = [];
@@ -60,16 +60,16 @@ abstract class ADao
 			}
 			return $entities;
 		}
-		return false;
+		return [];
 	}
 
 	/**
 	 * return filtered rows by array
 	 * (array('name' => 'David') convert to SQL query WHERE name = 'David')
 	 * @param array $by
-	 * @return bool|IEntity[]|array
+	 * @return IEntity[]|array
 	 */
-	protected function findBy(array $by, ?string $lang = null): mixed {
+	protected function findBy(array $by, ?string $lang = null): array {
 
 		$data = $this->mapper->findBy($by);
 		if ($data) {
@@ -79,7 +79,7 @@ abstract class ADao
 			}
 			return $entities;
 		}
-		return false;
+		return [];
 	}
 
 	/**
@@ -95,14 +95,14 @@ abstract class ADao
 	/**
 	 * return single row
 	 * @param array $by
-	 * @return bool|IEntity
+	 * @return IEntity|null
 	 */
-	public function findOneBy(array $by, ?string $orderBy = null): mixed {
+	public function findOneBy(array $by, ?string $orderBy = null): ?IEntity {
 		$data = $this->mapper->findOneBy($by, $orderBy);
 		if ($data) {
 			return $this->getEntity($this->entityName, (array) $data);
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -127,9 +127,9 @@ abstract class ADao
 	/**
 	 * return all row by condition in array
 	 * @param array $by
-	 * @return bool|IEntity[]|array
+	 * @return IEntity[]|array
 	 */
-	public function findAllBy(array $by, ?int $limit = null, ?int $offset = null, ?string $orderBy = null, ?string $lang = null): mixed {
+	public function findAllBy(array $by, ?int $limit = null, ?int $offset = null, ?string $orderBy = null, ?string $lang = null): array {
 		$data = $this->mapper->findAllBy($by, $limit, $offset, $orderBy);
 		if ($data) {
 			$entities = [];
@@ -138,21 +138,21 @@ abstract class ADao
 			}
 			return $entities;
 		}
-		return false;
+		return [];
 	}
 
 	/**
 	 * return single row by primary key
 	 * @param int|string $id
-	 * @return bool|IEntity
+	 * @return IEntity|null
 	 */
-	public function find(mixed $id, ?string $lang = null): mixed {
+	public function find(mixed $id, ?string $lang = null): ?IEntity {
 
 		$data = $this->mapper->find($id);
 		if ($data) {
 			return $this->getEntity($this->entityName, (array) $data, $lang);
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -242,9 +242,9 @@ abstract class ADao
 	/**
 	 * @param string $entityName
 	 * @param array $data
-	 * @return IEntity[]|bool|array
+	 * @return IEntity[]|array
 	 */
-	public function getEntities(string $entityName, array $data = [], ?string $lang = null): mixed {
+	public function getEntities(string $entityName, array $data = [], ?string $lang = null): array {
 		if ($data) {
 			$entities = [];
 			foreach ($data as $key => $item) {
@@ -252,7 +252,7 @@ abstract class ADao
 			}
 			return $entities;
 		}
-		return false;
+		return [];
 	}
 
 	public function save(IEntity $entity): IEntity {

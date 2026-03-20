@@ -14,7 +14,7 @@ class ObjectFacade
 
     public function getObjects(): array
     {
-        return $this->objectService->findAll();
+        return [];
     }
 
     public function getObject(int $id): ?ObjectEntity

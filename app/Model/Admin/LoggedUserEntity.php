@@ -74,6 +74,15 @@ class LoggedUserEntity extends AdministratorEntity
         $this->rights = $rights;
     }
 
+    /**
+     * Checks if the user has a specific group right or the master 'ALL' right.
+     */
+    public function hasGroupRight(string $code): bool
+    {
+        $groupRights = $this->rights['groups_right'] ?? [];
+        return in_array('ALL', $groupRights, true) || in_array($code, $groupRights, true);
+    }
+
     public function getActivePresentationId(): ?int
     {
         return $this->active_presentation_id;
