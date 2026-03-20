@@ -2,6 +2,7 @@
 
 namespace App\Model\Admin;
 
+use App\Model\AdminGroup\AdminGroupEntity;
 use App\Model\Log\LogFacade;
 use App\Model\AdminGroup\AdminGroupService;
 use App\Model\AdminGroupRight\AdminGroupRightService;
@@ -66,20 +67,32 @@ class AdminFacade
         $this->adminService->softDelete($id);
     }
 
-    public function getAdminGroups(): array { return $this->adminGroupService->getAdminGroups(); }
-
-    public function getGroup(int $groupId): ?array {
-        $groups = $this->getAdminGroups();
-        return $groups[$groupId] ?? null;
+    public function getAdminGroups(): array {
+        $groups = $this->adminGroupService->findAll();
+        $data = [];
+        foreach ($groups as $id => $entity) {
+            $data[$id] = $entity->getEntityData();
+        }
+        return $data;
     }
 
-    public function getAdminInGroups(int $adminId): array { return $this->adminGroupService->getAdminInGroups($adminId); }
+    public function getGroup(int $groupId): ?AdminGroupEntity
+    {
+        return $this->adminGroupService->find($groupId);
+    }
+
+    public function getAdminInGroups(int $adminId): array
+    {
+        return $this->adminGroupService->getAdminInGroups($adminId);
+    }
 
     public function saveAdminGroups(int $adminId, array $groupIds): void {
         $this->adminGroupService->saveAdminGroups($adminId, $groupIds);
     }
 
-    public function getAdminPresentations(int $adminId): array { return $this->presentationService->getAdminPresentations($adminId); }
+    public function getAdminPresentations(int $adminId): array {
+        return $this->presentationService->getAdminPresentations($adminId);
+    }
 
     public function saveAdminPresentations(int $adminId, array $presentationIds): void {
         $this->presentationService->saveAdminPresentations($adminId, $presentationIds);

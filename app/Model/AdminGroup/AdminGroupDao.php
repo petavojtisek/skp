@@ -17,12 +17,6 @@ class AdminGroupDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-
-    public function getAdminGroups(): array
-    {
-        return $this->mapper->getAdminGroups();
-    }
-
     public function getAdminInGroups(int $adminId): array
     {
         return $this->mapper->getAdminInGroups($adminId);

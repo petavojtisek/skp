@@ -9,12 +9,6 @@ class AdminGroupMapper extends BaseMapper
     protected string $tableName = 'admin_group';
     protected string $primaryKey = 'admin_group_id';
 
-    public function getAdminGroups(): array
-    {
-        $rows = $this->db->select('*')->from($this->tableName)->fetchAssoc($this->primaryKey);
-        return array_map(fn($row) => (array)$row, $rows);
-    }
-
     public function getAdminInGroups(int $adminId): array
     {
         return $this->db->select('group_id')

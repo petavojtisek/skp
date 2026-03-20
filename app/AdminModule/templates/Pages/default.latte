@@ -12,13 +12,10 @@
                 <ul class="todo-list page-tree-root" data-parent-id="0">
                     {define page-node}
                         {var $userPageGroupIds = array_keys($loggedUserEntity->rights['page_rights'] ?? [])}
-                        {var $pageGroupIds = (array)$page->page_group_ids}
-                        {var $isMember = !empty(array_intersect($userPageGroupIds, $pageGroupIds))}
+                        {var $isMember = !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids))}
                         {var $canEdit = $isMember && $loggedUserEntity->hasGroupRight('EDIT_PAGE')}
                         {var $canAdd = $isMember && $loggedUserEntity->hasGroupRight('ADD_PAGE')}
                         {var $canRemove = $isMember && $loggedUserEntity->hasGroupRight('REMOVE_PAGE')}
-
-
 
                         <li class="page-item {if !$canEdit && !$canAdd && !$canRemove}no-edit{/if}" data-id="{$page->getId()}" data-url="{link move! id => $page->getId()}">
                             <span class="handle">
@@ -28,16 +25,8 @@
                             <span class="text">
                                 <a n:tag-if="$canEdit" n:href="edit, id => $page->getId()" class="text-dark">{$page->getPageName()}</a>
                             </span>
-                            <small class="badge badge-secondary">{$page->getPageRewrite()}</small>
+                            
 
-                            <span class="page-groups ml-2">
-                                <span n:foreach="$page->page_groups as $group" class="badge badge-info" title="Skupina stránek">
-                                    <i class="fas fa-layer-group"></i> {$group->getName()}
-                                </span>
-                                <span n:foreach="$page->user_groups as $groupId" class="badge badge-success" title="Skupina uživatelů">
-                                    <i class="fas fa-user-friends"></i> ID: {$groupId}
-                                </span>
-                            </span>
 
                             <div class="tools visible">
                                 <a n:if="$canAdd" n:href="edit, parentId => $page->getId()" class="text-success mr-1" title="Přidat podstránku"><i class="fas fa-plus-circle"></i></a>

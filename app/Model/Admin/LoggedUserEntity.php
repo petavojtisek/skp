@@ -2,9 +2,11 @@
 
 namespace App\Model\Admin;
 
+use App\Model\Base\IEntity;
+
 class LoggedUserEntity extends AdministratorEntity
 {
-    public ?array $group = null;
+    public ?IEntity $group = null;
 
     /** @var array [presentation_id => 1/0] */
     public array $presentations = [];
@@ -43,12 +45,12 @@ class LoggedUserEntity extends AdministratorEntity
         return $data;
     }
 
-    public function getGroup(): ?array
+    public function getGroup(): ?IEntity
     {
         return $this->group;
     }
 
-    public function setGroup(?array $group): void
+    public function setGroup(?IEntity $group): void
     {
         $this->group = $group;
     }
@@ -81,7 +83,7 @@ class LoggedUserEntity extends AdministratorEntity
     {
         $groupRights = $this->rights['groups_right'] ?? [];
 
-        return array_key_exists('ALL', $groupRights, true) or  array_key_exists($code, $groupRights, true);
+        return array_key_exists('ALL', $groupRights) or  array_key_exists($code, $groupRights);
     }
 
     public function getActivePresentationId(): ?int

@@ -101,8 +101,9 @@ class LoginFacade
         if($entity->getId() > 0){
             $groupId = (int)$entity->getAdminGroupId();
 
-            $groups = $this->adminGroupService->getAdminGroups();
-            $entity->setGroup(isset($groups[$groupId]) ? (array)$groups[$groupId] : null);
+            $group = $this->adminGroupService->find($groupId);
+            $entity->setGroup($group);
+
             $userPresIds = $this->presentationService->getAdminPresentations($adminId);
             $presMap = [];
             foreach ($userPresIds as $pid) {

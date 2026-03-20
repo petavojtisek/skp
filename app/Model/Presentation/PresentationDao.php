@@ -21,13 +21,6 @@ class PresentationDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    /**
-     * @return PresentationMapper
-     */
-    public function getMapper(): \App\Model\Base\IMapper
-    {
-        return $this->mapper;
-    }
 
     public function getAdminPresentations(int $adminId): array
     {

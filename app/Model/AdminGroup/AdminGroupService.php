@@ -13,14 +13,17 @@ class AdminGroupService extends BaseService
         $this->adminGroupDao = $adminGroupDao;
     }
 
+    /**
+     * @return AdminGroupEntity[]
+     */
     public function findAll(): array
     {
-        return $this->adminGroupDao->findAll();
+        return $this->adminGroupDao->findAll() ?: [];
     }
 
     public function find(int $id): ?AdminGroupEntity
     {
-        return $this->adminGroupDao->find($id);
+        return $this->adminGroupDao->find($id) ?: null;
     }
 
     public function save(AdminGroupEntity $entity): int
@@ -31,11 +34,6 @@ class AdminGroupService extends BaseService
     public function delete(int $id): void
     {
         $this->adminGroupDao->delete($id);
-    }
-
-    public function getAdminGroups(): array
-    {
-        return $this->adminGroupDao->getAdminGroups();
     }
 
     public function getAdminInGroups(int $adminId): array
@@ -50,6 +48,7 @@ class AdminGroupService extends BaseService
 
     /**
      * Returns all groups available to a user starting from their own group and its descendants.
+     * @return AdminGroupEntity[]
      */
     public function getAvailableGroups(int $startGroupId): array
     {
@@ -58,8 +57,9 @@ class AdminGroupService extends BaseService
 
         $availableGroups = [];
         foreach ($allGroups as $group) {
-            if (in_array($group->admin_group_id, $availableIds)) {
-                $availableGroups[$group->admin_group_id] = $group;
+            $id = (int)$group->getId();
+            if (in_array($id, $availableIds)) {
+                $availableGroups[$id] = $group;
             }
         }
         return $availableGroups;
@@ -73,8 +73,8 @@ class AdminGroupService extends BaseService
 
         $ids = [$startGroupId];
         foreach ($allGroups as $group) {
-            if ($group->pid == $startGroupId) {
-                $ids = array_merge($ids, $this->getAvailableGroupIds($group->admin_group_id, $allGroups));
+            if ((int)$group->pid === $startGroupId) {
+                $ids = array_merge($ids, $this->getAvailableGroupIds((int)$group->getId(), $allGroups));
             }
         }
         return array_unique($ids);
@@ -91,7 +91,6 @@ class AdminGroupService extends BaseService
     }
 
     /**
-     * @param int $startId
      * @return array
      */
     public function getGroupTree(int $startId = 0): array
@@ -117,7 +116,7 @@ class AdminGroupService extends BaseService
     }
 
     /**
-     * @param array $elements
+     * @param AdminGroupEntity[] $elements
      * @param int $parentId
      * @param int $level
      * @return array
@@ -127,8 +126,8 @@ class AdminGroupService extends BaseService
         $branch = [];
 
         foreach ($elements as $element) {
-            if ($element->pid == $parentId) {
-                $children = $this->buildTree($elements, $element->admin_group_id, $level + 1);
+            if ((int)$element->pid === $parentId) {
+                $children = $this->buildTree($elements, (int)$element->getId(), $level + 1);
                 $branch[] = [
                     'entity' => $element,
                     'level' => $level,

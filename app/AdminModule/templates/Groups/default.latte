@@ -1,7 +1,7 @@
 {block content}
 <div class="mb-3">
     {var $userGroupId = $loggedUserEntity->getAdminGroupId()}
-    {var $userGroupPid = ($loggedUserEntity->group['pid'] ?? 0)}
+    {var $userGroupPid = ($loggedUserEntity->group ? $loggedUserEntity->group->pid : 0)}
     {var $defaultParentId = ($userGroupId <= 2 ? $userGroupPid : $userGroupId)}
     <a n:href="edit, parentId => $defaultParentId" class="btn btn-primary"><i class="fas fa-plus"></i> Nová skupina</a>
 </div>
