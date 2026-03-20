@@ -75,7 +75,7 @@ class FileManagerService extends BaseService
         $items = scandir($dir);
         $dirs = [];
         foreach ($items as $item) {
-            if ($item === '.' || $item === '..') continue;
+            if ($item === '.' or $item === '..') continue;
             if (is_dir($dir . DIRECTORY_SEPARATOR . $item)) {
                 $dirs[] = $item;
             }

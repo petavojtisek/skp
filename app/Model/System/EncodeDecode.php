@@ -50,13 +50,13 @@ class EncodeDecode
 			$res = @gmp_div_qr(gmp_sub(gmp_init($hash, 36), $this->smallKey2), $this->smallKey1);
 
 			// Zaloguj chyby vznikle pri pokusu o dekodovani hashe
-			if (is_array($err = error_get_last()) && $err !== $lastError)
+			if (is_array($err = error_get_last()) and $err !== $lastError)
 			{
 				$e = new \ErrorException($err['message'] . ' - hash: ' . var_export($hash, true), $err['type'], E_WARNING, $err['file'], $err['line']);
 
 				Debugger::log($e, ILogger::EXCEPTION);
 
-				if ( (defined('RONDO_DEV') && RONDO_DEV === TRUE) || (defined('RONDO_TEST') && RONDO_TEST === TRUE) )
+				if ( (defined('RONDO_DEV') and RONDO_DEV === TRUE) or (defined('RONDO_TEST') and RONDO_TEST === TRUE) )
 					throw $e;
 			}
 

@@ -33,7 +33,7 @@ abstract class AdminPresenter extends BasePresenter
     {
         parent::startup();
 
-        if (!$this->getUser()->isLoggedIn() && !$this->isPresenter('Sign')) {
+        if (!$this->getUser()->isLoggedIn() and !$this->isPresenter('Sign')) {
             $this->redirect('Sign:in');
         }
 
@@ -54,7 +54,7 @@ abstract class AdminPresenter extends BasePresenter
 
                 $userPresIds = array_keys($this->loggedUserEntity->presentations);
 
-                if (!$activeId || !in_array($activeId, $userPresIds)) {
+                if (!$activeId or !in_array($activeId, $userPresIds)) {
                     $activeId = !empty($userPresIds) ? $userPresIds[0] : null;
                     $session->active_presentation_id = $activeId;
                 }

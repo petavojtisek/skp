@@ -35,7 +35,7 @@ class BaseMapper extends AMapper
         $entity = parent::save($entity);
         $this->logChanges($entity, 'save');
 
-        if(isset($this->translateTableName) && $entity->getId() and $entity->hasTranslates())
+        if(isset($this->translateTableName) and $entity->getId() and $entity->hasTranslates())
         {
             $this->deleteTranslations($entity->getId());
             foreach ($entity->getTranslates() as $langId => $translationEntity)
@@ -143,7 +143,7 @@ class BaseMapper extends AMapper
     public function logChanges(IEntity $entity,?string $action = null): void
     {
         $diff = $this->getDiffData($entity);
-        if (empty($diff['before']) && empty($diff['after']))
+        if (empty($diff['before']) and empty($diff['after']))
         {
             return;
         }
@@ -219,7 +219,7 @@ class BaseMapper extends AMapper
             foreach ($entity->getTranslates() as $langId => $translationEntity)
             {
                $d  = $translationEntity->getDiffData();
-               if(!empty($d['before']) || !empty($d['after']))
+               if(!empty($d['before']) or !empty($d['after']))
                 {
                     $diffs['translates'][$langId] = $d;
                 }

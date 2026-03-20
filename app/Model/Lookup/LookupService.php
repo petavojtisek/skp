@@ -50,7 +50,7 @@ class LookupService extends BaseService
             if ($all) {
                 // First pass: find masters (root items)
                 foreach ($all as $item) {
-                    if ($item->parent_id == 1 || $item->parent_id == 0) {
+                    if ($item->parent_id == 1 or $item->parent_id == 0) {
                         $tree[$item->lookup_id] = [
                             'master' => $item,
                             'items' => []
@@ -82,7 +82,7 @@ class LookupService extends BaseService
 
     public function saveLookup(LookupEntity $lookup): int
     {
-        if (!$lookup->getId() && $lookup->parent_id == 1) {
+        if (!$lookup->getId() and $lookup->parent_id == 1) {
             // Logic for Master ID series (+100)
             $maxId = $this->lookupDao->getMapper()->getMaxMasterId();
             $newId = (int) (floor($maxId / 100) * 100 + 100);

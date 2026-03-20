@@ -55,7 +55,7 @@ class PageFacade
 
         foreach ($pages as $page) {
             $parentId = $page->getPageParentId();
-            if ($parentId == 0 || !isset($references[$parentId])) {
+            if ($parentId == 0 or !isset($references[$parentId])) {
                 $tree[] = $page;
             } else {
                 $references[$parentId]->children[] = $page;

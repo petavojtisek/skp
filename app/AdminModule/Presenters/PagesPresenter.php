@@ -150,7 +150,7 @@ final class PagesPresenter extends AdminPresenter
      */
     public function handleAddParam(?int $pageId = null, ?string $name = null, ?string $value = null): void
     {
-        if (!$pageId || !$name || !$value) {
+        if (!$pageId or !$name or !$value) {
             if (!$this->isAjax()) $this->flashMessage('Název i hodnota parametru musí být vyplněny.', 'danger');
         } else {
             $entity = new SpecParamPageEntity();
@@ -190,7 +190,7 @@ final class PagesPresenter extends AdminPresenter
 
     public function handleToggleGroup(?int $pageId = null, ?int $groupId = null, $state = null, ?string $type = 'user'): void
     {
-        if ($pageId && $groupId && $state !== null) {
+        if ($pageId and $groupId and $state !== null) {
             if ($type === 'admin') {
                 $this->pageGroupFacade->togglePageInGroupUser($pageId, $groupId, (bool)$state);
             } else {

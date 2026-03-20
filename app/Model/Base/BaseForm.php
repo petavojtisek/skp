@@ -69,11 +69,11 @@ class BaseForm extends \Nette\Application\UI\Form
 
 		$position = array_search("ajax", $classes);
 
-		if($position === FALSE && $this->isAjax)
+		if($position === FALSE and $this->isAjax)
 		{
 			$classes[] = "ajax";
 		}
-		else if($position !== FALSE && !$this->isAjax)
+		else if($position !== FALSE and !$this->isAjax)
 		{
 			file_put_contents(DIR_LOG.DS."ajaxform-need-factory.log", "Je potreba nastavit ajax u formulare ".$this->getName().", ktery je potomkem ".$this->getParent()->getName()."\r\n", FILE_APPEND);
 			array_splice($classes, $position, 1);

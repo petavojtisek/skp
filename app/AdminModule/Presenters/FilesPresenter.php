@@ -85,7 +85,7 @@ final class FilesPresenter extends AdminPresenter
         $file = $this->getHttpRequest()->getFile('file');
         $uuid = $this->getHttpRequest()->getPost('dzuuid');
 
-        if (!$file || !$uuid) {
+        if (!$file or !$uuid) {
             $this->sendResponse(new JsonResponse(['status' => 'error', 'message' => 'Chybějící data souboru nebo UUID.']));
         }
 

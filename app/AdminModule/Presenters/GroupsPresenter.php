@@ -28,11 +28,11 @@ final class GroupsPresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null, ?int $parentId = null): void
     {
-        if ($id === null && $this->id !== null) {
+        if ($id === null and $this->id !== null) {
             $id = (int)$this->id;
         }
 
-        if ($id && !$this->canEditGroup($id)) {
+        if ($id and !$this->canEditGroup($id)) {
             $this->flashMessage('Nemáte oprávnění k editaci této skupiny.', 'error');
             $this->redirect('default');
         }
@@ -125,7 +125,7 @@ final class GroupsPresenter extends AdminPresenter
         // 1. All available groups from the subtree
         $available = $this->groupFacade->getAvailableGroups($myGroupId);
         foreach ($available as $g) {
-            if ($this->id && $g->admin_group_id == $this->id) continue;
+            if ($this->id and $g->admin_group_id == $this->id) continue;
             $groups[$g->admin_group_id] = $g->admin_group_name;
         }
 
@@ -139,7 +139,7 @@ final class GroupsPresenter extends AdminPresenter
         // 3. Current parent of edited entity (always allow no-change)
         if ($this->id) {
             $entity = $this->groupFacade->getGroup((int)$this->id);
-            if ($entity && !isset($groups[$entity->pid])) {
+            if ($entity and !isset($groups[$entity->pid])) {
                 $p = $this->groupFacade->getGroup($entity->pid);
                 if ($p) $groups[$p->admin_group_id] = $p->admin_group_name;
                 elseif ($entity->pid === 0) $groups[0] = '-- Hlavní skupina --';
@@ -165,7 +165,7 @@ final class GroupsPresenter extends AdminPresenter
     {
         $id = (int)$values->admin_group_id;
         
-        if ($id && !$this->canEditGroup($id)) {
+        if ($id and !$this->canEditGroup($id)) {
             $this->flashMessage('Nemáte oprávnění k úpravě této skupiny.', 'error');
             $this->redirect('default');
         }
@@ -175,7 +175,7 @@ final class GroupsPresenter extends AdminPresenter
             // Check if it's the current parent (safety fallback)
             if ($id) {
                 $current = $this->groupFacade->getGroup($id);
-                if ($current && $current->pid !== $pid) {
+                if ($current and $current->pid !== $pid) {
                     $this->flashMessage('Zvolená nadřazená skupina není povolena.', 'error');
                     $this->redirect('default');
                 }

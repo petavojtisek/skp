@@ -82,7 +82,7 @@ abstract class AEntity implements IEntity
 
 	public function setVariable(string $variableName, mixed $value, ?string $type = null): self
 	{
-		if ($type && $value) {
+		if ($type and $value) {
 			switch ($type) {
 				case self::VALUE_TYPE_INTEGER:
 					$value = (int) $value;
@@ -123,7 +123,7 @@ abstract class AEntity implements IEntity
     {
         if (!in_array($variableName, $this->valuesIgnored, true))
         {
-            if (array_key_exists($variableName, $this->valuesDiff) && is_array($this->valuesDiff[$variableName]) && count($this->valuesDiff[$variableName]) > 0)
+            if (array_key_exists($variableName, $this->valuesDiff) and is_array($this->valuesDiff[$variableName]) and count($this->valuesDiff[$variableName]) > 0)
             {
                 if ($this->valuesDiff[$variableName][0] != $value) // Zemerne pouzita podobnost ( != ) namisto totoznosti ( !== )
                 {
@@ -190,7 +190,7 @@ abstract class AEntity implements IEntity
         }
 
 
-        if(!empty($languages) && !empty($data)){
+        if(!empty($languages) and !empty($data)){
             $this->createTranslates($languages, $data);
         }
 
@@ -274,7 +274,7 @@ abstract class AEntity implements IEntity
     public function hasChanged($includeObjects = false) : bool
     {
         foreach ($this->valuesDiff as $values)
-            if (count($values) > 1 && ($includeObjects || ((!is_object($values[0]) || method_exists($values[0], '__toString')) && (!is_object($values[1]) || method_exists($values[1], '__toString')))))
+            if (count($values) > 1 and ($includeObjects or ((!is_object($values[0]) or method_exists($values[0], '__toString')) and (!is_object($values[1]) or method_exists($values[1], '__toString')))))
                 return true;
 
         return false;
@@ -297,7 +297,7 @@ abstract class AEntity implements IEntity
                 {
                     foreach ([0,1] as $i)
                     {
-                        if (array_key_exists($i, $values) && is_object($values[$i]))
+                        if (array_key_exists($i, $values) and is_object($values[$i]))
                         {
                             if (method_exists($values[$i], '__toString'))
                             {
@@ -313,12 +313,12 @@ abstract class AEntity implements IEntity
 
                 if (count($values) > 0)
                 {
-                    if (count($values) === 2 && ($includeObjects || (!is_object($values[0]) && !is_object($values[1]))))
+                    if (count($values) === 2 and ($includeObjects or (!is_object($values[0]) and !is_object($values[1]))))
                     {
                         $diff['before'][$name] = $values[0];
                         $diff['after'][$name] = $values[1];
                     }
-                    else if ($allValues && ($includeObjects || !is_object($values[0])))
+                    else if ($allValues and ($includeObjects or !is_object($values[0])))
                     {
                         $diff['before'][$name] = $values[0];
                         $diff['after'][$name] = $values[0];
@@ -332,7 +332,7 @@ abstract class AEntity implements IEntity
 
 	public function getJSON(string $variable, mixed $key = false): mixed
 	{
-		if (!isset($this->$variable) || !$this->$variable) {
+		if (!isset($this->$variable) or !$this->$variable) {
 			return null;
 		}
 		if ($key === true) {
@@ -358,7 +358,7 @@ abstract class AEntity implements IEntity
 	 */
 	protected function getDateTime(mixed $value, mixed $format): mixed
 	{
-		if ($format === 'int' || $format === true) {
+		if ($format === 'int' or $format === true) {
 			if ($value instanceof DateTime) {
 				return $value->getTimestamp();
 			} elseif($value) {
@@ -370,7 +370,7 @@ abstract class AEntity implements IEntity
 			} elseif($value) {
 				return strtotime((string)$value) * 1000;
 			}
-		} elseif ($format && $value instanceof DateTime) {
+		} elseif ($format and $value instanceof DateTime) {
 			return $value->format((string)$format);
 		}
 
@@ -383,7 +383,7 @@ abstract class AEntity implements IEntity
 	 */
 	protected function createDateTime(mixed $value): mixed
 	{
-		if (is_numeric($value) || is_string($value)) {
+		if (is_numeric($value) or is_string($value)) {
 			return new DateTime($value);
 		}
 

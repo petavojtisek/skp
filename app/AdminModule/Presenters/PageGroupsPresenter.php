@@ -31,7 +31,7 @@ final class PageGroupsPresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null): void
     {
-        if ($id === null && $this->id !== null) {
+        if ($id === null and $this->id !== null) {
             $id = (int)$this->id;
         }
 

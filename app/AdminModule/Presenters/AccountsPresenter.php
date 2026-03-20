@@ -34,7 +34,7 @@ final class AccountsPresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null): void
     {
-        if ($id && !$this->isAllowedAdmin($id)) {
+        if ($id and !$this->isAllowedAdmin($id)) {
             $this->flashMessage('Nemáte oprávnění k editaci tohoto účtu.', 'error');
             $this->redirect('default');
         }
@@ -116,7 +116,7 @@ final class AccountsPresenter extends AdminPresenter
     {
         $id = (int) $values->admin_id;
         
-        if ($id && !$this->isAllowedAdmin($id)) {
+        if ($id and !$this->isAllowedAdmin($id)) {
             $this->flashMessage('Nemáte oprávnění k úpravě tohoto účtu.', 'error');
             $this->redirect('default');
         }
