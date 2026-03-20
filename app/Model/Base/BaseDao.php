@@ -13,6 +13,11 @@ class BaseDao extends ADao
 {
 
 
+    public function saveTranslation(int $primaryId, int $langId, string $item): void
+    {
+            $this->mapper->saveTranslation($primaryId, $langId, $item);
+    }
+
     public function getTranslations(int $id): array
     {
         $list =  $this->mapper->getTranslations($id);

@@ -28,6 +28,7 @@ class LookupService extends BaseService
 
     public function getLookupList(int $parentId, ?int $langId = null): array
     {
+        
         $key = 'lookup_list_' . $parentId . '_' . ($langId ?? 'default');
         return $this->cache->load($key, function() use ($parentId, $langId) {
             return $this->lookupDao->getLookupList($parentId, $langId);
@@ -84,15 +85,14 @@ class LookupService extends BaseService
     {
         if (!$lookup->getId() and $lookup->parent_id == 1) {
             // Logic for Master ID series (+100)
-            $maxId = $this->lookupDao->getMapper()->getMaxMasterId();
+            $maxId = $this->lookupDao->getMaxMasterId();
             $newId = (int) (floor($maxId / 100) * 100 + 100);
             $lookup->setId($newId);
-            $mapper = $this->lookupDao->getMapper();
-            $mapper->insert($lookup);
-            $mapper->deleteTranslations($lookup->getId());
+            $this->lookupDao->insert($lookup);
+            $this->lookupDao->deleteTranslations($lookup->getId());
             foreach ($lookup->getTranslates() as $langId => $translationEntity)
             {
-                $mapper->saveTranslation($lookup->getId(), $langId, $translationEntity->getValue());
+                $this->lookupDao->saveTranslation($lookup->getId(), $langId, $translationEntity->getValue());
             }
         }else {
             $id = (int)$this->lookupDao->save($lookup)->getId();

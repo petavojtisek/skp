@@ -28,8 +28,4 @@ class ModuleDao extends BaseDao
 
     }
 
-    public function getGroupModuleRights(int $groupId): array
-    {
-        return $this->mapper->getGroupModuleRights($groupId);
-    }
 }

@@ -25,7 +25,14 @@ class LookupDao extends BaseDao
 
     public function getLookupList($parentId, $langId = null): array
     {
-        return $this->mapper->getLookupList($parentId, $langId);
+        $res = $this->mapper->getLookupList($parentId, $langId);
+        $list = [];
+        if($res) {
+            foreach ($res as $index =>$item) {
+                $list[$index] =  (array)$item;
+            }
+        }
+        return $list;
     }
 
     public function getLookupItem($lookupId, $langId = null): ?string
@@ -38,6 +45,12 @@ class LookupDao extends BaseDao
     {
         $this->mapper->deleteTranslations($lookupId);
     }
+
+    public function getMaxMasterId(): int
+    {
+        return $this->mapper->getMaxMasterId();
+    }
+
 
 
 }
