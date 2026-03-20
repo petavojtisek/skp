@@ -39,7 +39,7 @@ class LoggedUserEntity extends AdministratorEntity
         $data['presentations'] = $this->presentations;
         $data['rights'] = $this->rights;
         $data['active_presentation_id'] = $this->active_presentation_id;
-        
+
         return $data;
     }
 
@@ -80,7 +80,8 @@ class LoggedUserEntity extends AdministratorEntity
     public function hasGroupRight(string $code): bool
     {
         $groupRights = $this->rights['groups_right'] ?? [];
-        return in_array('ALL', $groupRights, true) || in_array($code, $groupRights, true);
+
+        return array_key_exists('ALL', $groupRights, true) or  array_key_exists($code, $groupRights, true);
     }
 
     public function getActivePresentationId(): ?int

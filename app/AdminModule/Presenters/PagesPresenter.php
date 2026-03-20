@@ -60,8 +60,8 @@ final class PagesPresenter extends AdminPresenter
             
             // Groups for Page Groups tab
             $this->template->allPageGroups = $this->pageGroupFacade->getPageGroups();
-            $this->template->activeUserGroupIds = $this->pageGroupFacade->getPageGroupIds($id, 'user');
-            $this->template->activeAdminGroupIds = $this->pageGroupFacade->getPageGroupIds($id, 'admin');
+            $this->template->activeUserGroupIds = $this->pageGroupFacade->getPageInGroupIds($id);
+            $this->template->activeAdminGroupIds = $this->pageGroupFacade->getPageInGroupUserIds($id);
 
         } else {
             $this->template->specParams = [];
@@ -112,10 +112,10 @@ final class PagesPresenter extends AdminPresenter
 
         $newId = $this->pageFacade->savePage($entity);
 
-        // Automatické přiřazení skupiny 1 pro novou stránku do obou seznamů
+        // Automatické přiřazení skupiny 1 pro novou stránku
         if (!$id) {
-            $this->pageGroupFacade->togglePageGroup($newId, 1, true, 'user');
-            $this->pageGroupFacade->togglePageGroup($newId, 1, true, 'admin');
+            $this->pageGroupFacade->togglePageInGroup($newId, 1, true);
+            $this->pageGroupFacade->togglePageInGroupUser($newId, 1, true);
         }
         
         $this->flashMessage('Stránka byla úspěšně uložena.', 'success');
@@ -191,7 +191,11 @@ final class PagesPresenter extends AdminPresenter
     public function handleToggleGroup(?int $pageId = null, ?int $groupId = null, $state = null, ?string $type = 'user'): void
     {
         if ($pageId && $groupId && $state !== null) {
-            $this->pageGroupFacade->togglePageGroup($pageId, $groupId, (bool)$state, $type);
+            if ($type === 'admin') {
+                $this->pageGroupFacade->togglePageInGroupUser($pageId, $groupId, (bool)$state);
+            } else {
+                $this->pageGroupFacade->togglePageInGroup($pageId, $groupId, (bool)$state);
+            }
             $this->flashMessage('Nastavení skupiny bylo změněno.', 'success');
         }
         

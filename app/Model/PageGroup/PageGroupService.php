@@ -36,47 +36,44 @@ class PageGroupService extends BaseService
         return (int)$this->pageGroupDao->save($entity)->getId();
     }
 
-    /**
-     * @param string $type 'user' (page_in_group) nebo 'admin' (page_in_group_user)
-     */
-    public function togglePageGroup(int $pageId, int $pageGroupId, bool $state, string $type = 'user'): void
-    {
-        $table = ($type === 'admin') ? 'page_in_group_user' : 'page_in_group';
-        $this->pageGroupDao->getMapper()->togglePageInTable($table, $pageId, $pageGroupId, $state);
-    }
-
-    /**
-     * @param string $type 'user' nebo 'admin'
-     */
-    public function getPageGroupIds(int $pageId, string $type = 'user'): array
-    {
-        $table = ($type === 'admin') ? 'page_in_group_user' : 'page_in_group';
-        return $this->pageGroupDao->getMapper()->getPageGroupIdsFromTable($table, $pageId);
-    }
-
-    // --- Metody pro PageGroupsPresenter (správa skupin jako takových) ---
+    // --- Skupina stránek <-> Administrátorská skupina ---
 
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
-        $this->pageGroupDao->getMapper()->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
+        $this->pageGroupDao->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
         $this->eventManager->trigger('rights_changed', $adminGroupId);
     }
 
     public function getAdminGroupIds(int $pageGroupId): array
     {
-        return $this->pageGroupDao->getMapper()->getAdminGroupIds($pageGroupId);
+        return $this->pageGroupDao->getAdminGroupIds($pageGroupId);
     }
 
-    // Ponecháme původní pro kompatibilitu
-    public function getPageGroupsByPageId(int $pageId): array
+    // --- Stránka <-> Skupina stránek (Administrace) ---
+
+    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
     {
-        return $this->pageGroupDao->getPageGroupsByPageId($pageId);
+        $this->pageGroupDao->togglePageInGroup($pageId, $pageGroupId, $state);
     }
 
-    public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
+    public function getPageInGroupIds(int $pageId): array
     {
-        return $this->pageGroupDao->getAdminGroupIdsByPageGroups($pageGroupIds);
+        return $this->pageGroupDao->getPageInGroupIds($pageId);
     }
+
+    // --- Stránka <-> Uživatelská skupina (Frontend) ---
+
+    public function togglePageInGroupUser(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->pageGroupDao->togglePageInGroupUser($pageId, $pageGroupId, $state);
+    }
+
+    public function getPageInGroupUserIds(int $pageId): array
+    {
+        return $this->pageGroupDao->getPageInGroupUserIds($pageId);
+    }
+
+    // --- Pomocné metody ---
 
     public function getAccessiblePageGroupNames(int $adminGroupId): array
     {
@@ -86,5 +83,15 @@ class PageGroupService extends BaseService
     public function getAccessiblePageGroupIdsWithNames(int $adminGroupId): array
     {
         return $this->pageGroupDao->getAccessiblePageGroupIdsWithNames($adminGroupId);
+    }
+
+    public function getPageGroupsByPageId(int $pageId): array
+    {
+        return $this->pageGroupDao->getPageGroupsByPageId($pageId);
+    }
+
+    public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
+    {
+        return $this->pageGroupDao->getAdminGroupIdsByPageGroups($pageGroupIds);
     }
 }

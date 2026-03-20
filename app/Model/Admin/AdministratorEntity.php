@@ -9,6 +9,7 @@ class AdministratorEntity extends SecurityEntity implements IEntity
 {
     public mixed $admin_id = null;
     public mixed $admin_group_id = null;
+    public ?string $admin_group_name = null;
     public ?string $user_name = null;
     public ?string $user_password = null;
     public ?string $user_pass_salt = null;

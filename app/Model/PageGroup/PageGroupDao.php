@@ -22,6 +22,8 @@ class PageGroupDao extends BaseDao
         return $this->mapper;
     }
 
+    // --- Skupina stránek <-> Administrátorská skupina ---
+
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
         $this->mapper->toggleAdminGroup($pageGroupId, $adminGroupId, $state);
@@ -32,15 +34,36 @@ class PageGroupDao extends BaseDao
         return $this->mapper->getAdminGroupIds($pageGroupId);
     }
 
-    public function getAccessiblePageGroupIds(int $adminGroupId): array
+    public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
     {
-        // Poznámka: Tato metoda v mapperu chybí nebo má jiný název, 
-        // ale v předchozích verzích tu byla. Pro jistotu ji vracím přes mapper.
-        return $this->db->select('page_group_id, 1 as val')
-            ->from('page_group_admin_group')
-            ->where('admin_group_id = %i', $adminGroupId)
-            ->fetchPairs('page_group_id', 'val');
+        return $this->mapper->getAdminGroupIdsByPageGroups($pageGroupIds);
     }
+
+    // --- Stránka <-> Skupina stránek (Administrace) ---
+
+    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->mapper->togglePageInGroup($pageId, $pageGroupId, $state);
+    }
+
+    public function getPageInGroupIds(int $pageId): array
+    {
+        return $this->mapper->getPageInGroupIds($pageId);
+    }
+
+    // --- Stránka <-> Uživatelská skupina (Frontend) ---
+
+    public function togglePageInGroupUser(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->mapper->togglePageInGroupUser($pageId, $pageGroupId, $state);
+    }
+
+    public function getPageInGroupUserIds(int $pageId): array
+    {
+        return $this->mapper->getPageInGroupUserIds($pageId);
+    }
+
+    // --- Pomocné metody ---
 
     public function getAccessiblePageGroupNames(int $adminGroupId): array
     {
@@ -56,20 +79,5 @@ class PageGroupDao extends BaseDao
     {
         $data = $this->mapper->getPageGroupsByPageId($pageId);
         return $this->getEntities($this->entityName, $data) ?: [];
-    }
-
-    public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
-    {
-        return $this->mapper->getAdminGroupIdsByPageGroups($pageGroupIds);
-    }
-
-    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
-    {
-        $this->mapper->togglePageInTable('page_in_group', $pageId, $pageGroupId, $state);
-    }
-
-    public function getPageGroupIdsByPageId(int $pageId): array
-    {
-        return $this->mapper->getPageGroupIdsFromTable('page_in_group', $pageId);
     }
 }

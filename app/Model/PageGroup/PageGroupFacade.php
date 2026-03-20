@@ -31,17 +31,7 @@ class PageGroupFacade
         $this->pageGroupService->delete($id);
     }
 
-    public function togglePageGroup(int $pageId, int $pageGroupId, bool $state, string $type = 'user'): void
-    {
-        $this->pageGroupService->togglePageGroup($pageId, $pageGroupId, $state, $type);
-    }
-
-    public function getPageGroupIds(int $pageId, string $type = 'user'): array
-    {
-        return $this->pageGroupService->getPageGroupIds($pageId, $type);
-    }
-
-    // --- Metody pro PageGroupsPresenter (správa skupin jako takových) ---
+    // --- Skupina stránek <-> Administrátorská skupina ---
 
     public function toggleAdminGroup(int $pageGroupId, int $adminGroupId, bool $state): void
     {
@@ -53,6 +43,32 @@ class PageGroupFacade
         return $this->pageGroupService->getAdminGroupIds($pageGroupId);
     }
 
+    // --- Stránka <-> Skupina stránek (Administrace) ---
+
+    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->pageGroupService->togglePageInGroup($pageId, $pageGroupId, $state);
+    }
+
+    public function getPageInGroupIds(int $pageId): array
+    {
+        return $this->pageGroupService->getPageInGroupIds($pageId);
+    }
+
+    // --- Stránka <-> Uživatelská skupina (Frontend) ---
+
+    public function togglePageInGroupUser(int $pageId, int $pageGroupId, bool $state): void
+    {
+        $this->pageGroupService->togglePageInGroupUser($pageId, $pageGroupId, $state);
+    }
+
+    public function getPageInGroupUserIds(int $pageId): array
+    {
+        return $this->pageGroupService->getPageInGroupUserIds($pageId);
+    }
+
+    // --- Pomocné metody ---
+
     public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
     {
         return $this->pageGroupService->getAdminGroupIdsByPageGroups($pageGroupIds);
@@ -63,15 +79,13 @@ class PageGroupFacade
         return $this->pageGroupService->getAccessiblePageGroupNames($adminGroupId);
     }
 
-    // --- Zpětná kompatibilita ---
-
-    public function togglePageInGroup(int $pageId, int $pageGroupId, bool $state): void
+    public function getAccessiblePageGroupIdsWithNames(int $adminGroupId): array
     {
-        $this->pageGroupService->togglePageGroup($pageId, $pageGroupId, $state, 'user');
+        return $this->pageGroupService->getAccessiblePageGroupIdsWithNames($adminGroupId);
     }
 
-    public function getPageGroupIdsByPageId(int $pageId): array
+    public function getPageGroupsByPageId(int $pageId): array
     {
-        return $this->pageGroupService->getPageGroupIds($pageId, 'user');
+        return $this->pageGroupService->getPageGroupsByPageId($pageId);
     }
 }
