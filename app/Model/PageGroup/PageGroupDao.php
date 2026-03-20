@@ -41,4 +41,15 @@ class PageGroupDao extends BaseDao
     {
         return $this->mapper->getAccessiblePageGroupNames($adminGroupId);
     }
+
+    public function getPageGroupsByPageId(int $pageId): array
+    {
+        $data = $this->mapper->getPageGroupsByPageId($pageId);
+        return $this->getEntities($this->entityName, $data) ?: [];
+    }
+
+    public function getAdminGroupIdsByPageGroups(array $pageGroupIds): array
+    {
+        return $this->mapper->getAdminGroupIdsByPageGroups($pageGroupIds);
+    }
 }

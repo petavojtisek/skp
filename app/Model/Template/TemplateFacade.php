@@ -34,6 +34,16 @@ class TemplateFacade
         $this->templateService->deleteTemplate($id);
     }
 
+    public function getTemplatesByPresentation(int $presentationId): array
+    {
+        return $this->templateService->getTemplatesByPresentation($presentationId);
+    }
+
+    public function getTemplatesList(int $presentationId): array
+    {
+        return $this->templateService->getTemplatesList($presentationId);
+    }
+
     public function getCodeNames(int $templateId): array
     {
         return $this->templateService->getCodeNames($templateId);

@@ -6,10 +6,16 @@
                 <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní nastavení</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-settings-tab" data-toggle="pill" href="#tab-settings" role="tab" aria-controls="tab-settings" aria-selected="false">Nastavení objektů</a>
+                <a class="nav-link" id="tab-objects-tab" data-toggle="pill" href="#tab-objects" role="tab" aria-controls="tab-objects" aria-selected="false">Objekty</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-objects-tab" data-toggle="pill" href="#tab-objects" role="tab" aria-controls="tab-objects" aria-selected="false">Objekty</a>
+                <a class="nav-link" id="tab-params-tab" data-toggle="pill" href="#tab-params" role="tab" aria-controls="tab-params" aria-selected="false">Speciální parametry</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-module-config-tab" data-toggle="pill" href="#tab-module-config" role="tab" aria-controls="tab-module-config" aria-selected="false">Konfigurace modulu</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-page-groups-tab" data-toggle="pill" href="#tab-page-groups" role="tab" aria-controls="tab-page-groups" aria-selected="false">Editace skupin stránek</a>
             </li>
         </ul>
     </div>
@@ -17,112 +23,134 @@
         <div class="tab-content" id="page-tabs-content">
             <!-- Basic settings -->
             <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
-                <div class="form-group">
-                    <label>Název stránky</label>
-                    <input type="text" class="form-control" placeholder="Např. O nás" value="O nás">
-                </div>
-                <div class="form-group">
-                    <label>URL (Slug)</label>
-                    <input type="text" class="form-control" placeholder="o-nas" value="o-nas">
-                </div>
-                <div class="form-group">
-                    <label>SEO Title</label>
-                    <input type="text" class="form-control" value="O nás | SKP">
-                </div>
-                <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="activeSwitch" checked>
-                        <label class="custom-control-label" for="activeSwitch">Aktivní</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Aktivní od</label>
-                            <input type="date" class="form-control">
+                <form n:snippet="pageForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="page_name">Název stránky</label>
+                                <input type="text" id="page_name" name="page_name" class="form-control" value="{$page ? $page->getPageName()}" placeholder="Např. O nás" data-generate-rewrite-url="{link generateRewrite!}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="position">Pozice</label>
+                                <input type="number" id="position" name="position" class="form-control" value="{$page ? $page->getPosition()}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="page_status">Stav stránky</label>
+                                <select id="page_status" name="page_status" class="form-control">
+                                    <option n:foreach="$statuses as $sid => $status" value="{$sid}" n:attr="selected => $page && $page->getPageStatus() == $sid">
+                                        {$status['item']}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Aktivní do</label>
-                            <input type="date" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-success">Uložit základní nastavení</button>
-            </div>
 
-            <!-- Settings of Objects -->
-            <div class="tab-pane fade" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-tab">
-                <p class="text-muted">Přiřazení šablon a globálních objektů pro tuto stránku.</p>
-                <div class="form-group">
-                    <label>Šablona</label>
-                    <select class="form-control">
-                        <option>Výchozí šablona (root.tpl / @layout.latte)</option>
-                        <option>Kontakt</option>
-                    </select>
-                </div>
-                <button class="btn btn-success">Uložit nastavení</button>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="template_id">Šablona</label>
+                                <select id="template_id" name="template_id" class="form-control">
+                                    <option value="">-- Vyberte šablonu --</option>
+                                    <option n:foreach="$templates as $tid => $tname" value="{$tid}" n:attr="selected => $page && $page->getTemplateId() == $tid">
+                                        {$tname}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="page_rewrite">Rewrite (URL slug)</label>
+                                <div class="input-group">
+                                    <input type="text" id="page_rewrite" name="page_rewrite" class="form-control" value="{$page ? $page->getPageRewrite()}">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary" id="btn-generate-rewrite" title="Generovat z názvu"><i class="fas fa-sync"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="page_title">Titulek stránky (SEO Title)</label>
+                        <input type="text" id="page_title" name="page_title" class="form-control" value="{$page ? $page->getPageTitle()}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="page_description">Popis stránky (Meta Description)</label>
+                        <textarea id="page_description" name="page_description" class="form-control" rows="2">{$page ? $page->getPageDescription()}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="page_keywords">Klíčová slova (Meta Keywords)</label>
+                        <input type="text" id="page_keywords" name="page_keywords" class="form-control" value="{$page ? $page->getPageKeywords()}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="page_redirect">Přesměrování (URL nebo výběr stránky)</label>
+                        <input type="text" id="page_redirect" name="page_redirect" class="form-control" value="{$page ? $page->getPageRedirect()}" list="pages-list" placeholder="Zadejte URL nebo vyberte ze seznamu...">
+                        <datalist id="pages-list">
+                            <option n:foreach="$allPages as $pid => $pname" value="{$pname}">{$pname}</option>
+                        </datalist>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="page_sitemap" name="page_sitemap" value="Y" n:attr="checked => $page && $page->getPageSitemap() == 'Y'">
+                                <label class="custom-control-label" for="page_sitemap">Mapa stránek (Sitemap)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="page_menu" name="page_menu" value="Y" n:attr="checked => $page && $page->getPageMenu() == 'Y'">
+                                <label class="custom-control-label" for="page_menu">Zobrazit v menu</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="restricted_area" name="restricted_area" value="Y" n:attr="checked => $page && $page->getRestrictedArea() == 'Y'">
+                                <label class="custom-control-label" for="restricted_area">Chráněná oblast</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Uložit základní nastavení</button>
+                        <a n:href="default" class="btn btn-secondary">Zpět na seznam</a>
+                    </div>
+                </form>
             </div>
 
             <!-- Objects -->
             <div class="tab-pane fade" id="tab-objects" role="tabpanel" aria-labelledby="tab-objects-tab">
-                <div class="mb-3">
-                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addObjectModal"><i class="fas fa-plus"></i> Přidat objekt</button>
-                    <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#copyObjectModal"><i class="fas fa-copy"></i> Vybrat existující</button>
-                </div>
-                
-                <div class="accordion" id="accordionObjects">
-                    <div class="card" n:foreach="$pageObjects as $obj">
-                        <div class="card-header d-flex justify-content-between align-items-center" id="heading{$obj['id']}">
-                            <h2 class="mb-0 w-100">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{$obj['id']}" aria-expanded="true" aria-controls="collapse{$obj['id']}">
-                                    <span class="badge badge-info mr-2">{$obj['type']}</span> {$obj['title']} <small class="text-muted ml-2">[{$obj['code']}]</small>
-                                </button>
-                            </h2>
-                            <div class="btn-group">
-                                <a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
-                            </div>
-                        </div>
-                        <div id="collapse{$obj['id']}" class="collapse" aria-labelledby="heading{$obj['id']}" data-parent="#accordionObjects">
-                            <div class="card-body">
-                                <strong>Obsah:</strong><br>
-                                {$obj['content']|noescape}
-                            </div>
-                        </div>
-                    </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Správa objektů přiřazených k této stránce.
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modals -->
-<div class="modal fade" id="addObjectModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Přidat nový objekt</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Typ objektu</label>
-                    <select class="form-control">
-                        <option>Obsah (Editor)</option>
-                        <option>Galerie</option>
-                        <option>Novinky</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Kódové označení</label>
-                    <input type="text" class="form-control" placeholder="např. content.main">
+            <!-- Special parameters -->
+            <div class="tab-pane fade" id="tab-params" role="tabpanel" aria-labelledby="tab-params-tab">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Speciální parametry pro pokročilé nastavení stránky.
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Přidat</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+
+            <!-- Module config -->
+            <div class="tab-pane fade" id="tab-module-config" role="tabpanel" aria-labelledby="tab-module-config-tab">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Konfigurace modulu přiřazeného k této stránce.
+                </div>
+            </div>
+
+            <!-- Page groups -->
+            <div class="tab-pane fade" id="tab-page-groups" role="tabpanel" aria-labelledby="tab-page-groups-tab">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Přiřazení stránky do skupin stránek a nastavení přístupových práv.
+                </div>
             </div>
         </div>
     </div>
@@ -130,13 +158,47 @@
 {/block}
 
 {block scripts}
-<!-- TinyMCE would be initialized here when editing objects -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-  tinymce.init({
-    selector: '.tinymce-editor',
-    plugins: 'image link media table lists',
-    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | image'
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+        const pageNameInput = document.getElementById('page_name');
+        const rewriteInput = document.getElementById('page_rewrite');
+        const btnGenerate = document.getElementById('btn-generate-rewrite');
+        let isManualRewrite = rewriteInput.value !== '';
+        let timeout = null;
+
+        const generateRewrite = () => {
+            const name = pageNameInput.value;
+            if (!name) return;
+
+            const url = pageNameInput.getAttribute('data-generate-rewrite-url');
+            naja.makeRequest('GET', url, { name: name }, { history: false })
+                .then(payload => {
+                    if (payload.rewrite && !isManualRewrite) {
+                        rewriteInput.value = payload.rewrite;
+                    }
+                });
+        };
+
+        // Reagovat na psaní v názvu
+        pageNameInput.addEventListener('input', () => {
+            if (isManualRewrite) return;
+            
+            clearTimeout(timeout);
+            timeout = setTimeout(generateRewrite, 300); // Debounce 300ms
+        });
+
+        // Pokud uživatel do rewrite sáhne ručně, přestaneme mu ho měnit
+        rewriteInput.addEventListener('input', () => {
+            isManualRewrite = true;
+        });
+
+        // Tlačítko pro vynucení regenerace (i když se v něm uživatel vrtal)
+        if (btnGenerate) {
+            btnGenerate.addEventListener('click', () => {
+                isManualRewrite = false;
+                generateRewrite();
+            });
+        }
+    });
 </script>
 {/block}

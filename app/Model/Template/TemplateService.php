@@ -39,6 +39,21 @@ class TemplateService extends BaseService
         $this->templateDao->delete($id);
     }
 
+    public function getTemplatesByPresentation(int $presentationId): array
+    {
+        return $this->templateDao->findAllBy(['presentation_id' => $presentationId]) ?: [];
+    }
+
+    public function getTemplatesList(int $presentationId): array
+    {
+        $templates = $this->getTemplatesByPresentation($presentationId);
+        $list = [];
+        foreach ($templates as $t) {
+            $list[$t->getId()] = $t->getTemplateName() . ' (' . $t->getTemplateFilename() . ')';
+        }
+        return $list;
+    }
+
     public function getCodeNames(int $templateId): array
     {
         return $this->codeNameDao->findAllBy(['template_id' => $templateId]) ?: [];

@@ -2,8 +2,21 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\Model\Page\PageFacade;
+use App\Model\Template\TemplateFacade;
+use App\Model\Lookup\LookupFacade;
+
 final class PagesPresenter extends AdminPresenter
 {
+    /** @var PageFacade @inject */
+    public $pageFacade;
+
+    /** @var TemplateFacade @inject */
+    public $templateFacade;
+
+    /** @var LookupFacade @inject */
+    public $lookupFacade;
+
     /** @var int|null @persistent */
     public $id;
 
@@ -11,23 +24,40 @@ final class PagesPresenter extends AdminPresenter
     {
         $this->template->title = 'Stránky';
         
-        $this->template->pages = [
-            (object)['id' => 1, 'name' => 'Úvod', 'url' => '/', 'active' => true, 'children' => []],
-            (object)['id' => 2, 'name' => 'O nás', 'url' => '/o-nas', 'active' => true, 'children' => [
-                (object)['id' => 3, 'name' => 'Historie', 'url' => '/o-nas/historie', 'active' => true, 'children' => []],
-                (object)['id' => 4, 'name' => 'Tým', 'url' => '/o-nas/tym', 'active' => false, 'children' => [
-                     (object)['id' => 6, 'name' => 'Vedení', 'url' => '/o-nas/tym/vedeni', 'active' => true, 'children' => []],
-                ]],
-            ]],
-            (object)['id' => 5, 'name' => 'Kontakt', 'url' => '/kontakt', 'active' => true, 'children' => []],
-        ];
+        $presentationId = $this->loggedUserEntity->active_presentation_id;
+        
+        if ($presentationId) {
+            $this->template->pages = $this->pageFacade->getPages($presentationId);
+        } else {
+            $this->template->pages = [];
+        }
     }
     
-    public function renderEdit(?int $id = null): void
+    public function renderEdit(?int $id = null, ?int $parentId = null): void
     {
         $this->template->title = $id ? 'Editace stránky' : 'Nová stránka';
         $this->template->pageId = $id;
+        $this->template->parentId = $parentId;
         
+        $presentationId = $this->loggedUserEntity->active_presentation_id;
+
+        // Load page if exists
+        $page = null;
+        if ($id) {
+            // We need a find method in PageFacade
+            $page = $this->pageFacade->find($id);
+        }
+        $this->template->page = $page;
+
+        // Templates for current presentation
+        $this->template->templates = $this->templateFacade->getTemplatesList($presentationId);
+
+        // Statuses from lookup
+        $this->template->statuses = $this->lookupFacade->getLookupList(C_PRESENTATION_STATUS);
+
+        // Redirect autocomplete - other pages in same presentation
+        $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $id);
+
         $this->template->pageObjects = [
             ['id' => 1, 'type' => 'Obsah', 'code' => 'content.about_us', 'title' => 'Hlavní text', 'content' => '<p>Jsme sdružení...</p>'],
             ['id' => 2, 'type' => 'Galerie', 'code' => 'gallery.about', 'title' => 'Fotky z akcí', 'content' => '[Galerie 5 obrázků]'],
@@ -45,5 +75,18 @@ final class PagesPresenter extends AdminPresenter
         } else {
             $this->redirect('this');
         }
+    }
+
+    /**
+     * Helper to generate slug from string (AJAX or manual)
+     */
+    public function handleGenerateRewrite(?string $name = null): void
+    {
+        if (!$name) {
+            $this->sendJson(['rewrite' => '']);
+            return;
+        }
+        $rewrite = \Nette\Utils\Strings::webalize($name);
+        $this->sendJson(['rewrite' => $rewrite]);
     }
 }
