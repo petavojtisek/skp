@@ -84,42 +84,4 @@ class AdminFacade
     public function saveAdminPresentations(int $adminId, array $presentationIds): void {
         $this->presentationService->saveAdminPresentations($adminId, $presentationIds);
     }
-
-    /**
-     * Loads complete data for the logged-in user into the LoggedUserEntity
-     */
-    public function loadLoggedUserEntity(int $adminId, LoggedUserEntity $entity): void
-    {
-        $this->adminService->loadLoggedUserEntity($adminId, $entity);
-
-        if($entity->getId() > 0){
-            $groupId = (int)$entity->getAdminGroupId();
-
-
-            $groups = $this->getAdminGroups();
-            $entity->setGroup(isset($groups[$groupId]) ? (array)$groups[$groupId] : null);
-
-            $userPresIds = $this->getAdminPresentations($adminId);
-            $presMap = [];
-            foreach ($userPresIds as $pid) {
-                $presMap[$pid] = 1;
-            }
-            $entity->setPresentations($presMap);
-            $entity->setRights($this->getLoggedUserRights($entity));
-        }
-    }
-
-    protected function getLoggedUserRights(LoggedUserEntity $entity): array
-    {
-        $groupId = (int)$entity->getAdminGroupId();
-        $cacheKey = 'user_rights_group_' . $groupId;
-
-        return $this->cache->load($cacheKey, function() use ($groupId) {
-            return [
-                'groups_right' => $this->adminGroupRightService->getGroupRightsCodes($groupId),
-                'module_rights' => $this->moduleService->getModuleRights($groupId),
-                'page_rights' => $this->pageGroupService->getAccessiblePageGroupNames($groupId),
-            ];
-        }, ['rights_group_' . $groupId]);
-    }
 }

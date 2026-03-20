@@ -10,40 +10,32 @@ class LoginService extends BaseService
 {
     private $storage;
 
-    /** @var User */
-    public $user;
 
-    /** @var LogFacade */
-    private $logFacade;
-
-    public function __construct(User $user, LogFacade $logFacade)
+    public function __construct()
     {
-        $this->user = $user;
-        $this->logFacade = $logFacade;
+
     }
 
-    public function setUser($user): void
-    {
-        $this->user = $user;
-    }
 
     public function setStorage($storage): void
     {
         $this->storage = $storage;
     }
 
-    public function login($usr, $pass): void
+    public function getStorage(): ?string
+    {
+        return $this->storage;
+    }
+
+    public function getCredential($usr, $pass): ?CredentialEntity
     {
         if ($this->storage === 'admin') {
             $credentials = new CredentialEntity();
             $credentials->setUserName($usr);
             $credentials->setPassword($pass);
-            
-            $identity = $this->user->getAuthenticator()->authenticate(['admin', $credentials]);
-            $this->user->login($identity);
-
-            // LOG LOGIN
-            $this->logFacade->logAction('System', 'LOGIN', 'Přihlášení uživatele: ' . $usr, (int)$this->user->getId());
+            return  $credentials;
         }
+
+        return null;
     }
 }

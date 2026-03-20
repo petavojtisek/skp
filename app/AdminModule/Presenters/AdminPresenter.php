@@ -34,38 +34,39 @@ abstract class AdminPresenter extends BasePresenter
         }
 
         if ($this->getUser()->isLoggedIn()) {
-            $this->adminId = (int) $this->getUser()->getId();
-            
-            // Populate the entity via facade
-            $this->adminFacade->loadLoggedUserEntity($this->adminId, $this->loggedUserEntity);
+            $identity = $this->getUser()->getIdentity();
+            if ($identity) {
+                $this->adminId = (int) $identity->getId();
+                
+                // Populate the entity directly from identity data stored in session
+                $this->loggedUserEntity->initWithData($identity->getData());
 
-            // Handle active presentation via session
-            $session = $this->getSession('admin_context');
-            $activeId = $session->active_presentation_id;
-
-            $userPresIds = array_keys($this->loggedUserEntity->presentations);
-            
-            if (!$activeId || !in_array($activeId, $userPresIds)) {
-                $activeId = !empty($userPresIds) ? $userPresIds[0] : null;
-                $session->active_presentation_id = $activeId;
-            }
-
-            $this->loggedUserEntity->active_presentation_id = $activeId ? (int)$activeId : null;
-
-            // Pass list of available presentations to template for switcher
-            if (!empty($userPresIds)) {
-                $availablePres = [];
-                foreach ($userPresIds as $pid) {
-                    $p = $this->presentationFacade->getPresentation($pid);
-                    if ($p) $availablePres[$pid] = $p;
+                // Handle active presentation via identity
+                $activeId = $this->loggedUserEntity->active_presentation_id;
+                $userPresIds = array_keys($this->loggedUserEntity->presentations);
+                
+                if (!$activeId || !in_array($activeId, $userPresIds)) {
+                    $activeId = !empty($userPresIds) ? $userPresIds[0] : null;
+                    $this->loggedUserEntity->active_presentation_id = $activeId ? (int)$activeId : null;
+                    // Sync back to identity
+                    $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
                 }
-                $this->template->availablePresentations = $availablePres;
-            } else {
-                $this->template->availablePresentations = [];
-            }
 
-            $this->template->adminId = $this->adminId;
-            $this->template->loggedUserEntity = $this->loggedUserEntity;
+                // Pass list of available presentations to template for switcher
+                if (!empty($userPresIds)) {
+                    $availablePres = [];
+                    foreach ($userPresIds as $pid) {
+                        $p = $this->presentationFacade->getPresentation($pid);
+                        if ($p) $availablePres[$pid] = $p;
+                    }
+                    $this->template->availablePresentations = $availablePres;
+                } else {
+                    $this->template->availablePresentations = [];
+                }
+
+                $this->template->adminId = $this->adminId;
+                $this->template->loggedUserEntity = $this->loggedUserEntity;
+            }
         }
     }
 
@@ -77,8 +78,12 @@ abstract class AdminPresenter extends BasePresenter
         $id = (int)$id;
         $userPresIds = array_keys($this->loggedUserEntity->presentations);
         if (in_array($id, $userPresIds)) {
-            $session = $this->getSession('admin_context');
-            $session->active_presentation_id = $id;
+            // Update entity
+            $this->loggedUserEntity->active_presentation_id = $id;
+            
+            // Sync new state to session identity
+            $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
+            
             $this->flashMessage('Prezentace byla přepnuta.');
         }
         $this->redirect('this');

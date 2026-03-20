@@ -75,6 +75,7 @@ services:
 	- App\Model\FileManager\FileManagerDao
 
 	# AUTH
+	user: App\Model\Admin\User
 	authenticator:
 		class: App\Model\Admin\SystemAuthenticator
 		setup:
@@ -111,7 +112,18 @@ services:
 	# FACADE
 	- App\Model\Page\PageFacade
 	- App\Model\Lookup\LookupFacade
-	- App\Model\Login\LoginFacade
+	- App\Model\Login\LoginFacade(
+		@user, 
+		@App\Model\Login\LoginService, 
+		@App\Model\Log\LogService, 
+		@App\Model\Admin\AdminService, 
+		@App\Model\AdminGroup\AdminGroupService, 
+		@App\Model\AdminGroupRight\AdminGroupRightService, 
+		@App\Model\Presentation\PresentationService, 
+		@App\Model\PageGroup\PageGroupService, 
+		@App\Model\Module\ModuleService, 
+		@App\Model\System\Cache
+	)
 	- App\Model\Presentation\PresentationFacade
 	- App\Model\Config\ConfigFacade
 	- App\Model\Template\TemplateFacade

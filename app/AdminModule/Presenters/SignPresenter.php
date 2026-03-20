@@ -18,7 +18,6 @@ class SignPresenter extends AdminPresenter
     {
         parent::startup();
         $this->loginFacade->setStorage('admin');
-        $this->loginFacade->setUser($this->getUser());
     }
 
     public function actionDefault(): void
