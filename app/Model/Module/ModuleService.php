@@ -51,6 +51,15 @@ class ModuleService extends BaseService
         return $this->moduleDao->getModuleByInstallId($installId);
     }
 
+    public function toggleActiveByInstallId(int $installId, bool $state): void
+    {
+        $module = $this->getModuleByInstallId($installId);
+        if ($module) {
+            $module->setModuleActive($state ? 'Y' : 'N');
+            $this->moduleDao->save($module);
+        }
+    }
+
     /**
      * Sestaví matici oprávnění pro konkrétní modul a skupinu
      * @param int $moduleId

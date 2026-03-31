@@ -63,4 +63,14 @@ class TemplateFacade
     {
         $this->templateService->deleteCodeName($id);
     }
+
+    public function getAllowedModules(int $templateId): array
+    {
+        return $this->templateService->getAllowedModules($templateId);
+    }
+
+    public function getAllowedCodeNames(int $templateId, int $moduleId): array
+    {
+        return $this->templateService->getAllowedCodeNames($templateId, $moduleId);
+    }
 }

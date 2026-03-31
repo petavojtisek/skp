@@ -20,16 +20,22 @@ class InstallService extends BaseService
         return $this->installDao->findAll() ?: [];
     }
 
-    public function toggleInstalled(int $id, bool $state): void
+    public function findByModuleName(string $name): ?InstallEntity
     {
-        $module = $this->installDao->find($id);
-        if ($module) {
-            $module->installed = $state ? 1 : 0;
-            $this->installDao->update($module);
-        }
+        return $this->installDao->findOneBy(['module_name' => $name]);
     }
 
-    public function uninstallModule(int $id): void
+    public function find(int $id): ?InstallEntity
+    {
+        return $this->installDao->find($id);
+    }
+
+    public function save(InstallEntity $entity): InstallEntity
+    {
+        return $this->installDao->save($entity);
+    }
+
+    public function delete(int $id): void
     {
         $this->installDao->delete($id);
     }
@@ -37,7 +43,7 @@ class InstallService extends BaseService
     public function getAvailableModules(): array
     {
         $modules = [];
-        $path = dirname(__DIR__, 4) . '/install/modules';
+        $path = dirname(__DIR__, 3) . '/install/modules';
         
         if (is_dir($path)) {
             foreach (Finder::findDirectories('*')->in($path) as $dir) {
@@ -45,8 +51,7 @@ class InstallService extends BaseService
             }
         }
         
-        // Filter out already installed modules
-        $installed = array_map(fn($m) => $m->module_name, $this->getInstalledModules());
+        $installed = array_map(fn($m) => $m->getModuleName(), $this->getInstalledModules());
         return array_diff($modules, $installed);
     }
 }

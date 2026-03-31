@@ -29,26 +29,8 @@
                     </button>
                 </div>
 
-                <div n:foreach="$pageComponents as $compGroup" class="card card-outline card-secondary mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">{$compGroup->name} <code>{$compGroup->code_name}</code></h3>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        {var $moduleTemplate = "../../Modules/" . $compGroup->module_class . "/templates/Admin/list.latte"}
-                        {if file_exists($appDir . "/AdminModule/templates/Pages/" . $moduleTemplate)}
-                            {include $moduleTemplate, items => $compGroup->items, componentId => $compGroup->id}
-                        {else}
-                            <div class="p-3">
-                                <div class="alert alert-warning mb-0">
-                                    <i class="fas fa-exclamation-triangle"></i> Šablona pro modul <b>{$compGroup->module_class}</b> nebyla nalezena.<br>
-                                    <small class="text-muted">Hledaná cesta: app/Modules/{$compGroup->module_class}/templates/Admin/list.latte</small>
-                                </div>
-                            </div>
-                        {/if}
-                    </div>
+                <div n:foreach="$pageComponents as $comp">
+                    {control objectControl-$comp->id}
                 </div>
 
                 <div n:if="empty($pageComponents)" class="alert alert-info">
@@ -279,7 +261,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-add-object-label">Přidat nový objekt na stránku</h5>
+                <h5 class="modal-title" id="modal-add-object-label">Přidat objekt na stránku</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -289,10 +271,10 @@
                     <div class="card-header p-0 pt-1 border-bottom-0">
                         <ul class="nav nav-tabs" id="modal-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="modal-tab1-tab" data-toggle="pill" href="#modal-tab1" role="tab" aria-controls="modal-tab1" aria-selected="true">Nový</a>
+                                <a class="nav-link active" id="modal-tab1-tab" data-toggle="pill" href="#modal-tab1" role="tab" aria-controls="modal-tab1" aria-selected="true">Nový objekt</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="modal-tab2-tab" data-toggle="pill" href="#modal-tab2" role="tab" aria-controls="modal-tab2" aria-selected="false">Existující</a>
+                                <a class="nav-link" id="modal-tab2-tab" data-toggle="pill" href="#modal-tab2" role="tab" aria-controls="modal-tab2" aria-selected="false">Existující objekt</a>
                             </li>
                         </ul>
                     </div>
@@ -300,51 +282,45 @@
                         <div class="tab-content" id="modal-tabs-content">
                             <!-- Tab 1: Nový -->
                             <div class="tab-pane fade show active" id="modal-tab1" role="tabpanel" aria-labelledby="modal-tab1-tab">
-                                <form id="form-add-object-1">
+                                <form id="form-add-object-1" action="{link addObject!, pageId => $pageId}" method="post">
                                     <div class="form-group">
                                         <label>Typ (Modul)</label>
-                                        <select class="form-control select-module" data-type="tab1" data-url="{link getOptions!}">
+                                        <select name="module_id" class="form-control select-module" data-type="tab1" data-url="{link getOptions!}" required>
                                             <option value="">-- Vyberte modul --</option>
-                                            <option n:foreach="$tab1Modules as $mId => $mName" value="{$mId}">{$mName}</option>
+                                            <option n:foreach="$allowedModules as $mId => $mName" value="{$mId}">{$mName}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Kódové označení</label>
-                                        <select class="form-control select-options" disabled>
+                                        <select name="code_name" class="form-control select-options" disabled required>
                                             <option value="">-- Nejdříve vyberte modul --</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Název</label>
-                                        <input type="text" class="form-control" placeholder="Zadejte název objektu...">
+                                        <label>Název (vnitřní pojmenování)</label>
+                                        <input type="text" name="name" class="form-control" placeholder="Např. O nás" required>
                                     </div>
+                                    <button type="submit" class="btn btn-primary">Vytvořit a přidat</button>
                                 </form>
                             </div>
                             <!-- Tab 2: Existující -->
                             <div class="tab-pane fade" id="modal-tab2" role="tabpanel" aria-labelledby="modal-tab2-tab">
-                                <form id="form-add-object-2">
+                                <form id="form-add-object-2" action="{link linkObject!, pageId => $pageId}" method="post">
                                     <div class="form-group">
-                                        <label>Typ (Modul)</label>
-                                        <select class="form-control select-module" data-type="tab2" data-url="{link getOptions!}">
-                                            <option value="">-- Vyberte modul --</option>
-                                            <option n:foreach="$tab2Modules as $mId => $mName" value="{$mId}">{$mName}</option>
+                                        <label>Existující komponenta</label>
+                                        <select name="component_id" class="form-control existing-select" required>
+                                            <option value="">-- Vyberte komponentu --</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Jméno</label>
-                                        <select class="form-control select-options" disabled>
-                                            <option value="">-- Nejdříve vyberte modul --</option>
-                                        </select>
+                                    <div class="alert alert-info small">
+                                        <i class="fas fa-info-circle"></i> Zobrazují se pouze objekty povolené šablonou, které nejsou na této stránce.
                                     </div>
+                                    <button type="submit" class="btn btn-success">Přidat na stránku</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
-                <button type="button" class="btn btn-primary">Uložit objekt</button>
             </div>
         </div>
     </div>
@@ -451,6 +427,23 @@
                             }
                         });
                 });
+            });
+
+            // Načtení existujících komponent při přepnutí na druhou záložku
+            $('#modal-tabs a[href="#modal-tab2"]').on('shown.bs.tab', function (e) {
+                const targetSelect = document.querySelector('.existing-select');
+                const url = document.querySelector('.select-module').getAttribute('data-url');
+
+                naja.makeRequest('GET', url, { type: 'tab2' }, { history: false })
+                    .then(payload => {
+                        if (payload.options) {
+                            let html = '<option value="">-- Vyberte komponentu --</option>';
+                            for (const [id, name] of Object.entries(payload.options)) {
+                                html += `<option value="${ id }">${ name }</option>`;
+                            }
+                            targetSelect.innerHTML = html;
+                        }
+                    });
             });
         };
 

@@ -1,0 +1,63 @@
+<div class="card card-outline card-secondary mb-4" n:snippet="content">
+    <div class="card-header">
+        <h3 class="card-title">{$name} <code>{$code}</code></h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 50px" class="text-center">Aktivní</th>
+                        <th style="width: 150px">Stav</th>
+                        <th>Jméno</th>
+                        <th style="width: 180px">Datum vložení</th>
+                        <th style="width: 150px">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if empty($items)}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Žádné objekty k zobrazení.</td>
+                        </tr>
+                    {else}
+                        <tr n:foreach="$items as $item">
+                            <td class="text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input ajax-toggle" 
+                                           id="active-{$item->getId()}" 
+                                           n:attr="checked => $item->getActive() == 1"
+                                           data-url="{link toggleActive!, id => $item->getId()}">
+                                    <label class="custom-control-label" for="active-{$item->getId()}"></label>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-info">{$item->getStatus()}</span>
+                            </td>
+                            <td>{$item->getName()}</td>
+                            <td>{$item->getCreatedDt()|date:'d.m.Y H:i'}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-xs btn-primary" title="Editace"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-xs btn-info" title="Preview"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-xs btn-success" title="Přidat"><i class="fas fa-plus"></i></button>
+                                    <button class="btn btn-xs btn-danger" title="Odebrat"><i class="fas fa-minus"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 bg-light border-top">
+            <button class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Nový</button>
+            <button class="btn btn-sm btn-info"><i class="fas fa-copy"></i> Kopírovat</button>
+            <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Editace objektu</button>
+            <a n:href="removeFromPage!" class="btn btn-sm btn-danger"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
+            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a>
+        </div>
+    </div>
+</div>

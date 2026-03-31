@@ -21,5 +21,11 @@ class ComponentDao extends BaseDao
         $data = $this->mapper->getByPageId($pageId);
         return $this->getEntities($this->entityName, $data);
     }
+
+    public function getExistingNotOnPage(int $pageId, int $templateId): array
+    {
+        $data = $this->mapper->getExistingNotOnPage($pageId, $templateId);
+        return $this->getEntities($this->entityName, $data);
+    }
 }
 

@@ -56,6 +56,11 @@ class ComponentEntity extends BaseEntity
         $this->setVariable('code_name', $code, self::VALUE_TYPE_STRING);
     }
 
+    public function setInserted(mixed $inserted): void
+    {
+        $this->setVariable('inserted', $inserted, self::VALUE_TYPE_DATE);
+    }
+
     public function getModuleClassName(): ?string
     {
         return $this->module_class_name;

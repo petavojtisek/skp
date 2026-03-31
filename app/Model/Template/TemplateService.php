@@ -56,7 +56,8 @@ class TemplateService extends BaseService
 
     public function getCodeNames(int $templateId): array
     {
-        return $this->codeNameDao->findAllBy(['template_id' => $templateId]) ?: [];
+        $data = $this->codeNameDao->getByTemplateId($templateId);
+        return $data;
     }
 
     public function getCodeName(int $id): ?CodeNameEntity
@@ -72,5 +73,25 @@ class TemplateService extends BaseService
     public function deleteCodeName(int $id): void
     {
         $this->codeNameDao->delete($id);
+    }
+
+    public function getAllowedModules(int $templateId): array
+    {
+        $data = $this->codeNameDao->getAllowedModules($templateId);
+        $list = [];
+        foreach ($data as $row) {
+            $list[$row->module_id] = $row->module_name;
+        }
+        return $list;
+    }
+
+    public function getAllowedCodeNames(int $templateId, int $moduleId): array
+    {
+        $data = $this->codeNameDao->getAllowedCodeNames($templateId, $moduleId);
+        $list = [];
+        foreach ($data as $row) {
+            $list[$row->code_name] = $row->code_name;
+        }
+        return $list;
     }
 }

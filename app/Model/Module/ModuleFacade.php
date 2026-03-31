@@ -51,6 +51,11 @@ class ModuleFacade
         return  $this->moduleService->getModuleByInstallId($installId);
     }
 
+    public function toggleActiveByInstallId(int $installId, bool $state): void
+    {
+        $this->moduleService->toggleActiveByInstallId($installId, $state);
+    }
+
     public function getInstalledModules(): array
     {
         return $this->installService->getInstalledModules();

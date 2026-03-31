@@ -70,8 +70,8 @@
                                         <input n:name="code_name" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label n:name="module">Modul (ID)</label>
-                                        <input n:name="module" class="form-control">
+                                        <label n:name="module">Modul</label>
+                                        <select n:name="module" class="form-control"></select>
                                     </div>
                                 </div>
                                 <div class="card-footer">
@@ -102,7 +102,7 @@
                                 <tbody>
                                     <tr n:foreach="$codeNames as $cn">
                                         <td><code>{$cn->code_name}</code></td>
-                                        <td>{$cn->module}</td>
+                                        <td>{$cn->getModuleName()}</td>
                                         <td>
                                             <a n:href="editCodeName!, codeNameId => $cn->id" class="btn btn-sm btn-info ajax"><i class="fas fa-edit"></i></a>
                                             <a n:href="deleteCodeName!, codeNameId => $cn->id, id => $templateId" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>

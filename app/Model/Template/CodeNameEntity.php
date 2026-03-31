@@ -10,6 +10,7 @@ class CodeNameEntity extends BaseEntity
     public mixed $template_id = null;
     public ?int $module = null;
     public ?string $code_name = null;
+    public ?string $module_name = null;
 
     public function getId(): mixed { return $this->id; }
     public function setId(mixed $id): void { $this->setVariable('id', $id, self::VALUE_TYPE_INTEGER); }
@@ -22,4 +23,6 @@ class CodeNameEntity extends BaseEntity
 
     public function getCodeName(): ?string { return $this->code_name; }
     public function setCodeName(?string $code_name): void { $this->setVariable('code_name', $code_name, self::VALUE_TYPE_STRING); }
+
+    public function getModuleName(): ?string { return $this->module_name; }
 }

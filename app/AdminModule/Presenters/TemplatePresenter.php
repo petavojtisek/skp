@@ -16,6 +16,9 @@ final class TemplatePresenter extends AdminPresenter
     /** @var PresentationFacade @inject */
     public $presentationFacade;
 
+    /** @var \App\Model\Module\ModuleFacade @inject */
+    public $moduleFacade;
+
     /** @var int|null @persistent */
     public $id;
 
@@ -173,8 +176,17 @@ final class TemplatePresenter extends AdminPresenter
         $form->addText('code_name', 'Kódové označení')
             ->setRequired('Zadejte kódové označení');
 
-        $form->addInteger('module', 'Modul (ID)')
-            ->setDefaultValue(0);
+        $modules = [];
+        foreach ($this->moduleFacade->getInstalledModules() as $m) {
+            $moduleEntity = $this->moduleFacade->getModuleByInstallId($m->getId());
+            if ($moduleEntity) {
+                $modules[$moduleEntity->getId()] = $moduleEntity->getModuleName();
+            }
+        }
+
+        $form->addSelect('module', 'Modul', $modules)
+            ->setPrompt('-- Vyberte modul --')
+            ->setRequired('Vyberte modul');
 
         $form->addSubmit('send', 'Uložit kód')
             ->setHtmlAttribute('class', 'btn btn-primary');

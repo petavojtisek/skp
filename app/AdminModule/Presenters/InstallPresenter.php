@@ -10,24 +10,41 @@ final class InstallPresenter extends AdminPresenter
     /** @var InstallFacade @inject */
     public $installFacade;
 
+    /** @var \App\Model\Module\ModuleFacade @inject */
+    public $moduleFacade;
+
     /** @var int|null @persistent */
     public $id;
 
     public function renderDefault(): void
     {
         $this->template->title = 'Instalované moduly';
-        $this->template->installedModules = $this->installFacade->getInstalledModules();
+        $installedModules = $this->installFacade->getInstalledModules();
+        $this->template->installedModules = $installedModules;
         $this->template->availableModules = $this->installFacade->getAvailableModules();
+
+        $activeStates = [];
+        foreach ($installedModules as $m) {
+            $moduleEntity = $this->moduleFacade->getModuleByInstallId($m->getId());
+            $activeStates[$m->getId()] = $moduleEntity ? ($moduleEntity->getModuleActive() === 'Y') : false;
+        }
+        $this->template->activeStates = $activeStates;
     }
 
-    /**
-     * AJAX signal to toggle module active status
-     */
     public function handleToggleActive(int $id, bool $state = false): void
     {
         $this->installFacade->toggleInstalled($id, $state);
         if ($this->isAjax()) {
-            $this->template->installedModules = $this->installFacade->getInstalledModules();
+            $installedModules = $this->installFacade->getInstalledModules();
+            $this->template->installedModules = $installedModules;
+            
+            $activeStates = [];
+            foreach ($installedModules as $m) {
+                $moduleEntity = $this->moduleFacade->getModuleByInstallId($m->getId());
+                $activeStates[$m->getId()] = $moduleEntity ? ($moduleEntity->getModuleActive() === 'Y') : false;
+            }
+            $this->template->activeStates = $activeStates;
+            
             $this->redrawControl('installedTableSnippet');
         } else {
             $this->redirect('this');
@@ -53,12 +70,16 @@ final class InstallPresenter extends AdminPresenter
     }
 
     /**
-     * Signal to install module (placeholder)
+     * Signal to install module
      */
     public function handleInstall(string $name): void
     {
-        // TODO: Implement actual installation logic (copying, SQL execution)
-        $this->flashMessage('Instalace modulu ' . $name . ' zatím není implementována.', 'info');
+        try {
+            $this->installFacade->installModule($name);
+            $this->flashMessage('Modul ' . $name . ' byl úspěšně nainstalován.', 'success');
+        } catch (\Exception $e) {
+            $this->flashMessage('Chyba při instalaci modulu: ' . $e->getMessage(), 'danger');
+        }
         $this->redirect('this');
     }
 }

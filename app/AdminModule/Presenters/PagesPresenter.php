@@ -30,6 +30,9 @@ final class PagesPresenter extends AdminPresenter
     /** @var \App\Model\Component\ComponentFacade @inject */
     public $componentFacade;
 
+    /** @var \App\AdminModule\Components\ObjectControlFactory @inject */
+    public $objectControlFactory;
+
     /** @var int|null @persistent */
     public $id;
 
@@ -79,37 +82,9 @@ final class PagesPresenter extends AdminPresenter
         $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $id);
 
         // REAL COMPONENTS
-        $components = $id ? $this->componentFacade->getByPageId($id) : [];
-        $pageComponents = [];
-
-        foreach ($components as $component) {
-            $moduleClass = $component->getModuleClassName();
-            $items = [];
-            
-            // Dynamicky získáme data pro komponentu z její fasády
-            // Fasáda by měla být registrovaná v DI pod názvem odpovídajícím modulu
-            $facadeName = "App\\Modules\\{$moduleClass}\\Model\\{$moduleClass}Facade";
-            if (class_exists($facadeName)) {
-                try {
-                    $moduleFacade = $this->context->getByType($facadeName);
-                    if (method_exists($moduleFacade, 'getByComponentId')) {
-                        $items = $moduleFacade->getByComponentId($component->getId());
-                    }
-                } catch (\Nette\DI\MissingServiceException $e) {
-                    // Fasáda není registrovaná
-                }
-            }
-
-            $pageComponents[] = (object)[
-                'id' => $component->getId(),
-                'name' => $component->getComponentName(),
-                'code_name' => $component->getCodeName(),
-                'module_class' => $moduleClass,
-                'items' => $items
-            ];
-        }
-
-        $this->template->pageComponents = $pageComponents;
+        $this->template->pageComponents = $id ? $this->componentFacade->getByPageId($id) : [];
+        $templateId = $page ? $page->getTemplateId() : 0;
+        $this->template->allowedModules = $templateId ? $this->templateFacade->getAllowedModules($templateId) : [];
 
         // Dummy data for Add Object modal
         $this->template->tab1Modules = [
@@ -128,26 +103,87 @@ final class PagesPresenter extends AdminPresenter
     /**
      * AJAX signal to get dependent select options for objects modal
      */
-    public function handleGetOptions(?string $type = null, ?string $moduleId = null): void
+    public function handleGetOptions(?string $type = null, ?int $moduleId = null): void
     {
+        $pageId = (int)$this->id;
+        $page = $this->pageFacade->find($pageId);
+        $templateId = $page ? $page->getTemplateId() : 0;
+
         $options = [];
-        if ($type === 'tab1') {
-            $data = [
-                'content' => ['content.text' => 'Prostý text', 'content.html' => 'HTML blok'],
-                'gallery' => ['gallery.slider' => 'Slider fotek', 'gallery.grid' => 'Mřížka'],
-                'news' => ['news.list' => 'Seznam novinek', 'news.detail' => 'Detail článku']
-            ];
-            $options = $data[$moduleId] ?? [];
+        if ($type === 'tab1' && $moduleId) {
+            // Get all code names allowed for this module and template
+            $allowed = $this->templateFacade->getAllowedCodeNames($templateId, $moduleId);
+            
+            // Get currently used code names on this page
+            $used = [];
+            foreach ($this->componentFacade->getByPageId($pageId) as $comp) {
+                if ($comp->getModuleId() == $moduleId) {
+                    $used[] = $comp->getCodeName();
+                }
+            }
+            
+            $options = array_diff($allowed, $used);
         } elseif ($type === 'tab2') {
-            $data = [
-                'form' => ['form.contact' => 'Kontaktní formulář', 'form.order' => 'Objednávka'],
-                'map' => ['map.google' => 'Google Maps', 'map.seznam' => 'Mapy.cz'],
-                'custom' => ['custom.code' => 'Vlastní kód', 'custom.js' => 'JavaScript blok']
-            ];
-            $options = $data[$moduleId] ?? [];
+            // Existing components that are allowed by template but NOT on this page
+            $existing = $this->componentFacade->getExistingNotOnPage($pageId, $templateId);
+            foreach ($existing as $c) {
+                // Format: ModuleCodeName.CodeName (ComponentName)
+                $label = $c->getModuleCodeName() . '.' . $c->getCodeName() . ' (' . $c->getComponentName() . ')';
+                $options[$c->getId()] = $label;
+            }
         }
 
         $this->sendJson(['options' => $options]);
+    }
+
+    public function handleAddObject(?int $pageId = null): void
+    {
+        $post = $this->getHttpRequest()->getPost();
+        $moduleId = (int)($post['module_id'] ?? 0);
+        $codeName = $post['code_name'] ?? null;
+        $name = $post['name'] ?? null;
+
+        if ($pageId && $moduleId && $codeName && $name) {
+            $entity = new \App\Model\Component\ComponentEntity();
+            $entity->setModuleId($moduleId);
+            $entity->setCodeName($codeName);
+            $entity->setComponentName($name);
+            $entity->setInserted(new \DateTime());
+
+            $compId = $this->componentFacade->save($entity);
+            $this->componentFacade->linkToPage($compId, $pageId);
+            $this->flashMessage('Objekt byl vytvořen a přidán na stránku.', 'success');
+        }
+        $this->redirect('this', ['id' => $pageId]);
+    }
+
+    public function handleLinkObject(?int $pageId = null): void
+    {
+        $post = $this->getHttpRequest()->getPost();
+        $componentId = (int)($post['component_id'] ?? 0);
+
+        if ($pageId && $componentId) {
+            $this->componentFacade->linkToPage($componentId, $pageId);
+            $this->flashMessage('Existující objekt byl přidán na stránku.', 'success');
+        }
+        $this->redirect('this', ['id' => $pageId]);
+    }
+
+    public function handleRemoveFromPage(int $componentId, int $pageId): void
+    {
+        $this->componentFacade->unlinkFromPage($componentId, $pageId);
+        $this->flashMessage('Objekt byl odebrán ze stránky.');
+        $this->redirect('this', ['id' => $pageId]);
+    }
+
+    public function handleDeleteFromPresentation(int $componentId, int $pageId): void
+    {
+        $component = $this->componentFacade->find($componentId);
+        if ($component) {
+            $this->componentFacade->delete($componentId);
+            $this->flashMessage('Objekt byl kompletně smazán z prezentace.');
+        }
+        $this->redirect('this', ['id' => $pageId]);
     }
 
     public function handleSave(?int $id = null, ?int $parentId = null): void
@@ -287,5 +323,20 @@ final class PagesPresenter extends AdminPresenter
         } else {
             $this->redirect('this', ['id' => $pageId]);
         }
+    }
+
+    protected function createComponentObjectControl(): \Nette\Application\UI\Multiplier
+    {
+        return new \Nette\Application\UI\Multiplier(function (string $compId) {
+            $component = $this->componentFacade->find((int)$compId);
+            if (!$component) return null;
+
+            return $this->objectControlFactory->create(
+                $component->getModuleClassName(), // e.g. ContentVersionFacade
+                $component->getId(),
+                $component->getComponentName(),
+                $component->getCodeName()
+            );
+        });
     }
 }

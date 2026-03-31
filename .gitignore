@@ -4,3 +4,4 @@ vendor
 /temp/cache
 /log
 /node_modules
+/app/Modules

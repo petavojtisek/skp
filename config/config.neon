@@ -88,6 +88,7 @@ services:
 	- App\Model\Admin\LoggedUserEntity
 
 	# SERVICE
+	- App\AdminModule\Components\ObjectControlFactory
 	- App\Model\Page\SpecParamPageService
 	- App\Model\Component\ComponentService
 	- App\Model\System\Cache
@@ -99,6 +100,7 @@ services:
 	- App\Model\Config\ConfigService
 	- App\Model\Template\TemplateService
 	- App\Model\Install\InstallService
+	- App\Model\Install\InstallManager
 	- App\Model\Log\LogService
 	- App\Model\Admin\AdminService
 	- App\Model\AdminGroup\AdminGroupService

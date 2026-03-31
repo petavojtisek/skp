@@ -23,7 +23,7 @@
                     <td class="text-center">
                         <div class="custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input ajax-toggle" id="mod_{$module->install_id}" 
-                                   n:attr="checked => $module->installed" 
+                                   n:attr="checked => $activeStates[$module->install_id]" 
                                    data-url="{link toggleActive!, id => $module->install_id}">
                             <label class="custom-control-label" for="mod_{$module->install_id}"></label>
                         </div>

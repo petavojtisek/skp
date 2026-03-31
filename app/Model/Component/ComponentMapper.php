@@ -18,4 +18,16 @@ class ComponentMapper extends BaseMapper
             ->where('pc.page_id = %i', $pageId)
             ->fetchAll();
     }
+
+    public function getExistingNotOnPage(int $pageId, int $templateId): array
+    {
+        // Components that are NOT on this page AND are allowed by the template
+        return $this->db->select('c.*, m.module_name, m.module_code_name')
+            ->from($this->tableName, 'c')
+            ->join('module', 'm')->on('m.module_id = c.module_id')
+            ->join('code_name', 'cn')->on('cn.module = c.module_id AND cn.code_name = c.code_name')
+            ->where('cn.template_id = %i', $templateId)
+            ->where('c.component_id NOT IN (SELECT component_id FROM page_component WHERE page_id = %i)', $pageId)
+            ->fetchAll();
+    }
 }
