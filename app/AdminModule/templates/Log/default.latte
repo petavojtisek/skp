@@ -1,7 +1,51 @@
 {block content}
+<div class="card mb-3">
+    <div class="card-body">
+        <form action="{link this}" method="get">
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <label class="small">Hledat text</label>
+                        <input type="text" name="search" value="{$search}" class="form-control form-control-sm" placeholder="Akce, název, admin...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <label class="small">Modul</label>
+                        <select name="module" class="form-control form-control-sm">
+                            <option value="">-- Všechny --</option>
+                            <option n:foreach="$modules as $m" value="{$m}" n:attr="selected => $selectedModule == $m">{$m}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <label class="small">Od</label>
+                        <input type="date" name="dateFrom" value="{$dateFrom}" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group mb-0">
+                        <label class="small">Do</label>
+                        <input type="date" name="dateTo" value="{$dateTo}" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col-md-3 text-right">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-search"></i> Filtrovat
+                    </button>
+                    <a n:href="reset!" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-times"></i> Zrušit
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Přehled akcí v systému</h3>
+        <h3 class="card-title">Přehled akcí v systému ({$totalCount} záznamů)</h3>
     </div>
     <div class="card-body table-responsive p-0">
         <table class="table table-hover text-nowrap">
@@ -51,6 +95,27 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="card-footer clearfix" n:if="$lastPage > 1">
+        <ul class="pagination pagination-sm m-0 float-right">
+            <li class="page-item {if $page <= 1}disabled{/if}">
+                <a class="page-link" n:href="this, page => $page - 1">«</a>
+            </li>
+            
+            {for $i = 1; $i <= $lastPage; $i++}
+                {if $i == 1 or $i == $lastPage or ($i >= $page - 2 and $i <= $page + 2)}
+                    <li class="page-item {if $i == $page}active{/if}">
+                        <a class="page-link" n:href="this, page => $i">{$i}</a>
+                    </li>
+                {elseif $i == $page - 3 or $i == $page + 3}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {/if}
+            {/for}
+
+            <li class="page-item {if $page >= $lastPage}disabled{/if}">
+                <a class="page-link" n:href="this, page => $page + 1">»</a>
+            </li>
+        </ul>
     </div>
 </div>
 {/block}

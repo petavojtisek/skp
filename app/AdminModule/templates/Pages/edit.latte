@@ -29,27 +29,30 @@
                     </button>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Typ</th>
-                                <th>Kód</th>
-                                <th>Název</th>
-                                <th style="width: 100px">Akce</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr n:foreach="$pageObjects as $obj">
-                                <td>{$obj['type']}</td>
-                                <td><code>{$obj['code']}</code></td>
-                                <td>{$obj['title']}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div n:foreach="$pageComponents as $compGroup" class="card card-outline card-secondary mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">{$compGroup->name} <code>{$compGroup->code_name}</code></h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        {var $moduleTemplate = "../../Modules/" . $compGroup->module_class . "/templates/Admin/list.latte"}
+                        {if file_exists($appDir . "/AdminModule/templates/Pages/" . $moduleTemplate)}
+                            {include $moduleTemplate, items => $compGroup->items, componentId => $compGroup->id}
+                        {else}
+                            <div class="p-3">
+                                <div class="alert alert-warning mb-0">
+                                    <i class="fas fa-exclamation-triangle"></i> Šablona pro modul <b>{$compGroup->module_class}</b> nebyla nalezena.<br>
+                                    <small class="text-muted">Hledaná cesta: app/Modules/{$compGroup->module_class}/templates/Admin/list.latte</small>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+
+                <div n:if="empty($pageComponents)" class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Na této stránce zatím nejsou žádné objekty. Přidejte první objekt pomocí tlačítka výše.
                 </div>
             </div>
 

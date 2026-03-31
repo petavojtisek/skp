@@ -1,5 +1,8 @@
 # SKP Global Configuration
 
+extensions:
+	modules: App\DI\ModulesExtension
+
 parameters:
 	domain: skp.dev
 	storageDir: %appDir%/../storage
@@ -111,6 +114,7 @@ services:
 
 	# FACADE
 	- App\Model\Page\PageFacade
+	- App\Model\Component\ComponentFacade
 	- App\Model\Lookup\LookupFacade
 	- App\Model\Login\LoginFacade(
 		@user, 

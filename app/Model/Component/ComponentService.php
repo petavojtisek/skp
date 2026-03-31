@@ -18,8 +18,8 @@ class ComponentService extends BaseService
         return $this->componentDao->find($id) ?: null;
     }
 
-    public function findAll(): array
+    public function getByPageId(int $pageId): array
     {
-        return $this->componentDao->findAll() ?: [];
+        return $this->componentDao->getByPageId($pageId);
     }
 }

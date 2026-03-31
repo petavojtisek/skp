@@ -4,10 +4,9 @@ namespace App\Model\Component;
 
 use App\Model\Base\BaseDao;
 use App\Model\Base\IMapper;
-
 class ComponentDao extends BaseDao
 {
-    protected string $entityName = 'Component\ComponentEntity';
+    protected string $entityName = 'Component\\ComponentEntity';
 
     /** @var ComponentMapper */
     protected IMapper $mapper;
@@ -17,5 +16,10 @@ class ComponentDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-
+    public function getByPageId(int $pageId): array
+    {
+        $data = $this->mapper->getByPageId($pageId);
+        return $this->getEntities($this->entityName, $data);
+    }
 }
+

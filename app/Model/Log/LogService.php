@@ -14,31 +14,32 @@ class LogService extends BaseService
     /** @var LoggedUserEntity */
     private $loggedUser;
 
-    /** @var \Nette\Security\User */
-    private $user;
-
-    public function __construct(LogDao $logDao, LoggedUserEntity $loggedUser, \Nette\Security\User $user)
+    public function __construct(LogDao $logDao, LoggedUserEntity $loggedUser)
     {
         $this->logDao = $logDao;
         $this->loggedUser = $loggedUser;
-        $this->user = $user;
     }
 
-    public function getLogs(?int $limit = 10, ?int  $offset = 0) : array
+    public function getLogs(?int $limit = 10, ?int $offset = 0, ?string $search = null, ?string $module = null, ?string $dateFrom = null, ?string $dateTo = null) : array
     {
-        return  $this->logDao->getLogs($limit, $offset);
-
+        return $this->logDao->getLogs($limit, $offset, $search, $module, $dateFrom, $dateTo);
     }
 
+    public function countLogs(?string $search = null, ?string $module = null, ?string $dateFrom = null, ?string $dateTo = null): int
+    {
+        return $this->logDao->countLogs($search, $module, $dateFrom, $dateTo);
+    }
+
+    public function getUniqueModules(): array
+    {
+        return $this->logDao->getUniqueModules();
+    }
 
     public function addLog(LogEntity $log): int
     {
-
         if (!$log->getAdminId()) {
-            if ($this->user->isLoggedIn()) {
-                $log->setVariable('admin_id', (int)$this->user->getId());
-            } elseif ($this->loggedUser->admin_id) {
-                $log->setVariable('admin_id', (int)$this->loggedUser->admin_id);
+            if ($this->loggedUser->getId()) {
+                $log->setVariable('admin_id', (int)$this->loggedUser->getId());
             } else {
                 $log->setVariable('admin_id', 0);
             }
@@ -49,8 +50,6 @@ class LogService extends BaseService
 
     public function logAction(string $module, string $action, string $name, $elementId = null, ?array $sendData = null, ?array $beforeData = null, ?string $codeName = null): void
     {
-        /* TODO */
-        /*
         $log = new LogEntity();
         $log->setVariable('module', $module);
         $log->setVariable('action', $action);
@@ -62,7 +61,6 @@ class LogService extends BaseService
         if ($beforeData) $log->setBefore($beforeData);
 
         $this->addLog($log);
-        */
     }
 
 }

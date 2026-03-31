@@ -27,6 +27,9 @@ final class PagesPresenter extends AdminPresenter
     /** @var PageGroupFacade @inject */
     public $pageGroupFacade;
 
+    /** @var \App\Model\Component\ComponentFacade @inject */
+    public $componentFacade;
+
     /** @var int|null @persistent */
     public $id;
 
@@ -75,10 +78,38 @@ final class PagesPresenter extends AdminPresenter
         $this->template->statuses = $this->lookupFacade->getLookupList(C_PRESENTATION_STATUS);
         $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $id);
 
-        $this->template->pageObjects = [
-            ['id' => 1, 'type' => 'Obsah', 'code' => 'content.about_us', 'title' => 'Hlavní text', 'content' => '<p>Jsme sdružení...</p>'],
-            ['id' => 2, 'type' => 'Galerie', 'code' => 'gallery.about', 'title' => 'Fotky z akcí', 'content' => '[Galerie 5 obrázků]'],
-        ];
+        // REAL COMPONENTS
+        $components = $id ? $this->componentFacade->getByPageId($id) : [];
+        $pageComponents = [];
+
+        foreach ($components as $component) {
+            $moduleClass = $component->getModuleClassName();
+            $items = [];
+            
+            // Dynamicky získáme data pro komponentu z její fasády
+            // Fasáda by měla být registrovaná v DI pod názvem odpovídajícím modulu
+            $facadeName = "App\\Modules\\{$moduleClass}\\Model\\{$moduleClass}Facade";
+            if (class_exists($facadeName)) {
+                try {
+                    $moduleFacade = $this->context->getByType($facadeName);
+                    if (method_exists($moduleFacade, 'getByComponentId')) {
+                        $items = $moduleFacade->getByComponentId($component->getId());
+                    }
+                } catch (\Nette\DI\MissingServiceException $e) {
+                    // Fasáda není registrovaná
+                }
+            }
+
+            $pageComponents[] = (object)[
+                'id' => $component->getId(),
+                'name' => $component->getComponentName(),
+                'code_name' => $component->getCodeName(),
+                'module_class' => $moduleClass,
+                'items' => $items
+            ];
+        }
+
+        $this->template->pageComponents = $pageComponents;
 
         // Dummy data for Add Object modal
         $this->template->tab1Modules = [
