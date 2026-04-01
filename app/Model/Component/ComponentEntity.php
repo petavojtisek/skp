@@ -9,7 +9,7 @@ class ComponentEntity extends BaseEntity
     public mixed $component_id = null;
     public ?string $component_name = null;
     public ?int $module_id = null;
-    public ?string $inserted = null;
+    public mixed $inserted = null;
     public ?string $code_name = null;
 
     // From JOIN

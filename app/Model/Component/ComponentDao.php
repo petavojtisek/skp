@@ -22,10 +22,31 @@ class ComponentDao extends BaseDao
         return $this->getEntities($this->entityName, $data);
     }
 
+    public function findWithModule(int $id): ?ComponentEntity
+    {
+        $data = $this->mapper->findWithModule($id);
+        return $data ? $this->getEntity($this->entityName, (array)$data) : null;
+    }
+
     public function getExistingNotOnPage(int $pageId, int $templateId): array
     {
         $data = $this->mapper->getExistingNotOnPage($pageId, $templateId);
         return $this->getEntities($this->entityName, $data);
+    }
+
+    public function linkToPage(int $componentId, int $pageId): void
+    {
+        $this->mapper->linkToPage($componentId, $pageId);
+    }
+
+    public function unlinkFromPage(int $componentId, int $pageId): void
+    {
+        $this->mapper->unlinkFromPage($componentId, $pageId);
+    }
+
+    public function deleteLinks(int $componentId): void
+    {
+        $this->mapper->deleteLinks($componentId);
     }
 }
 

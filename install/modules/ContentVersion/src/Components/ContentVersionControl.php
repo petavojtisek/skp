@@ -33,6 +33,7 @@ class ContentVersionControl extends Control implements IObjectControl
     {
         $this->template->name = $this->name;
         $this->template->code = $this->code;
+        $this->template->componentId = $this->componentId;
         $this->template->items = $this->facade->getByComponentId($this->componentId);
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -49,6 +50,23 @@ class ContentVersionControl extends Control implements IObjectControl
             $this->getPresenter()->flashMessage("Stav objektu '{$entity->getName()}' byl změněn.", 'success');
         }
         $this->redrawControl();
+    }
+
+    public function handleRemoveFromPage(): void
+    {
+        $this->getPresenter()->handleRemoveFromPage($this->componentId, (int)$this->getPresenter()->id);
+    }
+
+    public function handleDeleteFromPresentation(): void
+    {
+        // 1. Module specific cleanup (content_version table)
+        $items = $this->facade->getByComponentId($this->componentId);
+        foreach ($items as $item) {
+            $this->facade->delete($item->getId());
+        }
+        
+        // 2. Presenter cleanup (component & page_component tables)
+        $this->getPresenter()->handleDeleteFromPresentation($this->componentId, (int)$this->getPresenter()->id);
     }
 }
 

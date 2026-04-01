@@ -21,6 +21,11 @@ class ComponentFacade
         return $this->componentService->find($id);
     }
 
+    public function findWithModule(int $id): ?ComponentEntity
+    {
+        return $this->componentService->findWithModule($id);
+    }
+
     public function getExistingNotOnPage(int $pageId, int $templateId): array
     {
         return $this->componentService->getExistingNotOnPage($pageId, $templateId);

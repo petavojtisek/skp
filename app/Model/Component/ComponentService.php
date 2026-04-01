@@ -18,6 +18,11 @@ class ComponentService extends BaseService
         return $this->componentDao->find($id) ?: null;
     }
 
+    public function findWithModule(int $id): ?ComponentEntity
+    {
+        return $this->componentDao->findWithModule($id);
+    }
+
     public function getByPageId(int $pageId): array
     {
         return $this->componentDao->getByPageId($pageId);
@@ -30,12 +35,12 @@ class ComponentService extends BaseService
 
     public function linkToPage(int $componentId, int $pageId): void
     {
-        $this->db->query("REPLACE INTO `page_component` (`page_id`, `component_id`) VALUES (%i, %i)", $pageId, $componentId);
+        $this->componentDao->linkToPage($componentId, $pageId);
     }
 
     public function unlinkFromPage(int $componentId, int $pageId): void
     {
-        $this->db->query("DELETE FROM `page_component` WHERE `page_id` = %i AND `component_id` = %i", $pageId, $componentId);
+        $this->componentDao->unlinkFromPage($componentId, $pageId);
     }
 
     public function save(ComponentEntity $entity): int
@@ -45,14 +50,9 @@ class ComponentService extends BaseService
 
     public function delete(int $id): void
     {
-        $this->db->begin();
-        try {
-            $this->db->query("DELETE FROM `page_component` WHERE `component_id` = %i", $id);
-            $this->componentDao->delete($id);
-            $this->db->commit();
-        } catch (\Exception $e) {
-            $this->db->rollback();
-            throw $e;
-        }
+        // Delete links first
+        $this->componentDao->deleteLinks($id);
+        // Then delete the component itself
+        $this->componentDao->delete($id);
     }
 }

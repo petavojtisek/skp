@@ -39,31 +39,31 @@ final class PagesPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Stránky';
-        
+
         $presentationId = $this->loggedUserEntity->active_presentation_id;
-        
+
         if ($presentationId) {
             $this->template->pages = $this->pageFacade->getPages($presentationId);
         } else {
             $this->template->pages = [];
         }
     }
-    
+
     public function renderEdit(?int $id = null, ?int $parentId = null): void
     {
         $id = $id ?: $this->id;
-        
+
         $this->template->title = $id ? 'Editace stránky' : 'Nová stránka';
         $this->template->pageId = $id;
         $this->template->parentId = $parentId;
-        
+
         $presentationId = $this->loggedUserEntity->active_presentation_id;
 
         $page = null;
         if ($id) {
             $page = $this->pageFacade->find($id);
             $this->template->specParams = $this->pageFacade->getSpecParams($id);
-            
+
             // Groups for Page Groups tab
             $this->template->allPageGroups = $this->pageGroupFacade->getPageGroups();
             $this->template->activeUserGroupIds = $this->pageGroupFacade->getPageInGroupIds($id);
@@ -84,20 +84,8 @@ final class PagesPresenter extends AdminPresenter
         // REAL COMPONENTS
         $this->template->pageComponents = $id ? $this->componentFacade->getByPageId($id) : [];
         $templateId = $page ? $page->getTemplateId() : 0;
+
         $this->template->allowedModules = $templateId ? $this->templateFacade->getAllowedModules($templateId) : [];
-
-        // Dummy data for Add Object modal
-        $this->template->tab1Modules = [
-            'content' => 'Obsahové moduly',
-            'gallery' => 'Galerie a obrázky',
-            'news' => 'Aktuality a novinky'
-        ];
-
-        $this->template->tab2Modules = [
-            'form' => 'Kontaktní formuláře',
-            'map' => 'Mapové podklady',
-            'custom' => 'Vlastní skripty'
-        ];
     }
 
     /**
@@ -113,7 +101,7 @@ final class PagesPresenter extends AdminPresenter
         if ($type === 'tab1' && $moduleId) {
             // Get all code names allowed for this module and template
             $allowed = $this->templateFacade->getAllowedCodeNames($templateId, $moduleId);
-            
+
             // Get currently used code names on this page
             $used = [];
             foreach ($this->componentFacade->getByPageId($pageId) as $comp) {
@@ -121,8 +109,9 @@ final class PagesPresenter extends AdminPresenter
                     $used[] = $comp->getCodeName();
                 }
             }
-            
-            $options = array_diff($allowed, $used);
+
+            $diff = array_diff($allowed, $used);
+            $options = array_combine($diff, $diff);
         } elseif ($type === 'tab2') {
             // Existing components that are allowed by template but NOT on this page
             $existing = $this->componentFacade->getExistingNotOnPage($pageId, $templateId);
@@ -186,10 +175,55 @@ final class PagesPresenter extends AdminPresenter
         $this->redirect('this', ['id' => $pageId]);
     }
 
+    public function handleGetEditData(int $compId): void
+    {
+        $component = $this->componentFacade->findWithModule($compId);
+        if (!$component) $this->sendJson(['error' => 'Component not found']);
+
+        $pageId = (int)$this->id;
+        $page = $this->pageFacade->find($pageId);
+        $templateId = $page ? $page->getTemplateId() : 0;
+
+        // Get allowed code names for this module and template
+        $allowed = $this->templateFacade->getAllowedCodeNames($templateId, $component->getModuleId());
+        
+        // Get used on page (excluding THIS component)
+        $used = [];
+        foreach ($this->componentFacade->getByPageId($pageId) as $c) {
+            if ($c->getId() != $compId && $c->getModuleId() == $component->getModuleId()) {
+                $used[] = $c->getCodeName();
+            }
+        }
+        
+        $availableCodes = array_diff($allowed, $used);
+        $options = array_combine($availableCodes, $availableCodes);
+
+        $this->sendJson([
+            'id' => $component->getId(),
+            'name' => $component->getComponentName(),
+            'currentCode' => $component->getCodeName(),
+            'options' => $options
+        ]);
+    }
+
+    public function handleUpdateObject(int $compId): void
+    {
+        $post = $this->getHttpRequest()->getPost();
+        $component = $this->componentFacade->find($compId);
+        
+        if ($component && isset($post['name']) && isset($post['code_name'])) {
+            $component->setComponentName($post['name']);
+            $component->setCodeName($post['code_name']);
+            $this->componentFacade->save($component);
+            $this->flashMessage('Nastavení objektu bylo upraveno.', 'success');
+        }
+        $this->redirect('this');
+    }
+
     public function handleSave(?int $id = null, ?int $parentId = null): void
     {
         $post = $this->getHttpRequest()->getPost();
-        
+
         $entity = $id ? $this->pageFacade->find($id) : new PageEntity();
         if (!$entity) {
             $this->flashMessage('Stránka nebyla nalezena.', 'danger');
@@ -205,7 +239,7 @@ final class PagesPresenter extends AdminPresenter
         $entity->setPosition((int)($post['position'] ?? 0));
         $entity->setPageStatus((int)($post['page_status'] ?? 0));
         $entity->setTemplateId($post['template_id'] ? (int)$post['template_id'] : null);
-        
+
         $entity->setPageSitemap(isset($post['page_sitemap']) ? 'Y' : 'N');
         $entity->setPageMenu(isset($post['page_menu']) ? 'Y' : 'N');
         $entity->setRestrictedArea(isset($post['restricted_area']) ? 'Y' : 'N');
@@ -222,7 +256,7 @@ final class PagesPresenter extends AdminPresenter
             $this->pageGroupFacade->togglePageInGroup($newId, 1, true);
             $this->pageGroupFacade->togglePageInGroupUser($newId, 1, true);
         }
-        
+
         $this->flashMessage('Stránka byla úspěšně uložena.', 'success');
         $this->redirect('edit', ['id' => $newId]);
     }
@@ -235,7 +269,7 @@ final class PagesPresenter extends AdminPresenter
                 // Kontrola práv pro přesun (stejná logika jako v šabloně)
                 $userPageGroupIds = array_keys($this->loggedUserEntity->rights['page_rights'] ?? []);
                 $isMember = !empty(array_intersect($userPageGroupIds, (array)$page->page_group_ids));
-                
+
                 if ($this->loggedUserEntity->hasGroupRight('EDIT_PAGE') or $isMember) {
                     $this->pageFacade->movePage($id, (int)$parentId, (int)$position);
                     $this->flashMessage("Stránka '{$page->getPageName()}' byla přesunuta.", 'success');
@@ -275,7 +309,7 @@ final class PagesPresenter extends AdminPresenter
             $entity->setPageId($pageId);
             $entity->setName($name);
             $entity->setValue($value);
-            
+
             $this->pageFacade->saveSpecParam($entity);
             $this->flashMessage('Parametr byl přidán.', 'success');
         }
@@ -316,7 +350,7 @@ final class PagesPresenter extends AdminPresenter
             }
             $this->flashMessage('Nastavení skupiny bylo změněno.', 'success');
         }
-        
+
         if ($this->isAjax()) {
             $this->redrawControl('flashes');
             $this->redrawControl('pageGroups');
@@ -328,15 +362,24 @@ final class PagesPresenter extends AdminPresenter
     protected function createComponentObjectControl(): \Nette\Application\UI\Multiplier
     {
         return new \Nette\Application\UI\Multiplier(function (string $compId) {
-            $component = $this->componentFacade->find((int)$compId);
-            if (!$component) return null;
+            $component = $this->componentFacade->findWithModule((int)$compId);
+            if (!$component) {
+                // \Tracy\Debugger::log("Component not found for ID $compId", 'error');
+                return null;
+            }
 
-            return $this->objectControlFactory->create(
+            $control = $this->objectControlFactory->create(
                 $component->getModuleClassName(), // e.g. ContentVersionFacade
                 $component->getId(),
                 $component->getComponentName(),
                 $component->getCodeName()
             );
+
+            if (!$control) {
+                // \Tracy\Debugger::log("Control not created for component ID $compId (Module: {$component->getModuleClassName()})", 'error');
+            }
+
+            return $control;
         });
     }
 }

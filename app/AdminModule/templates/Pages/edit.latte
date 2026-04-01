@@ -30,7 +30,8 @@
                 </div>
 
                 <div n:foreach="$pageComponents as $comp">
-                    {control objectControl-$comp->id}
+                    {var $compId = $comp->getId()}
+                    {control "objectControl-$compId"}
                 </div>
 
                 <div n:if="empty($pageComponents)" class="alert alert-info">
@@ -151,7 +152,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div n:if="$pageId">
                     {snippet specParams}
                         <div class="table-responsive">
@@ -215,8 +216,8 @@
                                         <div n:foreach="$allPageGroups as $pg" class="list-group-item">
                                             <div class="custom-control custom-switch">
                                                 {var $isActive = in_array($pg->getId(), $activeUserGroupIds)}
-                                                <input type="checkbox" class="custom-control-input ajax-group-toggle" 
-                                                       id="pg-user-{$pg->getId()}" 
+                                                <input type="checkbox" class="custom-control-input ajax-group-toggle"
+                                                       id="pg-user-{$pg->getId()}"
                                                        data-url="{link toggleGroup! pageId => $pageId, groupId => $pg->getId(), type => 'user'}"
                                                        n:attr="checked => $isActive">
                                                 <label class="custom-control-label" for="pg-user-{$pg->getId()}">{$pg->getName()}</label>
@@ -238,8 +239,8 @@
                                         <div n:foreach="$allPageGroups as $pg" class="list-group-item">
                                             <div class="custom-control custom-switch">
                                                 {var $isActive = in_array($pg->getId(), $activeAdminGroupIds)}
-                                                <input type="checkbox" class="custom-control-input ajax-group-toggle" 
-                                                       id="pg-admin-{$pg->getId()}" 
+                                                <input type="checkbox" class="custom-control-input ajax-group-toggle"
+                                                       id="pg-admin-{$pg->getId()}"
                                                        data-url="{link toggleGroup! pageId => $pageId, groupId => $pg->getId(), type => 'admin'}"
                                                        n:attr="checked => $isActive">
                                                 <label class="custom-control-label" for="pg-admin-{$pg->getId()}">{$pg->getName()}</label>
@@ -322,14 +323,47 @@
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Modal: Edit Component Basic Settings -->
+<div class="modal fade" id="modal-edit-component" tabindex="-1" role="dialog" aria-labelledby="modal-edit-component-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-edit-component-label">Nastavení objektu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="form-edit-component" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Název komponenty</label>
+                        <input type="text" name="name" class="form-control" required id="edit-comp-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Kódové označení</label>
+                        <select name="code_name" class="form-control" required id="edit-comp-code-name">
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                    <button type="submit" class="btn btn-primary">Uložit změny</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {/block}
 
 {block scripts}
-<script>
+<script n:syntax="off">
     document.addEventListener('DOMContentLoaded', () => {
         const pageNameInput = document.getElementById('page_name');
         const rewriteInput = document.getElementById('page_rewrite');
@@ -382,9 +416,9 @@
                     const valueInput = document.getElementById('new-param-value');
                     const url = btnAddParam.getAttribute('data-url');
 
-                    naja.makeRequest('GET', url, { 
-                        name: nameInput.value, 
-                        value: valueInput.value 
+                    naja.makeRequest('GET', url, {
+                        name: nameInput.value,
+                        value: valueInput.value
                     });
                 });
             }
@@ -420,7 +454,7 @@
                             if (payload.options) {
                                 let html = '<option value="">-- Vyberte možnost --</option>';
                                 for (const [id, name] of Object.entries(payload.options)) {
-                                    html += `<option value="${ id }">${ name }</option>`;
+                                    html += '<option value="' + id + '">' + name + '</option>';
                                 }
                                 targetSelect.innerHTML = html;
                                 targetSelect.disabled = false;
@@ -439,7 +473,7 @@
                         if (payload.options) {
                             let html = '<option value="">-- Vyberte komponentu --</option>';
                             for (const [id, name] of Object.entries(payload.options)) {
-                                html += `<option value="${ id }">${ name }</option>`;
+                                html += '<option value="' + id + '">' + name + '</option>';
                             }
                             targetSelect.innerHTML = html;
                         }
@@ -447,14 +481,43 @@
             });
         };
 
+        const initComponentActions = () => {
+            document.querySelectorAll('.btn-edit-component').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const compId = btn.getAttribute('data-id');
+                    const url = btn.getAttribute('data-url');
+                    const saveUrl = btn.getAttribute('data-save-url');
+
+                    naja.makeRequest('GET', url, { compId: compId }, { history: false })
+                        .then(payload => {
+                            if (payload.id) {
+                                document.getElementById('edit-comp-name').value = payload.name;
+                                const select = document.getElementById('edit-comp-code-name');
+                                let html = '';
+                                for (const [id, name] of Object.entries(payload.options)) {
+                                    const selected = (id === payload.currentCode) ? 'selected' : '';
+                                    html += '<option value="' + id + '" ' + selected + '>' + name + '</option>';
+                                }
+                                select.innerHTML = html;
+                                document.getElementById('form-edit-component').action = saveUrl;
+                                $('#modal-edit-component').modal('show');
+                            }
+                        });
+                });
+            });
+        };
+
         initParamActions();
         initGroupActions();
         initModalActions();
-        
+        initComponentActions();
+
         naja.addEventListener('success', () => {
             initParamActions();
             initGroupActions();
             initModalActions();
+            initComponentActions();
         });
     });
 </script>

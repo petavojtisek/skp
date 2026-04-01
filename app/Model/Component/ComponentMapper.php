@@ -19,6 +19,15 @@ class ComponentMapper extends BaseMapper
             ->fetchAll();
     }
 
+    public function findWithModule(int $id): ?\Dibi\Row
+    {
+        return $this->db->select('c.*, m.module_class_name, m.module_code_name')
+            ->from($this->tableName, 'c')
+            ->join('module', 'm')->on('m.module_id = c.module_id')
+            ->where('c.component_id = %i', $id)
+            ->fetch();
+    }
+
     public function getExistingNotOnPage(int $pageId, int $templateId): array
     {
         // Components that are NOT on this page AND are allowed by the template
@@ -29,5 +38,20 @@ class ComponentMapper extends BaseMapper
             ->where('cn.template_id = %i', $templateId)
             ->where('c.component_id NOT IN (SELECT component_id FROM page_component WHERE page_id = %i)', $pageId)
             ->fetchAll();
+    }
+
+    public function linkToPage(int $componentId, int $pageId): void
+    {
+        $this->db->query("REPLACE INTO `page_component` (`page_id`, `component_id`) VALUES (%i, %i)", $pageId, $componentId);
+    }
+
+    public function unlinkFromPage(int $componentId, int $pageId): void
+    {
+        $this->db->query("DELETE FROM `page_component` WHERE `page_id` = %i AND `component_id` = %i", $pageId, $componentId);
+    }
+
+    public function deleteLinks(int $componentId): void
+    {
+        $this->db->query("DELETE FROM `page_component` WHERE `component_id` = %i", $componentId);
     }
 }

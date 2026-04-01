@@ -77,21 +77,11 @@ class TemplateService extends BaseService
 
     public function getAllowedModules(int $templateId): array
     {
-        $data = $this->codeNameDao->getAllowedModules($templateId);
-        $list = [];
-        foreach ($data as $row) {
-            $list[$row->module_id] = $row->module_name;
-        }
-        return $list;
+        return $this->codeNameDao->getAllowedModules($templateId);
     }
 
     public function getAllowedCodeNames(int $templateId, int $moduleId): array
     {
-        $data = $this->codeNameDao->getAllowedCodeNames($templateId, $moduleId);
-        $list = [];
-        foreach ($data as $row) {
-            $list[$row->code_name] = $row->code_name;
-        }
-        return $list;
+        return $this->codeNameDao->getAllowedCodeNames($templateId, $moduleId);
     }
 }

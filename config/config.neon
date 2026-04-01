@@ -30,6 +30,7 @@ services:
 	# MAPPERS
 	- App\Model\Page\SpecParamPageMapper
 	- App\Model\Component\ComponentMapper
+	- App\Model\Element\ElementMapper
 	- App\Model\Page\PageMapper
 	- App\Model\Lookup\LookupMapper
 	- App\Model\Presentation\PresentationMapper
@@ -55,6 +56,7 @@ services:
 	# DAO
 	- App\Model\Page\SpecParamPageDao
 	- App\Model\Component\ComponentDao
+	- App\Model\Element\ElementDao
 	- App\Model\Page\PageDao
 	- App\Model\Lookup\LookupDao
 	- App\Model\Presentation\PresentationDao
@@ -91,6 +93,7 @@ services:
 	- App\AdminModule\Components\ObjectControlFactory
 	- App\Model\Page\SpecParamPageService
 	- App\Model\Component\ComponentService
+	- App\Model\Element\ElementService
 	- App\Model\System\Cache
 	- App\Model\System\ModelEventManager
 	- App\Model\Login\LoginService
@@ -117,6 +120,7 @@ services:
 	# FACADE
 	- App\Model\Page\PageFacade
 	- App\Model\Component\ComponentFacade
+	- App\Model\Element\ElementFacade
 	- App\Model\Lookup\LookupFacade
 	- App\Model\Login\LoginFacade(
 		@user, 
