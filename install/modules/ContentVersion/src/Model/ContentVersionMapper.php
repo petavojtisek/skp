@@ -11,10 +11,10 @@ class ContentVersionMapper extends BaseMapper
 
     public function getByComponentId(int $componentId): array
     {
-        return $this->db->select('cv.*')
+        return $this->db->select('cv.*, e.name, e.status_id, e.inserted as created_dt')
             ->from($this->tableName, 'cv')
-            ->join('version', 'v')->on('v.element_id = cv.element_id')
-            ->where('v.component_id = %i', $componentId)
+            ->join('element', 'e')->on('e.element_id = cv.element_id')
+            ->where('e.component_id = %i', $componentId)
             ->fetchAll();
     }
 }

@@ -18,8 +18,14 @@ class ElementService extends BaseService
         return $this->elementDao->find($id) ?: null;
     }
 
-    public function save(ElementEntity $entity): int
+    public function save(ElementEntity $entity, ?int $authorId = null): int
     {
+        if (!$entity->getId()) {
+            if ($authorId) {
+                $entity->setAuthorId($authorId);
+            }
+            $entity->setInserted(new \DateTime());
+        }
         return (int)$this->elementDao->save($entity)->getId();
     }
 

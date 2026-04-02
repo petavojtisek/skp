@@ -16,9 +16,9 @@ class ElementFacade
         return $this->elementService->find($id);
     }
 
-    public function save(ElementEntity $entity): int
+    public function save(ElementEntity $entity, ?int $authorId = null): int
     {
-        return $this->elementService->save($entity);
+        return $this->elementService->save($entity, $authorId);
     }
 
     public function delete(int $id): void

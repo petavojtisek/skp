@@ -31,6 +31,7 @@ services:
 	- App\Model\Page\SpecParamPageMapper
 	- App\Model\Component\ComponentMapper
 	- App\Model\Element\ElementMapper
+	- App\Model\Version\VersionMapper
 	- App\Model\Page\PageMapper
 	- App\Model\Lookup\LookupMapper
 	- App\Model\Presentation\PresentationMapper
@@ -57,6 +58,7 @@ services:
 	- App\Model\Page\SpecParamPageDao
 	- App\Model\Component\ComponentDao
 	- App\Model\Element\ElementDao
+	- App\Model\Version\VersionDao
 	- App\Model\Page\PageDao
 	- App\Model\Lookup\LookupDao
 	- App\Model\Presentation\PresentationDao
@@ -94,6 +96,7 @@ services:
 	- App\Model\Page\SpecParamPageService
 	- App\Model\Component\ComponentService
 	- App\Model\Element\ElementService
+	- App\Model\Version\VersionService
 	- App\Model\System\Cache
 	- App\Model\System\ModelEventManager
 	- App\Model\Login\LoginService
@@ -121,6 +124,7 @@ services:
 	- App\Model\Page\PageFacade
 	- App\Model\Component\ComponentFacade
 	- App\Model\Element\ElementFacade
+	- App\Model\Version\VersionFacade
 	- App\Model\Lookup\LookupFacade
 	- App\Model\Login\LoginFacade(
 		@user, 
