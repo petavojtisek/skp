@@ -3,6 +3,7 @@
 namespace App\Modules\ContentVersion\Model;
 
 use App\Model\Base\BaseDao;
+use App\Model\Base\IEntity;
 use App\Model\Base\IMapper;
 
 class ContentVersionDao extends BaseDao
@@ -21,5 +22,17 @@ class ContentVersionDao extends BaseDao
     {
         $data = $this->mapper->getByComponentId($componentId);
         return $this->getEntities($this->entityName, $data);
+    }
+
+    public function getEntity(string $entityName, array $data = [], ?string $lang = null): ?IEntity {
+
+        $entity = null;
+
+        try {
+            $entity = new ContentVersionEntity($data);
+        }catch(\Exception $e){
+
+        }
+        return 	$entity;
     }
 }

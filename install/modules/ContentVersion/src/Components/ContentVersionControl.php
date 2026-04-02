@@ -62,6 +62,7 @@ class ContentVersionControl extends Control implements IObjectControl
         $this->template->code = $this->code;
         $this->template->componentId = $this->componentId;
         $this->template->view = $this->view;
+        $this->template->states = $this->lookupFacade->getLookupListOption(C_ELEMENT_STATUS);
 
         if ($this->view === 'edit') {
             $item = $this->elementId ? $this->elementFacade->find($this->elementId) : new ElementEntity();
@@ -76,18 +77,6 @@ class ContentVersionControl extends Control implements IObjectControl
         $this->template->render();
     }
 
-    // --- Actions ---
-
-    public function handleToggleActive(int $id, bool $state): void
-    {
-        $element = $this->elementFacade->find($id);
-        if ($element) {
-            $element->setStatusId($state ? 1 : 2);
-            $this->elementFacade->save($element);
-            $this->getPresenter()->flashMessage("Stav verze '{$element->getName()}' byl změněn.", 'success');
-        }
-        $this->redrawControl();
-    }
 
     public function handleSetActiveVersion(int $elementId): void
     {
@@ -135,7 +124,7 @@ class ContentVersionControl extends Control implements IObjectControl
         $form->addText('name', 'Název verze')
             ->setRequired('Zadejte název verze');
 
-
+        // C_ELEMENT_STATUS should be defined or loaded via LookupFacade
         $statuses = $this->lookupFacade->getLookupListOption(C_ELEMENT_STATUS);
         $form->addSelect('status_id', 'Stav', $statuses)
             ->setRequired('Vyberte stav');
@@ -155,10 +144,14 @@ class ContentVersionControl extends Control implements IObjectControl
             $element = $this->elementFacade->find($this->elementId);
             $content = $this->facade->find($this->elementId);
             if ($element && $content) {
-                $values = $element->toArray();
+               
+                $values = $element->getEntityData();
                 $values['content'] = $content->getContent();
+
+                // Format dates for HTML5 input type="date"
                 if ($element->getValidFrom()) $values['valid_from'] = $element->getValidFrom('Y-m-d');
                 if ($element->getValidTo()) $values['valid_to'] = $element->getValidTo('Y-m-d');
+
                 $form->setDefaults($values);
             }
         }
@@ -169,7 +162,6 @@ class ContentVersionControl extends Control implements IObjectControl
 
     public function editFormSucceeded(Form $form, array $values): void
     {
-        xdebug_break();
         $id = $values['element_id'] ? (int)$values['element_id'] : null;
 
         $element = $id ? $this->elementFacade->find($id) : new ElementEntity();
@@ -181,12 +173,18 @@ class ContentVersionControl extends Control implements IObjectControl
 
         $elementId = $this->elementFacade->save($element, $this->user->getId());
 
-        $content = $id ? $this->facade->find($elementId) : new ContentVersionEntity();
+        $content = $id ? $this->facade->find($id) : new ContentVersionEntity();
         $content->setId($elementId);
         $content->setContent($values['content']);
-        $this->facade->save($content);
 
-        $this->getPresenter()->flashMessage('Verze obsahu byla uložena.', 'success');
+        // If it was a new element, we must insert it because save() would try to update due to presence of ID
+        if (!$id) {
+            $this->facade->save($content);
+        } else {
+            $this->facade->save($content);
+        }
+
+        $this->getPresenter()->flashMessage('Verze obsahu byla uloĹľena.', 'success');
 
         $this->view = 'list';
         $this->elementId = null;
@@ -194,7 +192,7 @@ class ContentVersionControl extends Control implements IObjectControl
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl();
         } else {
-            $this->getPresenter()->redirect('this');
+            $this->redirect('this');
         }
     }
 }

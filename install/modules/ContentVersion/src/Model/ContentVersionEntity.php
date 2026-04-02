@@ -48,9 +48,4 @@ class ContentVersionEntity extends BaseEntity
     {
         return $this->getDateTime($this->created_dt, $format);
     }
-
-    public function getActive(): int
-    {
-        return $this->status_id == 1 ? 1 : 0; // Temporary logic for 'Aktivní' checkbox
-    }
 }

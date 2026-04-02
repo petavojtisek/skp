@@ -10,8 +10,7 @@
             <table class="table table-bordered table-striped mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 50px" class="text-center" title="Aktivní verze pro web">Verze</th>
-                        <th style="width: 50px" class="text-center" title="Aktivní záznam (Stav)">Aktivní</th>
+                        <th style="width: 150px" class="text-center" title="Aktivní verze pro web">Aktivní Verze</th>
                         <th style="width: 150px">Stav</th>
                         <th>Jméno</th>
                         <th style="width: 180px">Datum vložení</th>
@@ -27,24 +26,16 @@
                         <tr n:foreach="$items as $item">
                             <td class="text-center">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" name="active_version_{$componentId}" class="custom-control-input ajax-radio" 
-                                           id="version-{$item->getId()}" 
+                                    <input type="radio" name="active_version_{$componentId}" class="custom-control-input ajax-radio"
+                                           id="version-{$item->getId()}"
                                            n:attr="checked => $item->getId() == $activeElementId"
                                            data-url="{link setActiveVersion!, elementId => $item->getId()}">
                                     <label class="custom-control-label" for="version-{$item->getId()}"></label>
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input ajax-toggle" 
-                                           id="active-{$item->getId()}" 
-                                           n:attr="checked => $item->getActive() == 1"
-                                           data-url="{link toggleActive!, id => $item->getId()}">
-                                    <label class="custom-control-label" for="active-{$item->getId()}"></label>
-                                </div>
-                            </td>
+
                             <td>
-                                <span class="badge badge-info">{$item->getStatus()}</span>
+                                <span class="badge badge-info">{@$states[$item->getStatus()]}</span>
                             </td>
                             <td>{$item->getName()}</td>
                             <td>{$item->getCreatedDt()|date:'d.m.Y H:i'}</td>
@@ -65,8 +56,8 @@
         <div class="p-3 bg-light border-top">
             <a n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nová verze</a>
             <button class="btn btn-sm btn-info"><i class="fas fa-copy"></i> Kopírovat</button>
-            <button class="btn btn-sm btn-warning btn-edit-component" 
-                    data-id="{$componentId}" 
+            <button class="btn btn-sm btn-warning btn-edit-component"
+                    data-id="{$componentId}"
                     data-url="{plink getEditData!, compId => $componentId}"
                     data-save-url="{plink updateObject!, compId => $componentId}">
                 <i class="fas fa-edit"></i> Editace objektu
