@@ -237,10 +237,79 @@
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 <!-- Nette forms -->
 <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+<!-- TinyMCE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+
 <!-- Naja AJAX -->
 <script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>
 <script>
   naja.initialize();
+
+  const initWysiwyg = () => {
+    tinymce.remove('.wysiwyg');
+    tinymce.init({
+      selector: '.wysiwyg',
+      height: 400,
+      plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+      toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link macros | code help',
+      file_picker_callback: (callback, value, meta) => {
+        const textarea = document.querySelector('.wysiwyg');
+        let fmUrl = textarea ? textarea.getAttribute('data-fm-url') : null;
+        if (!fmUrl) {
+          alert('FileManager URL is not defined.');
+          return;
+        }
+
+        // Add picker flag to URL
+        const separator = fmUrl.includes('?') ? '&' : '?';
+        fmUrl += separator + 'picker=1';
+
+        const win = window.open(fmUrl, 'FileManager', 'width=1100,height=700,resizable=yes');
+
+        const messageHandler = (e) => {
+          if (e.data && e.data.mceAction === 'selectFile') {
+            callback(e.data.url);
+            window.removeEventListener('message', messageHandler);
+          }
+        };
+        window.addEventListener('message', messageHandler);
+      },
+      setup: (editor) => {
+        editor.on('change', () => {
+          editor.save(); // Sync with original textarea for Nette forms
+        });
+
+        editor.ui.registry.addMenuButton('macros', {
+          text: 'Makra',
+          let page_name = {@$page_name};
+          let page_title = {@$page_title};
+          let baseUrl = {@$baseUrl};
+          fetch: (callback) => {
+            const items = [
+              {
+                type: 'menuitem',
+                text: 'Název stránky',
+                onAction: () => editor.insertContent(page_name)},
+              {
+                type: 'menuitem',
+                text: 'Titulek stránky',
+                onAction: () => editor.insertContent(page_title)
+              },
+              {
+                type: 'menuitem',
+                text: 'URL prezentace',
+                onAction: () => editor.insertContent(baseUrl)
+              }
+            ];
+            callback(items);
+          }
+        });
+      }
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', initWysiwyg);
+  naja.addEventListener('success', initWysiwyg);
 </script>
 
 {ifset scripts}{include scripts}{/ifset}

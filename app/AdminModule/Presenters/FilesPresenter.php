@@ -23,7 +23,10 @@ final class FilesPresenter extends AdminPresenter
     public ?int $elementId = null;
 
     /** @persistent */
-    public ?string $sourceType = 'general';
+    public string $sourceType = 'general';
+
+    /** @persistent */
+    public bool $picker = false;
 
     public function renderDefault(): void
     {

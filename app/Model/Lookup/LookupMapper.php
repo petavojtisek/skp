@@ -41,6 +41,23 @@ class LookupMapper extends BaseMapper
     }
 
     /**
+     * Get lookup list with translations
+     * @param int $pid
+     * @param int|null $langId
+     * @return array
+     */
+    public function getLookupListOption(int $pid, ?int $langId = null): array
+    {
+        $selection = $this->db->select('l.lookup_id, COALESCE(ll.value, l.item) as item, l.constant')
+            ->from($this->tableName)->as('l')
+            ->leftJoin('lookup_lang')->as('ll')->on('l.lookup_id = ll.lookup_id AND ll.lang_id = %i', $langId)
+            ->where('l.parent_id = %i', $pid);
+
+        return $selection->fetchPairs('lookup_id', 'item');
+    }
+
+
+    /**
      * Get single lookup item with translation
      * @param int $lookupId
      * @param int|null $langId

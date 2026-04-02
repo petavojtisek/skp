@@ -22,6 +22,11 @@ class LookupFacade
         return $this->lookupService->getLookupList($parentId, $langId);
     }
 
+    public function getLookupListOption(int $parentId, ?int $langId = null): array
+    {
+        return $this->lookupService->getLookupListOption($parentId, $langId);
+    }
+
     public function getLookupItem(int $lookupId, ?int $langId = null): ?string
     {
         return $this->lookupService->getLookupItem($lookupId, $langId);

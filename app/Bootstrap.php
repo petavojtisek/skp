@@ -3,7 +3,12 @@
 namespace App;
 
 use Nette\Bootstrap\Configurator;
-
+define('DS', DIRECTORY_SEPARATOR);
+define('PROJECT_ROOT_DIR', dirname(__DIR__, 1));
+define('APP_DIR', PROJECT_ROOT_DIR . DS. 'app');
+define('LOG_DIR', PROJECT_ROOT_DIR . DS. 'log');
+define('TEMP_DIR', PROJECT_ROOT_DIR . DS. 'temp');
+define('CONFIG_DIR', PROJECT_ROOT_DIR .DS. 'config');
 
 class Bootstrap
 {
@@ -11,6 +16,12 @@ class Bootstrap
 	{
 		$configurator = new Configurator;
 		$appDir = dirname(__DIR__);
+
+
+
+
+
+
 
 		//$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
 		$configurator->enableTracy($appDir . '/log');

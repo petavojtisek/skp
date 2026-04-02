@@ -47,7 +47,7 @@ final class AccountsPresenter extends AdminPresenter
             if (!$admin) {
                 $this->error('Účet nebyl nalezen');
             }
-            
+
             $data = $admin->getEntityData();
             unset($data['user_password']); // Don't show password in form
             $this['accountForm']->setDefaults($data);
@@ -75,7 +75,7 @@ final class AccountsPresenter extends AdminPresenter
 
         $form->addPassword('user_password', 'Heslo')
             ->setEmptyValue('')
-            ->setNullable(); 
+            ->setNullable();
 
         $form->addText('name', 'Jméno');
         $form->addText('surname', 'Příjmení');
@@ -87,21 +87,14 @@ final class AccountsPresenter extends AdminPresenter
         $adminLang = $this->loggedUserEntity->admin_lang ?? C_LANGUAGE_CS;
 
         // Status from lookup
-        $statuses = $this->lookupFacade->getLookupList(C_ADMINISTRATOR_STATUS, $adminLang);
-        $statusOptions = [];
-        foreach ($statuses as $s) {
-            if ($s->lookup_id == C_ADMINISTRATOR_STATUS_REMOVED) continue;
-            $statusOptions[$s->lookup_id] = $s->item;
-        }
+        $statusOptions = $this->lookupFacade->getLookupListOption(C_ADMINISTRATOR_STATUS, $adminLang);
+
         $form->addSelect('status', 'Status', $statusOptions)
             ->setRequired('Zvolte status');
 
         // Lang from lookup
-        $langs = $this->lookupFacade->getLookupList(C_LANGUAGE, $adminLang);
-        $langOptions = [];
-        foreach ($langs as $l) {
-            $langOptions[$l->lookup_id] = $l->item;
-        }
+        $langOptions = $this->lookupFacade->getLookupListOption(C_LANGUAGE, $adminLang);
+
         $form->addSelect('admin_lang', 'Jazyk', $langOptions)
             ->setRequired('Zvolte jazyk');
 
@@ -115,14 +108,14 @@ final class AccountsPresenter extends AdminPresenter
     public function accountFormSucceeded(Form $form, \stdClass $values): void
     {
         $id = (int) $values->admin_id;
-        
+
         if ($id and !$this->isAllowedAdmin($id)) {
             $this->flashMessage('Nemáte oprávnění k úpravě tohoto účtu.', 'error');
             $this->redirect('default');
         }
 
         $admin = $id ? $this->adminFacade->getAdmin($id) : new AdministratorEntity();
-        
+
         if (empty($values->user_password)) {
             unset($values->user_password);
         } else {
@@ -131,10 +124,10 @@ final class AccountsPresenter extends AdminPresenter
         }
 
         $admin->fillEntity((array) $values);
-        
+
         $newId = $this->adminFacade->saveAdmin($admin);
         $this->flashMessage('Údaje byly uloženy.');
-        
+
         if (!$id) {
             $this->redirect('edit', ['id' => $newId]);
         }
@@ -146,7 +139,7 @@ final class AccountsPresenter extends AdminPresenter
         $form = new Form;
         $userGroupId = (int)$this->loggedUserEntity->getAdminGroupId();
         $allowedGroups = $this->groupFacade->getAvailableGroups($userGroupId);
-        
+
         $groupOptions = [];
         foreach ($allowedGroups as $g) {
             $groupOptions[$g->admin_group_id] = $g->admin_group_name;
@@ -154,7 +147,7 @@ final class AccountsPresenter extends AdminPresenter
 
         $form->addRadioList('admin_group_id', 'Skupina', $groupOptions)
             ->setRequired('Zvolte skupinu');
-        
+
         if ($this->id) {
             $admin = $this->adminFacade->getAdmin((int)$this->id);
             if ($admin) {
@@ -199,7 +192,7 @@ final class AccountsPresenter extends AdminPresenter
         }
 
         $form->addCheckboxList('presentations', 'Prezentace', $presOptions);
-        
+
         if ($this->id) {
             $form['presentations']->setDefaultValue($this->adminFacade->getAdminPresentations((int)$this->id));
         }

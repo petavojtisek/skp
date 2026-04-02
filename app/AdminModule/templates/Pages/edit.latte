@@ -59,8 +59,8 @@
                             <div class="form-group">
                                 <label for="page_status">Stav stránky</label>
                                 <select id="page_status" name="page_status" class="form-control">
-                                    <option n:foreach="$statuses as $sid => $status" value="{$sid}" n:attr="selected => $page && $page->getPageStatus() == $sid">
-                                        {$status['item']}
+                                    <option n:foreach="$statuses as $sid => $item" value="{$sid}" n:attr="selected => $page && $page->getPageStatus() == $sid">
+                                        {$item}
                                     </option>
                                 </select>
                             </div>
@@ -360,10 +360,11 @@
         </div>
     </div>
 </div>
+
 {/block}
 
 {block scripts}
-<script n:syntax="off">
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const pageNameInput = document.getElementById('page_name');
         const rewriteInput = document.getElementById('page_rewrite');
@@ -430,6 +431,16 @@
                 el.addEventListener('change', () => {
                     const url = el.getAttribute('data-url');
                     naja.makeRequest('GET', url, { state: el.checked ? 1 : 0 });
+                });
+            });
+
+            // Radio buttony pro verze
+            document.querySelectorAll('.ajax-radio').forEach(el => {
+                el.addEventListener('change', () => {
+                    if (el.checked) {
+                        const url = el.getAttribute('data-url');
+                        naja.makeRequest('GET', url);
+                    }
                 });
             });
         };

@@ -30,11 +30,13 @@ abstract class ADao
 		$entity = null;
 
 		try {
+
 			if (str_contains($entityName, '\\')) {
 				$entityPath = 'App\Model\\' . $entityName;
 			} else {
 				$entityPath = 'App\Model\Entity\\' . $entityName;
 			}
+
 			$entity = new $entityPath($data);
 		}catch(\Exception $e){
 

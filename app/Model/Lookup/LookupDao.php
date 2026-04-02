@@ -35,6 +35,14 @@ class LookupDao extends BaseDao
         return $list;
     }
 
+
+    public function getLookupListOption($parentId, $langId = null): array
+    {
+        return   $this->mapper->getLookupListOption($parentId, $langId);
+
+    }
+
+
     public function getLookupItem($lookupId, $langId = null): ?string
     {
         return $this->mapper->getLookupItem($lookupId, $langId);

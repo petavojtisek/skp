@@ -78,7 +78,7 @@ final class PagesPresenter extends AdminPresenter
         $this->template->page = $page;
 
         $this->template->templates = $this->templateFacade->getTemplatesList($presentationId);
-        $this->template->statuses = $this->lookupFacade->getLookupList(C_PRESENTATION_STATUS);
+        $this->template->statuses = $this->lookupFacade->getLookupListOption(C_PRESENTATION_STATUS);
         $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $id);
 
         // REAL COMPONENTS
@@ -186,7 +186,7 @@ final class PagesPresenter extends AdminPresenter
 
         // Get allowed code names for this module and template
         $allowed = $this->templateFacade->getAllowedCodeNames($templateId, $component->getModuleId());
-        
+
         // Get used on page (excluding THIS component)
         $used = [];
         foreach ($this->componentFacade->getByPageId($pageId) as $c) {
@@ -194,7 +194,7 @@ final class PagesPresenter extends AdminPresenter
                 $used[] = $c->getCodeName();
             }
         }
-        
+
         $availableCodes = array_diff($allowed, $used);
         $options = array_combine($availableCodes, $availableCodes);
 
@@ -210,7 +210,7 @@ final class PagesPresenter extends AdminPresenter
     {
         $post = $this->getHttpRequest()->getPost();
         $component = $this->componentFacade->find($compId);
-        
+
         if ($component && isset($post['name']) && isset($post['code_name'])) {
             $component->setComponentName($post['name']);
             $component->setCodeName($post['code_name']);

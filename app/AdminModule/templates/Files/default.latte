@@ -85,6 +85,9 @@
                                 <td><small class="text-muted">{$file->getCreatedDt('j.n.Y H:i')}</small></td>
                                 <td class="text-right">
                                     <div class="btn-group">
+                                        <button n:if="$picker" class="btn btn-xs btn-success" onclick="selectFile({link //:File:get, id => $file->file_id})">
+                                            <i class="fas fa-check"></i> Vybrat
+                                        </button>
                                         <a n:href=":File:detail, id => $file->file_id" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>
                                         <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger" onclick="return confirm('Smazat soubor?')"><i class="fas fa-trash"></i></a>
                                     </div>
@@ -116,6 +119,13 @@
     Dropzone.autoDiscover = false;
 
     $(function() {
+        window.selectFile = function(url) {
+            if (window.opener) {
+                window.opener.postMessage({ mceAction: 'selectFile', url: url }, '*');
+                window.close();
+            }
+        };
+
         var dropzoneElement = $("#file-dropzone");
         if (dropzoneElement.length === 0) return;
 

@@ -28,12 +28,24 @@ class LookupService extends BaseService
 
     public function getLookupList(int $parentId, ?int $langId = null): array
     {
-        
+
         $key = 'lookup_list_' . $parentId . '_' . ($langId ?? 'default');
         return $this->cache->load($key, function() use ($parentId, $langId) {
             return $this->lookupDao->getLookupList($parentId, $langId);
         }, ['lookup']);
     }
+
+
+    public function getLookupListOption(int $parentId, ?int $langId = null): array
+    {
+
+        $key = 'lookup_list_option' . $parentId . '_' . ($langId ?? 'default');
+        return $this->cache->load($key, function() use ($parentId, $langId) {
+            return $this->lookupDao->getLookupListOption($parentId, $langId);
+        }, ['lookupOption']);
+    }
+
+
 
     public function getLookupItem(int $lookupId, ?int $langId = null): ?string
     {

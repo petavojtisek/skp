@@ -35,7 +35,7 @@ final class LookupPresenter extends AdminPresenter
         $this->template->title = $id ? 'Editace položky' : 'Nová položka';
 
         // Get languages for translations (excluding CS)
-        $languages = $this->lookupFacade->getLookupList(500);
+        $languages = $this->lookupFacade->getLookupList(C_LANGUAGE);
         $this->template->languages = array_filter($languages, fn($l) => $l->lookup_id != C_LANGUAGE_CS);
 
         if ($id) {
