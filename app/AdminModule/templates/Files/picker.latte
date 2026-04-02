@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Výběr souboru | SKP Admin</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+  <style>
+      body { background: #f4f6f9; padding: 15px; }
+      .dropzone .dz-preview .dz-error-message { top: 150px; }
+  </style>
+</head>
+<body class="hold-transition">
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="btn-group">
+                <a n:href="switchBase!, type => 'images'" class="btn {if $baseType == 'images'}btn-primary{else}btn-outline-primary{/if}">
+                    <i class="fas fa-images"></i> Obrázky
+                </a>
+                <a n:href="switchBase!, type => 'documents'" class="btn {if $baseType == 'documents'}btn-primary{else}btn-outline-primary{/if}">
+                    <i class="fas fa-file-alt"></i> Dokumenty
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-folder-open text-warning mr-2"></i>
+                        <strong>{$baseType}</strong> 
+                        {if $subDir} / <small>{$subDir}</small>{/if}
+                    </h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" onclick="var name = prompt('Název nové složky:'); if(name) window.location.href = {link createFolder!, name => 'REPLACE'}.replace('REPLACE', encodeURIComponent(name));">
+                            <i class="fas fa-folder-plus"></i> Nová složka
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div id="file-dropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 5px; min-height: 120px; background: #fff; cursor: pointer;">
+                                <div class="dz-message">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i><br>
+                                    <strong>Nahrajte soubory sem.</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Název</th>
+                                    <th>Velikost</th>
+                                    <th class="text-right">Akce</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr n:if="$subDir">
+                                    <td colspan="3">
+                                        <a n:href="goUp!" class="text-warning">
+                                            <i class="fas fa-level-up-alt fa-rotate-90 mr-2"></i> ..
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <tr n:foreach="$directories as $dir">
+                                    <td>
+                                        <a n:href="openFolder!, name => $dir" class="text-warning">
+                                            <i class="fas fa-folder mr-2"></i> <strong>{$dir}</strong>
+                                        </a>
+                                    </td>
+                                    <td>-</td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                <tr n:foreach="$files as $file">
+                                    <td>
+                                        <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if} mr-2"></i>
+                                        {$file->original_name}
+                                    </td>
+                                    <td><small class="text-muted">{$file->size|bytes}</small></td>
+                                    <td class="text-right">
+                                        <button class="btn btn-xs btn-success" onclick="selectFile({link //:Front:File:get, id => $file->file_id})">
+                                            <i class="fas fa-check"></i> Vybrat
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr n:if="!$directories && !$files">
+                                    <td colspan="3" class="text-center p-4 text-muted">Složka je prázdná.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+<script>
+    Dropzone.autoDiscover = false;
+
+    $(function() {
+        window.selectFile = function(url) {
+            if (window.opener) {
+                window.opener.postMessage({ mceAction: 'selectFile', url: url }, '*');
+                window.close();
+            }
+        };
+
+        var dropzoneElement = $("#file-dropzone");
+        if (dropzoneElement.length === 0) return;
+
+        var myDropzone = new Dropzone("#file-dropzone", {
+            url: {link upload!},
+            paramName: "file",
+            maxFilesize: 2048,
+            chunking: true,
+            forceChunking: true,
+            chunkSize: 2000000,
+            dictDefaultMessage: "Přetáhněte soubory sem",
+            init: function() {
+                this.on("queuecomplete", function() {
+                    setTimeout(function() { location.reload(); }, 500);
+                });
+                this.on("error", function(file, message) {
+                    var errorMessage = typeof message === "string" ? message : (message.message || "Neznámá chyba");
+                    alert("Chyba při nahrávání: " + errorMessage);
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

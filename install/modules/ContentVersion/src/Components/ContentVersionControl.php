@@ -85,6 +85,38 @@ class ContentVersionControl extends Control implements IObjectControl
         $this->redrawControl();
     }
 
+    public function handleCopy(int $elementId): void
+    {
+        $oldElement = $this->elementFacade->find($elementId);
+        $oldContent = $this->facade->find($elementId);
+
+        if ($oldElement && $oldContent) {
+            $newElement = clone $oldElement;
+            $newElement->setId(null);
+            $newElement->setAuthorId($this->user->getId());
+            $newElement->setInserted(new \DateTime());
+            $newElement->setName($oldElement->getName() . ' (kopie)');
+
+            $newId = $this->elementFacade->save($newElement);
+
+            $newContent = new ContentVersionEntity();
+            $newContent->setId($newId);
+            $newContent->setContent($oldContent->getContent());
+            $this->facade->save($newContent);
+
+            $this->getPresenter()->flashMessage("Verze byla zkopírována.", 'success');
+        }
+        $this->redrawControl();
+    }
+
+    public function handleDelete(int $elementId): void
+    {
+        $this->facade->delete($elementId);
+        $this->elementFacade->delete($elementId);
+        $this->getPresenter()->flashMessage("Verze byla smazána.", 'success');
+        $this->redrawControl();
+    }
+
     public function handleEdit(?int $elementId = null): void
     {
         $this->view = 'edit';
@@ -144,7 +176,7 @@ class ContentVersionControl extends Control implements IObjectControl
             $element = $this->elementFacade->find($this->elementId);
             $content = $this->facade->find($this->elementId);
             if ($element && $content) {
-               
+
                 $values = $element->getEntityData();
                 $values['content'] = $content->getContent();
 
@@ -184,7 +216,7 @@ class ContentVersionControl extends Control implements IObjectControl
             $this->facade->save($content);
         }
 
-        $this->getPresenter()->flashMessage('Verze obsahu byla uloĹľena.', 'success');
+        $this->getPresenter()->flashMessage('Verze obsahu byla uložena.', 'success');
 
         $this->view = 'list';
         $this->elementId = null;

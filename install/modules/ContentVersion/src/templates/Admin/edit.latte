@@ -1,4 +1,4 @@
-<div class="card card-primary card-outline" n:snippet="form">
+<div class="card card-primary card-outline" n:snippet="contentVersion">
     <div class="card-header">
         <h3 class="card-title">
             <i class="fas fa-edit mr-1"></i>
@@ -43,7 +43,7 @@
 
             <div class="form-group">
                 <label n:name="content">Obsah</label>
-                <textarea n:name="content" class="form-control"></textarea>
+                <textarea n:name="content" class="form-control wysiwyg" data-fm-url="{$presenter->link(':Admin:Files:default')}"></textarea>
             </div>
         </div>
         <div class="card-footer">

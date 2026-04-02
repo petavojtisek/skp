@@ -24,9 +24,9 @@ abstract class AEntity implements IEntity
 	/** @var array */
 	protected array $valuesSet = [];
 
-    protected $valuesIgnored = [];
+    protected array $valuesIgnored = [];
 
-    protected $valuesDiff = [];
+    protected array $valuesDiff = [];
 
     /** @var array */
 	protected array $valuesUpdated = [];

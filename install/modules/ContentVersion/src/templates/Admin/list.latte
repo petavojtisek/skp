@@ -1,4 +1,4 @@
-<div class="card card-outline card-secondary mb-4" n:snippet="content">
+<div class="card card-outline card-secondary mb-4" n:snippet="contentVersion">
     <div class="card-header">
         <h3 class="card-title">{$name} <code>{$code}</code></h3>
         <div class="card-tools">
@@ -20,7 +20,7 @@
                 <tbody>
                     {if empty($items)}
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Žádné verze obsahu k zobrazení.</td>
+                            <td colspan="5" class="text-center text-muted">Žádné verze obsahu k zobrazení.</td>
                         </tr>
                     {else}
                         <tr n:foreach="$items as $item">
@@ -43,8 +43,8 @@
                                 <div class="btn-group">
                                     <a n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
                                     <button class="btn btn-xs btn-info" title="Preview"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-xs btn-success" title="Přidat"><i class="fas fa-plus"></i></button>
-                                    <button class="btn btn-xs btn-danger" title="Odebrat"><i class="fas fa-minus"></i></button>
+                                    <a n:href="copy!, elementId => $item->getId()" class="btn btn-xs btn-success ajax" title="Kopírovat"><i class="fas fa-plus"></i></a>
+                                    <a n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto verzi?')"><i class="fas fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -63,7 +63,7 @@
                 <i class="fas fa-edit"></i> Editace objektu
             </button>
             <a n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
-            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a>
+            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a> 
         </div>
     </div>
 </div>

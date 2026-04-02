@@ -28,20 +28,27 @@ final class FilesPresenter extends AdminPresenter
     /** @persistent */
     public bool $picker = false;
 
+    public function actionDefault(): void
+    {
+        if ($this->picker) {
+            $this->setView('picker');
+        }
+    }
+
     public function renderDefault(): void
     {
         $this->template->title = 'Správce souborů';
-        
+
         // Ensure base directories exist
         $this->fileManagerFacade->createDirectory('images', '');
         $this->fileManagerFacade->createDirectory('documents', '');
 
         $this->template->baseType = $this->baseType;
         $this->template->subDir = $this->subDir;
-        
+
         // List directories in current path
         $this->template->directories = $this->fileManagerFacade->getDirectories($this->baseType, $this->subDir);
-        
+
         // List files in current path from DB
         // We need a way to filter by path in DB
         $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
@@ -77,7 +84,7 @@ final class FilesPresenter extends AdminPresenter
 
         $cleanName = \Nette\Utils\Strings::webalize($name);
         $newPath = ($this->subDir ? $this->subDir . '/' : '') . $cleanName;
-        
+
         $this->fileManagerFacade->createDirectory($this->baseType, $newPath);
         $this->flashMessage('Složka byla vytvořena.');
         $this->redirect('this');
@@ -95,12 +102,7 @@ final class FilesPresenter extends AdminPresenter
         $chunkIndex = (int) $this->getHttpRequest()->getPost('dzchunkindex');
         $totalChunks = (int) $this->getHttpRequest()->getPost('dztotalchunkcount');
 
-        $params = $this->context->getParameters();
-        if (!isset($params['tempDir'])) {
-             $this->sendResponse(new JsonResponse(['status' => 'error', 'message' => 'Parametr tempDir není definován v konfiguraci.']));
-        }
-        
-        $tempDir = $params['tempDir'] . '/uploads/' . $uuid;
+        $tempDir = $this->fileManagerFacade->getTempDir() . '/uploads/' . $uuid;
         FileSystem::createDir($tempDir);
         $file->move($tempDir . '/' . $chunkIndex);
 
@@ -120,18 +122,19 @@ final class FilesPresenter extends AdminPresenter
 
     private function processCompleteUpload(string $tempDir, int $totalChunks, string $originalName): void
     {
+
         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
         $newFileName = sprintf('%s_%s.%s', date('Ymd_His'), Random::generate(8), $extension);
-        
+
         // Determine base type if not fixed
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
         $detectedBaseType = in_array($extension, $imageExtensions) ? 'images' : 'documents';
-        
+
         // If we are in a specific view, use that baseType, otherwise use detected
         $targetBase = $this->baseType ?: $detectedBaseType;
         $targetPath = $targetBase . ($this->subDir ? '/' . $this->subDir : '');
-        
-        $finalDir = $this->context->getParameters()['storageDir'] . '/' . $targetPath;
+
+        $finalDir = $this->fileManagerFacade->getStorageDir() . '/' . $targetPath;
         FileSystem::createDir($finalDir);
 
         $finalPath = $finalDir . '/' . $newFileName;

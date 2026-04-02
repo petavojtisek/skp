@@ -134,9 +134,9 @@ class FileManagerEntity extends BaseEntity
         return $this->getDateTime($this->created_dt, $format);
     }
 
-    public function setCreatedDt(mixed $dt): void
+    public function setCreatedDt($createdDt = null): void
     {
-        $this->setVariable('created_dt', $dt, self::VALUE_TYPE_DATE);
+        $this->setVariable('created_dt', $createdDt, self::VALUE_TYPE_DATE);
     }
 
     public function getAdminId(): ?int

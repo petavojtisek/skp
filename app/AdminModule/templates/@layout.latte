@@ -281,10 +281,10 @@
 
         editor.ui.registry.addMenuButton('macros', {
           text: 'Makra',
-          let page_name = {@$page_name};
-          let page_title = {@$page_title};
-          let baseUrl = {@$baseUrl};
           fetch: (callback) => {
+            let page_name = {@$page_name};
+            let page_title = {@$page_title};
+            let baseUrl = {@$baseUrl};
             const items = [
               {
                 type: 'menuitem',

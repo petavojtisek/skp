@@ -11,6 +11,16 @@ class FileManagerFacade
         $this->fileManagerService = $fileManagerService;
     }
 
+    public function getStorageDir(): string
+    {
+        return $this->fileManagerService->getStorageDir();
+    }
+
+    public function getTempDir(): string
+    {
+        return $this->fileManagerService->getTempDir();
+    }
+
     public function getFile(int $id): ?FileManagerEntity
     {
         return $this->fileManagerService->find($id);

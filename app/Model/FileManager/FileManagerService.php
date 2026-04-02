@@ -9,11 +9,23 @@ class FileManagerService extends BaseService
 {
     private FileManagerDao $fileManagerDao;
     private string $storageDir;
+    private string $tempDir;
 
-    public function __construct(string $storageDir, FileManagerDao $fileManagerDao)
+    public function __construct(string $storageDir, string $tempDir, FileManagerDao $fileManagerDao)
     {
         $this->fileManagerDao = $fileManagerDao;
         $this->storageDir = $storageDir;
+        $this->tempDir = $tempDir;
+    }
+
+    public function getStorageDir(): string
+    {
+        return $this->storageDir;
+    }
+
+    public function getTempDir(): string
+    {
+        return $this->tempDir;
     }
 
     public function findAll(): array
@@ -35,9 +47,9 @@ class FileManagerService extends BaseService
     {
         $file = $this->find($id);
         if ($file) {
-            $fyzicalPath = $this->getPhysicalPath($file);
-            if (file_exists($fyzicalPath)) {
-                FileSystem::delete($fyzicalPath);
+            $physicalPath = $this->getPhysicalPath($file);
+            if (file_exists($physicalPath)) {
+                FileSystem::delete($physicalPath);
             }
             $this->fileManagerDao->delete($id);
         }

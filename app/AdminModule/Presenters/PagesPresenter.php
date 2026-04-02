@@ -51,23 +51,25 @@ final class PagesPresenter extends AdminPresenter
 
     public function renderEdit(?int $id = null, ?int $parentId = null): void
     {
-        $id = $id ?: $this->id;
+        if ($id !== null) {
+            $this->id = $id;
+        }
 
-        $this->template->title = $id ? 'Editace stránky' : 'Nová stránka';
-        $this->template->pageId = $id;
+        $this->template->title = $this->id ? 'Editace stránky' : 'Nová stránka';
+        $this->template->pageId = $this->id;
         $this->template->parentId = $parentId;
 
         $presentationId = $this->loggedUserEntity->active_presentation_id;
 
         $page = null;
-        if ($id) {
-            $page = $this->pageFacade->find($id);
-            $this->template->specParams = $this->pageFacade->getSpecParams($id);
+        if ($this->id) {
+            $page = $this->pageFacade->find($this->id);
+            $this->template->specParams = $this->pageFacade->getSpecParams($this->id);
 
             // Groups for Page Groups tab
             $this->template->allPageGroups = $this->pageGroupFacade->getPageGroups();
-            $this->template->activeUserGroupIds = $this->pageGroupFacade->getPageInGroupIds($id);
-            $this->template->activeAdminGroupIds = $this->pageGroupFacade->getPageInGroupUserIds($id);
+            $this->template->activeUserGroupIds = $this->pageGroupFacade->getPageInGroupIds($this->id);
+            $this->template->activeAdminGroupIds = $this->pageGroupFacade->getPageInGroupUserIds($this->id);
 
         } else {
             $this->template->specParams = [];
@@ -79,10 +81,10 @@ final class PagesPresenter extends AdminPresenter
 
         $this->template->templates = $this->templateFacade->getTemplatesList($presentationId);
         $this->template->statuses = $this->lookupFacade->getLookupListOption(C_PRESENTATION_STATUS);
-        $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $id);
+        $this->template->allPages = $this->pageFacade->getPagesList($presentationId, $this->id);
 
         // REAL COMPONENTS
-        $this->template->pageComponents = $id ? $this->componentFacade->getByPageId($id) : [];
+        $this->template->pageComponents = $this->id ? $this->componentFacade->getByPageId((int)$this->id) : [];
         $templateId = $page ? $page->getTemplateId() : 0;
 
         $this->template->allowedModules = $templateId ? $this->templateFacade->getAllowedModules($templateId) : [];
@@ -162,7 +164,13 @@ final class PagesPresenter extends AdminPresenter
     {
         $this->componentFacade->unlinkFromPage($componentId, $pageId);
         $this->flashMessage('Objekt byl odebrán ze stránky.');
-        $this->redirect('this', ['id' => $pageId]);
+
+        if ($this->isAjax()) {
+            $this->redrawControl('pageComponents');
+            $this->redrawControl('flashes');
+        } else {
+            $this->redirect('this', ['id' => $pageId]);
+        }
     }
 
     public function handleDeleteFromPresentation(int $componentId, int $pageId): void
@@ -172,7 +180,13 @@ final class PagesPresenter extends AdminPresenter
             $this->componentFacade->delete($componentId);
             $this->flashMessage('Objekt byl kompletně smazán z prezentace.');
         }
-        $this->redirect('this', ['id' => $pageId]);
+
+        if ($this->isAjax()) {
+            $this->redrawControl('pageComponents');
+            $this->redrawControl('flashes');
+        } else {
+            $this->redirect('this', ['id' => $pageId]);
+        }
     }
 
     public function handleGetEditData(int $compId): void

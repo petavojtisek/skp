@@ -20,8 +20,7 @@ final class RouterFactory
 			'action' => 'default'
 		]);
 
-		$router[] = new Route('<presenter>/<action>[/<id>]', [
-			'module' => 'Front',
+		$router[] = new Route('<presenter>/<action>[/<id>]', [			'module' => 'Front',
 			'presenter' => 'Home',
 			'action' => 'default'
 		]);

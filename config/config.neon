@@ -118,7 +118,7 @@ services:
 	- App\Model\ModulePermission\ModulePermissionService
 	- App\Model\ModuleGroupRight\ModuleGroupRightService
 	- App\Model\ModuleRight\ModuleRightService
-	- App\Model\FileManager\FileManagerService(%storageDir%)
+	- App\Model\FileManager\FileManagerService(%storageDir%, %tempDir%)
 
 	# FACADE
 	- App\Model\Page\PageFacade
