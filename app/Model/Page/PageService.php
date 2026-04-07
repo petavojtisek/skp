@@ -42,7 +42,7 @@ class PageService extends BaseService
         if ($excludeId) {
             $where[] = ['page_id != %i', $excludeId];
         }
-        
+
         $pages = $this->pageDao->findAllBy($where, null, null, 'page_name ASC');
         $list = [];
         if ($pages) {

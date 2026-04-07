@@ -64,4 +64,14 @@ class PresentationService extends BaseService
     {
         $this->presentationDao->saveAdminPresentations($adminId, $presentationIds);
     }
+
+    public function getPresentationByDomain(string $domain): ?PresentationEntity
+    {
+        return $this->presentationDao->findOneBy(['domain' => $domain]);
+    }
+
+    public function getDefaultPresentation(): ?PresentationEntity
+    {
+        return $this->presentationDao->findOneBy(['is_default' => 1]);
+    }
 }

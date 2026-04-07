@@ -68,4 +68,14 @@ class PresentationFacade
     {
         $this->presentationService->saveAdminPresentations($adminId, $presentationIds);
     }
+
+    public function getPresentationByDomain(string $domain): ?PresentationEntity
+    {
+        return $this->presentationService->getPresentationByDomain($domain);
+    }
+
+    public function getDefaultPresentation(): ?PresentationEntity
+    {
+        return $this->presentationService->getDefaultPresentation();
+    }
 }

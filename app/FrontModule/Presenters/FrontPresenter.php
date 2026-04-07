@@ -3,7 +3,11 @@
 namespace App\FrontModule\Presenters;
 
 use App\Model\Page\PageEntity;
+use App\Model\Page\PageFacade;
 use App\Model\Presentation\PresentationEntity;
+use App\Model\Presentation\PresentationFacade;
+use App\Model\System\Cache;
+use App\Model\Template\TemplateFacade;
 use App\Presenters\BasePresenter;
 
 abstract class FrontPresenter extends BasePresenter
@@ -19,6 +23,18 @@ abstract class FrontPresenter extends BasePresenter
 
 
     public array $menuTree = [];
+
+    /** @var PresentationFacade @inject */
+    public PresentationFacade $presentationFacade;
+
+    /** @var PageFacade @inject */
+    public PageFacade $pageFacade;
+
+    /** @var Cache @inject */
+    public Cache $cache;
+
+    /** @var TemplateFacade @inject */
+    public TemplateFacade $templateFacade;
 
     public function startup(): void
     {
@@ -39,54 +55,156 @@ abstract class FrontPresenter extends BasePresenter
     }
 
 
+    private function checkPageIsEnabled($page) : bool
+    {
+        return ($page instanceof PageEntity and $page->getPageStatus() == C_PRESENTATION_STATUS_ACTIVE);
+    }
+
+
+    private function checkPresentationIsEnabled($presentation) : bool
+    {
+        return ($presentation instanceof PresentationEntity and $presentation->getPresentationStatus() == C_PRESENTATION_STATUS_ACTIVE);
+    }
+
+
     public function getActivePresentation() : void
     {
-            //load by domain if not take default amd with presentation_status C_PRESENTATION_STATUS_ACTIVE
-            //if found set activePresentation and active_presentation_id
-            //if not found 404
+        $domain = $this->getHttpRequest()->getUrl()->getHost();
+        $cacheKey = 'active_presentation_' . $domain;
 
+        $presentation = $this->cache->load($cacheKey, function() use ($domain) {
+            $presentation = $this->presentationFacade->getPresentationByDomain($domain);
 
+            if (!$this->checkPresentationIsEnabled($presentation)) {
+                $presentation = $this->presentationFacade->getDefaultPresentation();
+            }
 
+            return $presentation;
+        }, ['presentation']);
+
+        if (!$this->checkPresentationIsEnabled($presentation)) {
+            $this->error('Presentation not found or not active.', 404);
+        }
+
+        $this->activePresentation = $presentation;
+        $this->active_presentation_id = $presentation->getId();
     }
+
 
 
     public function getActivePage() : void
     {
-        //load PageEntity by active_presentation_id and page_status  = C_PRESENTATION_STATUS_ACTIVE
-        //if found  resolve redirect if found redirect else set pageEntity a activePageId
-        // if not find default with page_status C_PRESENTATION_STATUS_ACTIVE pages are sort by position ASC
-            //if found default  redirect with 301on this page
-            //if not found 404
+        $pageId = (int)$this->getParameter('id');
 
+        if ($pageId) {
+            $page = $this->pageFacade->getPageById($pageId, $this->active_presentation_id);
 
+            if ($this->checkPageIsEnabled($page)) {
+
+                if ($page->getPageRedirectId()) {
+                     $this->redirect('this', ['id' => $page->getPageRedirectId()]);
+                } elseif ($page->getPageRedirect()) {
+                     $this->redirectUrl($page->getPageRedirect());
+                }
+
+                $this->activePage = $page;
+                $this->active_page_id = $page->getId();
+                return;
+            }
+        }
+
+        $defaultPage = $this->pageFacade->getDefaultPage($this->active_presentation_id, C_PRESENTATION_STATUS_ACTIVE);
+
+        if ($defaultPage) {
+             //if found default redirect with 301 on this page
+            $this->redirectPermanent('this', ['id' => $defaultPage->getId()]);
+        }
+
+        $this->error('Page not found.', 404);
     }
+
 
     public function getMenuTree() : void
     {
-        //load menu by active_presentation_id from active pages only...
-        //store to cache
-        //if page updated or add new in admin invalidate cache we have event manager for this
+        $cacheKey = 'menu_tree_' . $this->active_presentation_id;
 
+        $this->menuTree = $this->cache->load($cacheKey, function() {
+            $pages = $this->pageFacade->getPages($this->active_presentation_id);
+            return $this->filterActivePagesFromTree($pages);
+        }, ['menu_tree', 'page']);
+    }
+
+    private function filterActivePagesFromTree(array $pages): array
+    {
+        $filtered = [];
+        foreach ($pages as $page) {
+            if ($this->checkPageIsEnabled($page) and $page->getPageMenu() == 'Y') {
+                if (!empty($page->children)) {
+                    $page->children = $this->filterActivePagesFromTree($page->children);
+                }
+                $filtered[] = $page;
+            }
+        }
+        return $filtered;
     }
 
 
     public function getSpecParamPresentation() : void
     {
-        //load specParamPresetation data by active_presentation_id
-        //store to cache
-        //if specParamPresetation updated or add new in admin invalidate cache we have event manager for this
+        $cacheKey = 'spec_param_presentation_' . $this->active_presentation_id;
+
+        $this->specParamPresentation = $this->cache->load($cacheKey, function () {
+            $params = $this->presentationFacade->getSpecParams($this->active_presentation_id);
+            $result = [];
+            foreach ($params as $param) {
+                $result[$param->getName()] = $param->getValue();
+            }
+            return $result;
+        }, ['spec_param_presentation']);
     }
 
     public function getSpecParamPage() : void
     {
-        //load specParamPage data by active_presentation_id
-        //store / load  to cache and store to specParamPage
-        //if specParamPage updated or add new in admin invalidate cache we have event manager for this
+        if (!$this->active_page_id) {
+            return;
+        }
+
+        $cacheKey = 'spec_param_page_' . $this->active_page_id;
+
+        $this->specParamPage = $this->cache->load($cacheKey, function () {
+            $params = $this->pageFacade->getSpecParams($this->active_page_id);
+            $result = [];
+            foreach ($params as $param) {
+                $result[$param->getName()] = $param->getValue();
+            }
+            return $result;
+        }, ['spec_param_page']);
     }
 
     public function loadPageTemplate() : void
     {
-        //assign template by activePage template if not found  404
+        if (!$this->activePage || !$this->activePage->getTemplateId()) {
+            $this->error('Page template not found.', 404);
+        }
+
+        $templateId = $this->activePage->getTemplateId();
+
+        $cacheKey = 'page_template_' . $templateId;
+
+        $templateEntity = $this->cache->load($cacheKey, function() use ($templateId) {
+            return $this->templateFacade->getTemplate($templateId);
+        }, ['template']);
+
+        if (!$templateEntity || !$templateEntity->getTemplateFilename()) {
+            $this->error('Page template not found.', 404);
+        }
+
+        $templateFile = __DIR__ . '/../templates/' . $templateEntity->getTemplateFilename() . '.latte';
+        if (file_exists($templateFile)) {
+             $this->template->setFile($templateFile);
+        } else {
+             $this->error('Page template file not found.', 404);
+        }
     }
 
     public function resolvePresentationComponentAction() : void

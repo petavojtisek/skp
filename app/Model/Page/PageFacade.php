@@ -11,7 +11,7 @@ class PageFacade
     private SpecParamPageService $specParamPageService;
 
     public function __construct(
-        PageService $pageService, 
+        PageService $pageService,
         PageGroupService $pageGroupService,
         SpecParamPageService $specParamPageService
     ) {
@@ -35,20 +35,20 @@ class PageFacade
 
         foreach ($pages as $page) {
             $id = $page->getId();
-            
+
             // Načtení "Skupin stránek" (page_in_group)
             $page->page_groups = $this->pageGroupService->getPageGroupsByPageId($id);
-            
+
             // Pro snazší kontrolu práv v šabloně přidáme i čisté pole ID skupin stránek
             $page->page_group_ids = $this->pageGroupService->getPageInGroupIds($id);
-            
+
             // Načtení "Skupin uživatelů" (page_in_group_user)
             $page->user_groups = $this->pageGroupService->getPageInGroupUserIds($id);
-            
+
             // Práva pro administrátory (vazba page_group -> admin_group)
             $groupIDs = array_keys((array)$page->page_groups);
             $page->admin_groups = $this->pageGroupService->getAdminGroupIdsByPageGroups($groupIDs);
-            
+
             $page->children = [];
             $references[$id] = $page;
         }
@@ -103,5 +103,15 @@ class PageFacade
     public function deleteSpecParam(int $id): void
     {
         $this->specParamPageService->delete($id);
+    }
+
+    public function getPageById(int $pageId, int $presentationId): ?PageEntity
+    {
+        return $this->pageService->getPageById($pageId, $presentationId);
+    }
+
+    public function getDefaultPage(int $presentationId, int $activeStatus): ?PageEntity
+    {
+        return $this->pageService->getDefaultPage($presentationId, $activeStatus);
     }
 }
