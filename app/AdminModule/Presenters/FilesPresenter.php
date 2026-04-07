@@ -30,12 +30,27 @@ final class FilesPresenter extends AdminPresenter
 
     public function actionDefault(): void
     {
+
         if ($this->picker) {
             $this->setView('picker');
         }
+        $this->template->baseType = $this->baseType;
     }
 
+
+    public function renderPicker()
+    {
+        $this->setRenderParams();
+    }
+
+
     public function renderDefault(): void
+    {
+        $this->setRenderParams();
+
+    }
+
+    private function setRenderParams()
     {
         $this->template->title = 'Správce souborů';
 
@@ -53,6 +68,8 @@ final class FilesPresenter extends AdminPresenter
         // We need a way to filter by path in DB
         $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
     }
+
+
 
     public function handleSwitchBase(string $type): void
     {

@@ -64,6 +64,7 @@ class ContentVersionControl extends Control implements IObjectControl
         $this->template->view = $this->view;
         $this->template->states = $this->lookupFacade->getLookupListOption(C_ELEMENT_STATUS);
 
+
         if ($this->view === 'edit') {
             $item = $this->elementId ? $this->elementFacade->find($this->elementId) : new ElementEntity();
             $this->template->item = $item;
