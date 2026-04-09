@@ -94,6 +94,7 @@ abstract class FrontPresenter extends BasePresenter
 
     public function getActivePage() : void
     {
+
         $pageId = (int)$this->getParameter('page_id');
 
         $page = null;
@@ -114,7 +115,7 @@ abstract class FrontPresenter extends BasePresenter
             if ($page->getPageRewrite()) {
                 $path = ltrim($this->getHttpRequest()->getUrl()->getPathInfo(), '/');
                 $rewriteWithExtension = $page->getPageRewrite() . '.html';
-                
+
                 // If the current path doesn't match the rewrite, redirect to the rewrite
                 // We check both with and without .html for flexibility
                 if ($path !== $page->getPageRewrite() && $path !== $rewriteWithExtension && $path !== '') {
@@ -190,6 +191,7 @@ abstract class FrontPresenter extends BasePresenter
 
     public function loadPageTemplate() : void
     {
+
         if (!$this->activePage or !$this->activePage->getTemplateId()) {
             $this->error('Page template not found.', 404);
         }
@@ -206,12 +208,13 @@ abstract class FrontPresenter extends BasePresenter
             $this->error('Page template not found.', 404);
         }
 
-        $templateFile = __DIR__ . '/../templates/' . $templateEntity->getTemplateFilename() . '.latte';
+        $templateFile = __DIR__ . '/../templates/' . $templateEntity->getTemplateFilename() ;
         if (file_exists($templateFile)) {
              $this->template->setFile($templateFile);
         } else {
              $this->error('Page template file not found.', 404);
         }
+
     }
 
     public function resolvePresentationComponentAction() : void

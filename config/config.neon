@@ -25,7 +25,7 @@ latte:
 	strictParsing: yes
 
 services:
-	router: App\RouterFactory::createRouter
+	router: App\RouterFactory::createRouter(@connection, @App\Model\System\Cache)
 
 	# MAPPERS
 	- App\Model\Page\SpecParamPageMapper
