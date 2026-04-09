@@ -147,10 +147,11 @@ abstract class FrontPresenter extends BasePresenter
         $filtered = [];
         foreach ($pages as $page) {
             if ($this->checkPageIsEnabled($page) and $page->getPageMenu() == 'Y') {
-                if (!empty($page->children)) {
-                    $page->children = $this->filterActivePagesFromTree($page->children);
+                $p = clone $page; // Clone to avoid modifying original entities if they are shared
+                if (!empty($p->children)) {
+                    $p->children = $this->filterActivePagesFromTree($p->children);
                 }
-                $filtered[] = $page;
+                $filtered[] = $p;
             }
         }
         return $filtered;
@@ -244,6 +245,17 @@ abstract class FrontPresenter extends BasePresenter
         //logic for edit /detail also need resolve in template... list action vs detail.. detail will have other template for example... its mean only detail on page will be..
         //easiest way is maby rewrite whole content block when detail maybe no i will specify this
 
+    }
+
+    public function beforeRender(): void
+    {
+        parent::beforeRender();
+        $this->template->activePage = $this->activePage;
+        $this->template->active_page_id = $this->active_page_id;
+        $this->template->activePresentation = $this->activePresentation;
+        $this->template->menuTree = $this->menuTree;
+        $this->template->specParamPresentation = $this->specParamPresentation;
+        $this->template->specParamPage = $this->specParamPage;
     }
 
 

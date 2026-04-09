@@ -17,11 +17,18 @@
 
         <nav class="main-nav">
             <ul class="nav-list">
-                <li><a n:href="Home:default">Home</a></li>
-                <li><a href="#">O nás</a></li>
-                <li><a href="#">Cíle</a></li>
-                <li><a href="#">Dokumenty</a></li>
-                <li><a href="#">Kontakt</a></li>
+                <li n:foreach="$menuTree as $item">
+                    <a n:href="Home:default, page_id => $item->getId()" n:class="$active_page_id == $item->getId() ? active">
+                        {$item->getPageName()}
+                    </a>
+                    <ul n:if="!empty($item->children)" class="submenu">
+                        <li n:foreach="$item->children as $subitem">
+                            <a n:href="Home:default, page_id => $subitem->getId()" n:class="$active_page_id == $subitem->getId() ? active">
+                                {$subitem->getPageName()}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="mobile-only"><a href="#join" class="btn btn-primary">Přidejte se</a></li>
             </ul>
         </nav>
