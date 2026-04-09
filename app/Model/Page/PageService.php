@@ -33,6 +33,21 @@ class PageService extends BaseService
         return (int)$this->pageDao->save($entity)->getId();
     }
 
+    public function getByRewrite(string $rewrite, int $presentationId): ?PageEntity
+    {
+        return $this->pageDao->findByRewrite($rewrite, $presentationId);
+    }
+
+    public function getPageById(int $pageId, int $presentationId): ?PageEntity
+    {
+        return $this->pageDao->getPageById($pageId, $presentationId);
+    }
+
+    public function getDefaultPage(int $presentationId, int $activeStatus): ?PageEntity
+    {
+        return $this->pageDao->getDefaultPage($presentationId, $activeStatus);
+    }
+
     /**
      * @return array id => name
      */

@@ -114,4 +114,9 @@ class PageFacade
     {
         return $this->pageService->getDefaultPage($presentationId, $activeStatus);
     }
+
+    public function getPageByRewrite(string $rewrite, int $presentationId): ?PageEntity
+    {
+        return $this->pageService->getByRewrite($rewrite, $presentationId);
+    }
 }

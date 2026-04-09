@@ -100,7 +100,7 @@ final class PagesPresenter extends AdminPresenter
         $templateId = $page ? $page->getTemplateId() : 0;
 
         $options = [];
-        if ($type === 'tab1' && $moduleId) {
+        if ($type === 'tab1' and $moduleId) {
             // Get all code names allowed for this module and template
             $allowed = $this->templateFacade->getAllowedCodeNames($templateId, $moduleId);
 
@@ -134,7 +134,7 @@ final class PagesPresenter extends AdminPresenter
         $codeName = $post['code_name'] ?? null;
         $name = $post['name'] ?? null;
 
-        if ($pageId && $moduleId && $codeName && $name) {
+        if ($pageId and $moduleId and $codeName and $name) {
             $entity = new \App\Model\Component\ComponentEntity();
             $entity->setModuleId($moduleId);
             $entity->setCodeName($codeName);
@@ -153,7 +153,7 @@ final class PagesPresenter extends AdminPresenter
         $post = $this->getHttpRequest()->getPost();
         $componentId = (int)($post['component_id'] ?? 0);
 
-        if ($pageId && $componentId) {
+        if ($pageId and $componentId) {
             $this->componentFacade->linkToPage($componentId, $pageId);
             $this->flashMessage('Existující objekt byl přidán na stránku.', 'success');
         }
@@ -204,7 +204,7 @@ final class PagesPresenter extends AdminPresenter
         // Get used on page (excluding THIS component)
         $used = [];
         foreach ($this->componentFacade->getByPageId($pageId) as $c) {
-            if ($c->getId() != $compId && $c->getModuleId() == $component->getModuleId()) {
+            if ($c->getId() != $compId and $c->getModuleId() == $component->getModuleId()) {
                 $used[] = $c->getCodeName();
             }
         }
@@ -225,7 +225,7 @@ final class PagesPresenter extends AdminPresenter
         $post = $this->getHttpRequest()->getPost();
         $component = $this->componentFacade->find($compId);
 
-        if ($component && isset($post['name']) && isset($post['code_name'])) {
+        if ($component and isset($post['name']) and isset($post['code_name'])) {
             $component->setComponentName($post['name']);
             $component->setCodeName($post['code_name']);
             $this->componentFacade->save($component);

@@ -94,33 +94,40 @@ abstract class FrontPresenter extends BasePresenter
 
     public function getActivePage() : void
     {
-        $pageId = (int)$this->getParameter('id');
+        $pageId = (int)$this->getParameter('page_id');
 
+        $page = null;
         if ($pageId) {
             $page = $this->pageFacade->getPageById($pageId, $this->active_presentation_id);
+        }
 
-            if ($this->checkPageIsEnabled($page)) {
-
-                if ($page->getPageRedirectId()) {
-                     $this->redirect('this', ['id' => $page->getPageRedirectId()]);
-                } elseif ($page->getPageRedirect()) {
-                     $this->redirectUrl($page->getPageRedirect());
-                }
-
-                $this->activePage = $page;
-                $this->active_page_id = $page->getId();
-                return;
+        if ($page && $page->getPageStatus() == C_PRESENTATION_STATUS_ACTIVE) {
+            // Internal or External Redirects defined in DB
+            if ($page->getPageRedirectId()) {
+                 $this->redirectPermanent('this', ['page_id' => $page->getPageRedirectId()]);
+            } elseif ($page->getPageRedirect()) {
+                 $this->redirectUrl($page->getPageRedirect());
             }
+
+            // SEO Enforcement: Redirect to canonical URL if accessed via non-rewrite URL
+            // (Only if the page has a rewrite and we are not already using it)
+            if ($page->getPageRewrite()) {
+                $path = ltrim($this->getHttpRequest()->getUrl()->getPathInfo(), '/');
+                $rewriteWithExtension = $page->getPageRewrite() . '.html';
+                
+                // If the current path doesn't match the rewrite, redirect to the rewrite
+                // We check both with and without .html for flexibility
+                if ($path !== $page->getPageRewrite() && $path !== $rewriteWithExtension && $path !== '') {
+                     $this->redirectPermanent('this', ['page_id' => $page->getId()]);
+                }
+            }
+
+            $this->activePage = $page;
+            $this->active_page_id = $page->getId();
+            return;
         }
 
-        $defaultPage = $this->pageFacade->getDefaultPage($this->active_presentation_id, C_PRESENTATION_STATUS_ACTIVE);
-
-        if ($defaultPage) {
-             //if found default redirect with 301 on this page
-            $this->redirectPermanent('this', ['id' => $defaultPage->getId()]);
-        }
-
-        $this->error('Page not found.', 404);
+        $this->error('Stránka nebyla nalezena.', 404);
     }
 
 
@@ -183,7 +190,7 @@ abstract class FrontPresenter extends BasePresenter
 
     public function loadPageTemplate() : void
     {
-        if (!$this->activePage || !$this->activePage->getTemplateId()) {
+        if (!$this->activePage or !$this->activePage->getTemplateId()) {
             $this->error('Page template not found.', 404);
         }
 
@@ -195,7 +202,7 @@ abstract class FrontPresenter extends BasePresenter
             return $this->templateFacade->getTemplate($templateId);
         }, ['template']);
 
-        if (!$templateEntity || !$templateEntity->getTemplateFilename()) {
+        if (!$templateEntity or !$templateEntity->getTemplateFilename()) {
             $this->error('Page template not found.', 404);
         }
 

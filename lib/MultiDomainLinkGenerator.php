@@ -90,7 +90,7 @@ class MultiDomainLinkGenerator {
 
 		$url = $linkGenerator->link($destination, $params);
 
-		if ($fragment !== '' && $fragment !== '0') {
+		if ($fragment !== '' and $fragment !== '0') {
 			$url .= $fragment;
 		}
 

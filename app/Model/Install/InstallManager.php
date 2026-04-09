@@ -67,7 +67,7 @@ class InstallManager
             $this->db->rollback();
             
             // Clean up files if they were copied
-            if ($filesCopied && is_dir($destPath)) {
+            if ($filesCopied and is_dir($destPath)) {
                 FileSystem::delete($destPath);
             }
             

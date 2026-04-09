@@ -91,7 +91,7 @@ class ContentVersionControl extends Control implements IObjectControl
         $oldElement = $this->elementFacade->find($elementId);
         $oldContent = $this->facade->find($elementId);
 
-        if ($oldElement && $oldContent) {
+        if ($oldElement and $oldContent) {
             $newElement = clone $oldElement;
             $newElement->setId(null);
             $newElement->setAuthorId($this->user->getId());
@@ -176,7 +176,7 @@ class ContentVersionControl extends Control implements IObjectControl
         if ($this->elementId) {
             $element = $this->elementFacade->find($this->elementId);
             $content = $this->facade->find($this->elementId);
-            if ($element && $content) {
+            if ($element and $content) {
 
                 $values = $element->getEntityData();
                 $values['content'] = $content->getContent();
