@@ -119,4 +119,9 @@ class PageFacade
     {
         return $this->pageService->getByRewrite($rewrite, $presentationId);
     }
+
+    public function getComponentActions(int $pageId): array
+    {
+        return $this->pageService->getComponentActions($pageId);
+    }
 }

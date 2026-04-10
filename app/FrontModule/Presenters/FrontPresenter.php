@@ -9,6 +9,9 @@ use App\Model\Presentation\PresentationFacade;
 use App\Model\System\Cache;
 use App\Model\Template\TemplateFacade;
 use App\Presenters\BasePresenter;
+use App\Model\Helper\FrontControlFactory;
+use App\Model\Component\ComponentFacade;
+use Nette\ComponentModel\IComponent;
 
 abstract class FrontPresenter extends BasePresenter
 {
@@ -36,21 +39,31 @@ abstract class FrontPresenter extends BasePresenter
     /** @var TemplateFacade @inject */
     public TemplateFacade $templateFacade;
 
+    /** @var FrontControlFactory @inject */
+    public FrontControlFactory $frontControlFactory;
+
+    /** @var ComponentFacade @inject */
+    public ComponentFacade $componentFacade;
+
+    public array $componentsConfig = [];
+
     public function startup(): void
     {
         parent::startup();
 
-        //todo load data
         $this->getActivePresentation();
         $this->getActivePage();
         $this->getMenuTree();
         $this->getSpecParamPresentation();
         $this->getSpecParamPage();
-
         $this->loadPageTemplate();
+
+        // 1. Collect all requested actions
         $this->resolvePresentationComponentAction();
         $this->resolvePageComponentAction();
         $this->loadPageComponents();
+
+        // 2. Actually process/trigger them
         $this->processComponents();
     }
 
@@ -94,7 +107,6 @@ abstract class FrontPresenter extends BasePresenter
 
     public function getActivePage() : void
     {
-
         $pageId = (int)$this->getParameter('page_id');
 
         $page = null;
@@ -111,13 +123,10 @@ abstract class FrontPresenter extends BasePresenter
             }
 
             // SEO Enforcement: Redirect to canonical URL if accessed via non-rewrite URL
-            // (Only if the page has a rewrite and we are not already using it)
             if ($page->getPageRewrite()) {
                 $path = ltrim($this->getHttpRequest()->getUrl()->getPathInfo(), '/');
                 $rewriteWithExtension = $page->getPageRewrite() . '.html';
 
-                // If the current path doesn't match the rewrite, redirect to the rewrite
-                // We check both with and without .html for flexibility
                 if ($path !== $page->getPageRewrite() && $path !== $rewriteWithExtension && $path !== '') {
                      $this->redirectPermanent('this', ['page_id' => $page->getId()]);
                 }
@@ -147,7 +156,7 @@ abstract class FrontPresenter extends BasePresenter
         $filtered = [];
         foreach ($pages as $page) {
             if ($this->checkPageIsEnabled($page) and $page->getPageMenu() == 'Y') {
-                $p = clone $page; // Clone to avoid modifying original entities if they are shared
+                $p = clone $page;
                 if (!empty($p->children)) {
                     $p->children = $this->filterActivePagesFromTree($p->children);
                 }
@@ -192,13 +201,11 @@ abstract class FrontPresenter extends BasePresenter
 
     public function loadPageTemplate() : void
     {
-
         if (!$this->activePage or !$this->activePage->getTemplateId()) {
             $this->error('Page template not found.', 404);
         }
 
         $templateId = $this->activePage->getTemplateId();
-
         $cacheKey = 'page_template_' . $templateId;
 
         $templateEntity = $this->cache->load($cacheKey, function() use ($templateId) {
@@ -215,36 +222,121 @@ abstract class FrontPresenter extends BasePresenter
         } else {
              $this->error('Page template file not found.', 404);
         }
+    }
 
+    private function generateComponentName(string $module, int $componentId, ?string $codeName): string
+    {
+        $moduleSnake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $module));
+        $codeNameSnake = $codeName ? strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $codeName)) : null;
+        return $codeNameSnake ? "{$moduleSnake}_{$codeNameSnake}" : "{$moduleSnake}_{$componentId}";
+    }
+
+    private function addComponentCall(int $componentId, string $module, string $action, array $params = [], ?string $codeName = null): void
+    {
+        // Normalize module name for key (PascalCase) to ensure consistent grouping
+        $moduleKey = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $module)));
+
+        if (!isset($this->componentsConfig[$moduleKey])) {
+            $this->componentsConfig[$moduleKey] = [];
+        }
+
+        if (!isset($this->componentsConfig[$moduleKey][$componentId])) {
+            $this->componentsConfig[$moduleKey][$componentId] = [
+                'module_original' => $moduleKey, // Original name for factory
+                'code_name' => $codeName,
+                'calls' => []
+            ];
+        }
+
+        // Update code_name if we found it later (e.g. from physical component load)
+        if ($codeName !== null && $this->componentsConfig[$moduleKey][$componentId]['code_name'] === null) {
+            $this->componentsConfig[$moduleKey][$componentId]['code_name'] = $codeName;
+        }
+
+        $this->componentsConfig[$moduleKey][$componentId]['calls'][] = [
+            'action' => $action,
+            'params' => $params
+        ];
     }
 
     public function resolvePresentationComponentAction() : void
     {
-        // load presentation component action eg contentVersion via factory need prepare new factory for frontend and process action by
-        // its mean call action from action and add params from params field
-
-    }
-    public function resolvePageComponentAction()
-    {
-        // load page_component_action eg for contentVersion, banners etc via factory need prepare new factor for all models if not exist for frontend and process action by
-        // its mean call action from action and add params from params field
-    }
-
-    public function loadPageComponents()
-    {
-        // load page_component eg contentVersion and via frontend factory need prepare new factor for all models if not exist for frontend
-        //$this->componentFactories = [];
-
+        $actions = $this->presentationFacade->getComponentActions($this->active_presentation_id);
+        foreach ($actions as $actionRow) {
+            // Use entity methods if it's an entity, or array access
+            if ($actionRow instanceof \App\Model\Presentation\ComponentActionEntity) {
+                $params = $actionRow->getParams() ?: [];
+                $this->addComponentCall((int)$actionRow->getComponentId(), $actionRow->getModule(), $actionRow->getAction(), $params);
+            } else {
+                $params = isset($actionRow->params) ? json_decode($actionRow->params, true) : [];
+                $this->addComponentCall((int)$actionRow->component_id, $actionRow->module, $actionRow->action, $params);
+            }
+        }
     }
 
-    public function processComponents()
+    public function resolvePageComponentAction(): void
     {
-        //use $this->componentFactories
-        //  process listAction for all component from loadPageComponents default listAction for this and detailAction for call detail action if has sence
-        // for example news will have detailAction but banner not need detailAction so we need resolve what is called and call this action if exist if not call nothing
-        //logic for edit /detail also need resolve in template... list action vs detail.. detail will have other template for example... its mean only detail on page will be..
-        //easiest way is maby rewrite whole content block when detail maybe no i will specify this
+        if (!$this->active_page_id) return;
+        $actions = $this->pageFacade->getComponentActions($this->active_page_id);
+        foreach ($actions as $actionRow) {
+            if (is_array($actionRow)) {
+                $params = isset($actionRow['param']) ? json_decode($actionRow['param'], true) : [];
+                $this->addComponentCall((int)$actionRow['component_id'], $actionRow['module'], $actionRow['action'], $params);
+            } else {
+                $params = method_exists($actionRow, 'getParams') ? $actionRow->getParams() : (isset($actionRow->param) ? json_decode($actionRow->param, true) : []);
+                $this->addComponentCall((int)$actionRow->getComponentId(), $actionRow->getModule(), $actionRow->getAction(), $params);
+            }
+        }
+    }
 
+    public function loadPageComponents(): void
+    {
+        if (!$this->active_page_id) return;
+
+        $components = $this->componentFacade->getByPageId($this->active_page_id);
+        foreach ($components as $component) {
+            // Physical components always get 'default' action unless already specified
+            $this->addComponentCall($component->getId(), $component->getModuleCodeName(), 'default', [], $component->getCodeName());
+        }
+    }
+
+    public function processComponents(): void
+    {
+        foreach ($this->componentsConfig as $moduleKey => $instances) {
+            foreach ($instances as $componentId => $config) {
+                $componentName = $this->generateComponentName($moduleKey, $componentId, $config['code_name']);
+                $this->getComponent($componentName);
+            }
+        }
+    }
+
+    protected function createComponent(string $name): ?IComponent
+    {
+        foreach ($this->componentsConfig as $moduleKey => $instances) {
+            foreach ($instances as $componentId => $config) {
+                $expectedName = $this->generateComponentName($moduleKey, $componentId, $config['code_name']);
+                
+                if ($name === $expectedName) {
+                    $control = $this->frontControlFactory->create($config['module_original']);
+                    if ($control) {
+                        if (method_exists($control, 'setComponentId')) {
+                            $control->setComponentId($componentId);
+                        }
+
+                        foreach ($config['calls'] as $call) {
+                            $method = 'action' . ucfirst($call['action']);
+                            if (method_exists($control, $method)) {
+                                $control->$method(...array_values($call['params'] ?? []));
+                            }
+                        }
+
+                        return $control;
+                    }
+                }
+            }
+        }
+
+        return parent::createComponent($name);
     }
 
     public function beforeRender(): void
@@ -257,8 +349,4 @@ abstract class FrontPresenter extends BasePresenter
         $this->template->specParamPresentation = $this->specParamPresentation;
         $this->template->specParamPage = $this->specParamPage;
     }
-
-
-
-
 }

@@ -32,14 +32,19 @@ class PageDao extends BaseDao
     public function getDefaultPage(int $presentationId, int $activeStatus): ?PageEntity
     {
         // Typically default page is the one with parent_id = 0 and lowest position, or has a specific flag.
-        // Based on the router logic, it seems we just need 'a' default page. 
+        // Based on the router logic, it seems we just need 'a' default page.
         // Let's assume it's the one with parent_id = 0 and status = active.
         $data = $this->mapper->findOneBy([
-            'presentation_id' => $presentationId, 
+            'presentation_id' => $presentationId,
             'page_status' => $activeStatus,
             'page_parent_id' => 0
         ], 'position ASC');
-        
+
         return $data ? $this->getEntity($this->entityName, (array)$data) : null;
+    }
+
+    public function getComponentActions(int $pageId): array
+    {
+        return $this->mapper->getComponentActions($pageId);
     }
 }

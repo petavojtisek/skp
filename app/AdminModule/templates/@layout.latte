@@ -250,6 +250,9 @@
     tinymce.init({
       selector: '.wysiwyg',
       height: 400,
+      convert_urls: false,
+      extended_valid_elements: 'svg[*],defs[*],pattern[*],desc[*],metadata[*],g[*],mask[*],path[*],line[*],polyline[*],rect[*],circle[*],ellipse[*],polygon[*],use[*],stop[*],linearGradient[*],radialGradient[*],text[*],tspan[*]',
+      custom_elements: 'svg,defs,pattern,desc,metadata,g,mask,path,line,polyline,rect,circle,ellipse,polygon,use,stop,linearGradient,radialGradient,text,tspan',
       plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
       toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link macros | code help',
       file_picker_callback: (callback, value, meta) => {

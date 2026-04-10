@@ -92,6 +92,7 @@ services:
 	- App\Model\Admin\LoggedUserEntity
 
 	# SERVICE
+	- App\Model\Helper\FrontControlFactory
 	- App\AdminModule\Components\ObjectControlFactory
 	- App\Model\Page\SpecParamPageService
 	- App\Model\Component\ComponentService

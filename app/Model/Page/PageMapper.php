@@ -17,4 +17,12 @@ class PageMapper extends BaseMapper
             ->and('presentation_id = %i', $presentationId)
             ->fetch();
     }
+
+    public function getComponentActions(int $pageId): array
+    {
+        return $this->db->select('*')
+            ->from('page_component_action')
+            ->where('page_id = %i', $pageId)
+            ->fetchAll();
+    }
 }

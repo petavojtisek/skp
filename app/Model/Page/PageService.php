@@ -48,6 +48,11 @@ class PageService extends BaseService
         return $this->pageDao->getDefaultPage($presentationId, $activeStatus);
     }
 
+    public function getComponentActions(int $pageId): array
+    {
+        return $this->pageDao->getComponentActions($pageId);
+    }
+
     /**
      * @return array id => name
      */
