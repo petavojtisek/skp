@@ -86,6 +86,19 @@ class LoggedUserEntity extends AdministratorEntity
         return array_key_exists('ALL', $groupRights) or  array_key_exists($code, $groupRights);
     }
 
+    /**
+     * Checks if the user has a specific right within a module.
+     */
+    public function hasModuleRight(string $moduleCode, string $rightCode): bool
+    {
+        // Master 'ALL' right bypasses module checks
+        if ($this->hasGroupRight('ALL')) {
+            return true;
+        }
+
+        return isset($this->rights['module_rights'][$moduleCode][$rightCode]);
+    }
+
     public function getActivePresentationId(): ?int
     {
         return $this->active_presentation_id;

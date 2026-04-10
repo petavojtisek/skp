@@ -46,6 +46,11 @@ class ModuleService extends BaseService
         $this->moduleDao->delete($id);
     }
 
+    public function findActiveByType(int $type): array
+    {
+        return $this->moduleDao->findActiveByType($type);
+    }
+
     public function getModuleByInstallId(int $installId): ?ModuleEntity
     {
         return $this->moduleDao->getModuleByInstallId($installId);

@@ -14,6 +14,9 @@ The `Page` module manages the content and structure of public-facing pages.
 - **`PageService`**: Contains core logic for tree building and DB operations.
 - **`PageDao` / `PageMapper`**: Data access for the `page` table.
 
+## Frontend Integration
+- **`FrontendRunner`**: On the public site, `FrontendRunner` uses `PageFacade` to resolve the current page from the `page_id` parameter, handles redirects, checks page status, and sets up template variables like `activePage`, `menuTree`, and `pages`.
+
 ## Permissions Logic
 - Access to edit/add/remove pages in the tree is determined by the intersection of the user's `page_rights` and the page's `page_group_ids`.
 - Users with the `ALL` group right bypass these checks.

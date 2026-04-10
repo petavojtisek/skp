@@ -11,6 +11,7 @@ use App\Model\System\Cache;
 use App\Model\Template\TemplateFacade;
 use App\Model\Helper\FrontControlFactory;
 use App\Model\Component\ComponentFacade;
+use App\Modules\WebTexts\Model\WebTextFacade;
 use Nette\ComponentModel\IComponent;
 use Nette\Http\IRequest;
 
@@ -38,6 +39,9 @@ class FrontendRunner
     /** @var ComponentFacade @inject */
     public ComponentFacade $componentFacade;
 
+    /** @var WebTextFacade @inject */
+    public WebTextFacade $webTextFacade;
+
     public IRequest $httpRequest;
     public FrontPresenter $presenter;
 
@@ -52,6 +56,7 @@ class FrontendRunner
 
     public array $menuTree = [];
     public array $pages = [];
+    public array $webTexts = [];
 
 
     public function __construct(PresentationFacade $presentationFacade,
@@ -60,6 +65,7 @@ class FrontendRunner
         TemplateFacade $templateFacade,
         FrontControlFactory $frontControlFactory,
         ComponentFacade $componentFacade,
+        WebTextFacade $webTextFacade,
         IRequest $httpRequest
     )
     {
@@ -71,6 +77,7 @@ class FrontendRunner
         $this->templateFacade = $templateFacade;
         $this->frontControlFactory = $frontControlFactory;
         $this->componentFacade = $componentFacade;
+        $this->webTextFacade = $webTextFacade;
         $this->httpRequest = $httpRequest;
     }
 
@@ -89,6 +96,7 @@ class FrontendRunner
         $this->getSpecParamPresentation();
         $this->getSpecParamPage();
         $this->loadPageTemplate();
+        $this->loadWebTexts();
 
         // 1. Collect all requested actions
         $this->resolvePresentationComponentAction();
@@ -278,6 +286,20 @@ class FrontendRunner
         } else {
             $this->presenter->error('Page template file not found.', 404);
         }
+    }
+
+    public function loadWebTexts(): void
+    {
+        $cacheKey = 'all_web_texts';
+
+        $this->webTexts = $this->cache->load($cacheKey, function() {
+            $texts = $this->webTextFacade->getAllWebTexts();
+            $result = [];
+            foreach ($texts as $text) {
+                $result[$text->getCode()] = $text->getText();
+            }
+            return $result;
+        }, ['web_text']);
     }
 
     public function generateComponentName(string $module, int $componentId, ?string $codeName): string

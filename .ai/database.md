@@ -117,6 +117,26 @@
 | lang_id | int | NO | MUL | NULL |  |
 | value | varchar(255) | NO |  | NULL |  |
 
+## Table: `content_version`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| element_id | int | NO | PRI | NULL | auto_increment |
+| content | text | YES |  | NULL |  |
+
+## Table: `element`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| element_id | int | NO | PRI | NULL | auto_increment |
+| component_id | int | NO | MUL | NULL |  |
+| name | varchar(255) | NO |  | NULL |  |
+| status_id | int | NO |  | NULL |  |
+| author_id | int | NO |  | NULL |  |
+| valid_from | date | YES |  | NULL |  |
+| valid_to | date | YES |  | NULL |  |
+| inserted | datetime | YES |  | NULL |  |
+
 ## Table: `file_manager`
 
 | Field | Type | Null | Key | Default | Extra |
@@ -322,4 +342,19 @@
 | template_name | varchar(255) | NO |  | NULL |  |
 | template_path | varchar(255) | YES |  | NULL |  |
 | presentation_id | int | NO |  | NULL |  |
+
+## Table: `version`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| component_id | int | NO | MUL | NULL |  |
+| element_id | int | NO |  | NULL |  |
+
+## Table: `web_text`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| web_text_id | int | NO | PRI | NULL | auto_increment |
+| code | varchar(255) | YES |  | NULL |  |
+| text | longtext | YES |  | NULL |  |
 

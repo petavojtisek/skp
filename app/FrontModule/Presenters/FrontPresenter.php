@@ -72,5 +72,6 @@ abstract class FrontPresenter extends BasePresenter
         $this->template->components =  $this->frontRunner->components;
         $this->template->specParamPresentation =  $this->frontRunner->specParamPresentation;
         $this->template->specParamPage =  $this->frontRunner->specParamPage;
+        $this->template->webTexts = $this->frontRunner->webTexts;
     }
 }

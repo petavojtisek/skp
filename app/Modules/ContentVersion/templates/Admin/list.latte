@@ -1,0 +1,69 @@
+<div class="card card-outline card-secondary mb-4" n:snippet="contentVersion">
+    <div class="card-header">
+        <h3 class="card-title">{$name} <code>{$code}</code></h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 150px" class="text-center" title="Aktivní verze pro web">Aktivní Verze</th>
+                        <th style="width: 150px">Stav</th>
+                        <th>Jméno</th>
+                        <th style="width: 180px">Datum vložení</th>
+                        <th style="width: 150px">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if empty($items)}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Žádné verze obsahu k zobrazení.</td>
+                        </tr>
+                    {else}
+                        <tr n:foreach="$items as $item">
+                            <td class="text-center">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" name="active_version_{$componentId}" class="custom-control-input ajax-radio"
+                                           id="version-{$item->getId()}"
+                                           n:attr="checked => $item->getId() == $activeElementId"
+                                           data-url="{link setActiveVersion!, elementId => $item->getId()}">
+                                    <label class="custom-control-label" for="version-{$item->getId()}"></label>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="badge badge-info">{@$states[$item->getStatus()]}</span>
+                            </td>
+                            <td>{$item->getName()}</td>
+                            <td>{$item->getCreatedDt()|date:'d.m.Y H:i'}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
+                                    <button class="btn btn-xs btn-info" title="Preview"><i class="fas fa-eye"></i></button>
+                                    <a n:href="copy!, elementId => $item->getId()" class="btn btn-xs btn-success ajax" title="Kopírovat"><i class="fas fa-plus"></i></a>
+                                    <a n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto verzi?')"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 bg-light border-top">
+            <a n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nová verze</a>
+            <button class="btn btn-sm btn-info"><i class="fas fa-copy"></i> Kopírovat</button>
+            <button class="btn btn-sm btn-warning btn-edit-component"
+                    data-id="{$componentId}"
+                    data-url="{plink getEditData!, compId => $componentId}"
+                    data-save-url="{plink updateObject!, compId => $componentId}">
+                <i class="fas fa-edit"></i> Editace objektu
+            </button>
+            <a n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
+            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a> 
+        </div>
+    </div>
+</div>

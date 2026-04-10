@@ -25,7 +25,12 @@ class ModuleDao extends BaseDao
     {
         $res = $this->mapper->findOneBy(['install_id'=>$installId]);
         return new ModuleEntity($res);
+    }
 
+    public function findActiveByType(int $type): array
+    {
+        $data = $this->mapper->findAllBy(['module_type' => $type, 'module_active' => 'Y']);
+        return $this->getEntities($this->entityName, $data);
     }
 
 }

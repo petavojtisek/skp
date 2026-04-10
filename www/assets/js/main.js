@@ -31,4 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    document.querySelectorAll('.email-link').forEach(link => {
+
+        link.addEventListener('click', (e) => {
+            const email = link.dataset.user + '@' + link.dataset.domain;
+            link.href = 'mailto:' + email;
+        });
+    });
+
+
 });

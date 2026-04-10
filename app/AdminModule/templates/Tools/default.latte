@@ -33,6 +33,11 @@
                     </a>
                 </div>
             </div>
+
+            {foreach $systemModules as $mod}
+                {var $compName = $mod->getModuleName()}
+                {control $compName}
+            {/foreach}
         </div>
     </div>
 </div>

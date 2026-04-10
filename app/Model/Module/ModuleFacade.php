@@ -46,6 +46,11 @@ class ModuleFacade
         $this->moduleService->delete($id);
     }
 
+    public function findActiveByType(int $type): array
+    {
+        return $this->moduleService->findActiveByType($type);
+    }
+
     public function getModuleByInstallId(int $installId): ?ModuleEntity
     {
         return  $this->moduleService->getModuleByInstallId($installId);
