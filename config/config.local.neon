@@ -1,6 +1,7 @@
 # SKP Local Configuration
 
 parameters:
+	domain: skp.dev
 	database:
 		host: localhost
 		username: root

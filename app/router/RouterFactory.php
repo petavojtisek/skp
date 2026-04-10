@@ -24,13 +24,19 @@ final class RouterFactory
 			'action' => 'default'
 		]);
 
+
+        $router[] = new Route('file/<action>/<id>', [
+            'module' => 'Front',
+            'presenter' => 'File',
+        ]);
+
         $router[] = new PageRewriteRoute($db, $cache);
 
-		$router[] = new Route('<presenter>/<action>[/<id>]', [
-			'module' => 'Front',
-			'presenter' => 'Home',
-			'action' => 'default'
-		]);
+        $router[] = new Route('<presenter>/<action>[/<id>]', [
+                    'module' => 'Front',
+                    'presenter' => 'Home',
+                    'action' => 'default'
+        ]);
 
 		return $router;
 	}
@@ -66,7 +72,7 @@ class PageRewriteRoute implements Nette\Application\IRouter
                 ->from('presentation')
                 ->where('domain = %s', $domain)
                 ->fetch();
-            
+
             if (!$p || $p->presentation_status != C_PRESENTATION_STATUS_ACTIVE) {
                 $p = $this->db->select('presentation_id, presentation_status')
                     ->from('presentation')

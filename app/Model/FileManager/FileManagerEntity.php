@@ -3,6 +3,7 @@
 namespace App\Model\FileManager;
 
 use App\Model\Base\BaseEntity;
+use App\Model\System\EncodeDecode;
 
 class FileManagerEntity extends BaseEntity
 {
@@ -147,5 +148,10 @@ class FileManagerEntity extends BaseEntity
     public function setAdminId(?int $admin_id): void
     {
         $this->setVariable('admin_id', $admin_id, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getEncodedId() : string
+    {
+        return EncodeDecode::encodeSmallHash($this->getId());
     }
 }

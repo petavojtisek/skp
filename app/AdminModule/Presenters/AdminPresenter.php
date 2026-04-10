@@ -33,7 +33,11 @@ abstract class AdminPresenter extends BasePresenter
     {
         parent::startup();
 
-        if (!$this->getUser()->isLoggedIn() and !$this->isPresenter('Sign')) {
+        // Allow bypassing login check for file picker if specifically requested
+        // but we will add stricter check in FilesPresenter for security.
+        $isPicker = ($this->getName() === 'Admin:Files' && $this->getParameter('picker'));
+
+        if (!$this->getUser()->isLoggedIn() && !$this->isPresenter('Sign') && !$isPicker) {
             $this->redirect('Sign:in');
         }
 

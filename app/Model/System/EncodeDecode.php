@@ -7,13 +7,13 @@ use Tracy\ILogger;
 
 class EncodeDecode
 {
-	private $JWTSecret     = 'e6JzmfMq6LyzolodwQezGXE5oBi9DvAy2lgSTpXye0972hkCf2kCri6a2rMr0H2G';
+	private $JWTSecret     = 'f7a28e93b1c5d4f06a8e92b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3';
 	private $algorithm     = 'HS512';
 	private $encryptMethod = 'AES-256-CBC';
-	private $secretKey     = 'Es5G0i1JpHWLawRNnNKCeuAE7wfGa65VVh2TGUTHCcqTuiXN11vleAYVAeuaYpVV'; // key for URL data encryption and decryption
-	private $secretIv      = 'PtjgwounuEg7oNzrLy9wWjzwtaFKeu0u'; // Initialization Vector data for URL data encryption and decryption
-	private $smallKey1     = 3296051;
-	private $smallKey2     = 2257766;
+	private $secretKey     = '696417730e69818816f19476722d3257a06368d4078832a875a6878e3489e13b'; // key for URL data encryption and decryption
+	private $secretIv      = 'd5a8c2b19e4f073a61d82b49c0e5f316'; // Initialization Vector data for URL data encryption and decryption
+	private static $smallKey1     = 4927153;
+	private static $smallKey2     = 8153062;
 
 
 	/**
@@ -21,14 +21,14 @@ class EncodeDecode
 	 * @param int $id
 	 * @return string
 	 */
-	public function encodeSmallHash($id)
+	public static function  encodeSmallHash($id)
 	{
 		if(extension_loaded('gmp'))
-			return gmp_strval(gmp_add(gmp_mul(gmp_init(intval($id), 10), $this->smallKey1), $this->smallKey2), 36);
+			return gmp_strval(gmp_add(gmp_mul(gmp_init(intval($id), 10), self::$smallKey1), self::$smallKey2), 36);
 
 		trigger_error('GNU Multiple Precision library is NOT loaded.', E_USER_WARNING);
 
-		return base_convert($id * $this->smallKey1 + $this->smallKey2, 10, 36);
+		return base_convert($id * self::$smallKey1 + self::$smallKey2, 10, 36);
 	}
 
 	/**
@@ -36,7 +36,7 @@ class EncodeDecode
 	 * @param string $hash
 	 * @return int|FALSE
 	 */
-	public function decodeSmallHash($hash)
+	public static function decodeSmallHash($hash)
 	{
 		if(extension_loaded('gmp'))
 		{
@@ -47,7 +47,7 @@ class EncodeDecode
 			if (is_float($hash) and round($hash) == $hash)
 				$hash = (string)$hash;
 
-			$res = @gmp_div_qr(gmp_sub(gmp_init($hash, 36), $this->smallKey2), $this->smallKey1);
+			$res = @gmp_div_qr(gmp_sub(gmp_init($hash, 36), self::$smallKey2), self::$smallKey1);
 
 			// Zaloguj chyby vznikle pri pokusu o dekodovani hashe
 			if (is_array($err = error_get_last()) and $err !== $lastError)
@@ -56,8 +56,6 @@ class EncodeDecode
 
 				Debugger::log($e, ILogger::EXCEPTION);
 
-				if ( (defined('RONDO_DEV') and RONDO_DEV === TRUE) or (defined('RONDO_TEST') and RONDO_TEST === TRUE) )
-					throw $e;
 			}
 
 			return (gmp_intval($res[1]) === 0 ? gmp_intval($res[0]) : false);
@@ -66,8 +64,8 @@ class EncodeDecode
 		trigger_error('GNU Multiple Precision library is NOT loaded.', E_USER_WARNING);
 
 		$id = base_convert($hash, 36, 10);
-		if (fmod($id - $this->smallKey2, $this->smallKey1) == 0)
-			return ($id - $this->smallKey2) / $this->smallKey1;
+		if (fmod($id - self::$smallKey2, self::$smallKey1) == 0)
+			return ($id - self::$smallKey2) / self::$smallKey1;
 
 		return false;
 	}
@@ -117,7 +115,7 @@ class EncodeDecode
 	}
 
 	/**
-	 * generate salt 
+	 * generate salt
 	 * @return array - $key, $iv
 	 */
 	private function getSecretKeys()
@@ -166,7 +164,7 @@ class EncodeDecode
 	 *
 	 * @param int $length  length of pseudorandom string [OPTIONAL] - default: 20
 	 *
-	 * @return string 
+	 * @return string
 	 */
 	public function generateRandomString($length = 20)
 	{

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
   <style>
       body { background: #f4f6f9; padding: 15px; }
@@ -40,7 +40,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-folder-open text-warning mr-2"></i>
-                        <strong>{$baseType}</strong> 
+                        <strong>{$baseType}</strong>
                         {if $subDir} / <small>{$subDir}</small>{/if}
                     </h3>
                     <div class="card-tools">
@@ -96,7 +96,7 @@
                                     </td>
                                     <td><small class="text-muted">{$file->size|bytes}</small></td>
                                     <td class="text-right">
-                                        <button class="btn btn-xs btn-success" onclick="selectFile({link //:Front:File:get, id => $file->file_id})">
+                                        <button class="btn btn-xs btn-success" onclick="selectFile({link //:Front:File:get, id =>  $file->getEncodedId()})">
                                             <i class="fas fa-check"></i> Vybrat
                                         </button>
                                     </td>

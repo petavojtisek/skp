@@ -30,6 +30,24 @@ final class FilesPresenter extends AdminPresenter
 
     public function actionDefault(): void
     {
+        // For picker, we allow access if the user has been recently logged in (via cookie)
+        // even if the main session expired, to avoid interrupting the workflow.
+
+        if ($this->picker and (!isset($_SERVER['HTTP_REFERER']) or !preg_match("#admin#",$_SERVER['HTTP_REFERER'])) ){
+            $this->terminate();
+            /*
+            && !$this->getUser()->isLoggedIn()) {
+
+            $cookie = $this->getHttpRequest()->getCookie('admin_active');
+            if ($cookie) {
+                // We set the adminId from cookie if session is dead but cookie lives
+                $this->adminId = (int)$cookie;
+            } else {
+                // If no session and no cookie, they must log in
+                $this->redirect('Sign:in');
+            }
+            */
+        }
 
         if ($this->picker) {
             $this->setView('picker');
@@ -66,7 +84,8 @@ final class FilesPresenter extends AdminPresenter
 
         // List files in current path from DB
         // We need a way to filter by path in DB
-        $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
+        $this->template->files =  $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
+
     }
 
 

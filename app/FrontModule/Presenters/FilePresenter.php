@@ -3,9 +3,11 @@
 namespace App\FrontModule\Presenters;
 
 use App\Model\FileManager\FileManagerFacade;
+use App\Model\System\EncodeDecode;
+use App\Presenters\BasePresenter;
 use Nette\Application\Responses\FileResponse;
 
-final class FilePresenter extends FrontPresenter
+final class FilePresenter extends BasePresenter
 {
     /** @var FileManagerFacade @inject */
     public $fileManagerFacade;
@@ -14,8 +16,11 @@ final class FilePresenter extends FrontPresenter
      * Zobrazí/stáhne soubor na základě ID
      * URL: /file/detail/<id>
      */
-    public function actionDetail(int $id): void
+    public function actionDetail(int|string $id): void
     {
+        if(is_string($id) && !is_numeric($id)) {
+            $id = EncodeDecode::decodeSmallHash($id);
+        }
         $file = $this->fileManagerFacade->getFile($id);
 
         if (!$file) {
@@ -41,8 +46,13 @@ final class FilePresenter extends FrontPresenter
         $this->sendResponse($response);
     }
 
-    public function actionGet(int $id): void
+    public function actionGet(int|string $id): void
     {
+
+        if(is_string($id) && !is_numeric($id)) {
+            $id = EncodeDecode::decodeSmallHash($id);
+        }
+
         $file = $this->fileManagerFacade->getFile($id);
         if (!$file) {
             $this->error('Soubor nebyl nalezen.');

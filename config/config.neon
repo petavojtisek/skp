@@ -4,7 +4,7 @@ extensions:
 	modules: App\DI\ModulesExtension
 
 parameters:
-	domain: skp.dev
+	domain: skp.cz
 	storageDir: %appDir%/../storage
 	tempDir: %tempDir%
 	# Paths or other global parameters like in ebcar
@@ -122,21 +122,22 @@ services:
 	- App\Model\FileManager\FileManagerService(%storageDir%, %tempDir%)
 
 	# FACADE
+	- App\Model\System\FrontendRunner
 	- App\Model\Page\PageFacade
 	- App\Model\Component\ComponentFacade
 	- App\Model\Element\ElementFacade
 	- App\Model\Version\VersionFacade
 	- App\Model\Lookup\LookupFacade
 	- App\Model\Login\LoginFacade(
-		@user, 
-		@App\Model\Login\LoginService, 
-		@App\Model\Log\LogService, 
-		@App\Model\Admin\AdminService, 
-		@App\Model\AdminGroup\AdminGroupService, 
-		@App\Model\AdminGroupRight\AdminGroupRightService, 
-		@App\Model\Presentation\PresentationService, 
-		@App\Model\PageGroup\PageGroupService, 
-		@App\Model\Module\ModuleService, 
+		@user,
+		@App\Model\Login\LoginService,
+		@App\Model\Log\LogService,
+		@App\Model\Admin\AdminService,
+		@App\Model\AdminGroup\AdminGroupService,
+		@App\Model\AdminGroupRight\AdminGroupRightService,
+		@App\Model\Presentation\PresentationService,
+		@App\Model\PageGroup\PageGroupService,
+		@App\Model\Module\ModuleService,
 		@App\Model\System\Cache
 	)
 	- App\Model\Presentation\PresentationFacade

@@ -1,33 +1,27 @@
 {block content}
-    {control content_version_welcome}
+
 
      {* 1. HERO SEKCE *}
     <section class="hero">
-        <div class="container hero-content">
-            <h1>Spolek krajina Polabí</h1>
-            <p>Společně chráníme a obnovujeme přirozený ráz našeho regionu pro další generace.</p>
-            <a href="#join" class="btn btn-white">Přidejte se k nám</a>
-            <div class="scroll-indicator"><span>⌄</span></div>
-        </div>
+        {if isset($components['ContentVersion']['hero'])}
+            {control content_version_hero}
+        {/if}
+
     </section>
 
     {* 2. NÁŠ ÚČEL (S Ikonami) *}
     <section class="purpose container section-padding">
-
+        {if isset($components['ContentVersion']['welcome'])}
+            {control content_version_welcome}
+        {/if}
     </section>
 
     {* 3. CTA BOXY (Modrý a Zelený) *}
     <section class="cta-boxes container">
-        <div class="cta-box blue">
-            <h3>Přidejte se k nám</h3>
-            <p>Staňte se aktivním členem našeho spolku.</p>
-            <a href="#" class="btn btn-white">Více informací</a>
-        </div>
-        <div class="cta-box green">
-            <h3>Podpořte projekt</h3>
-            <p>Váš příspěvek pomůže sázet nové aleje.</p>
-            <a href="#" class="btn btn-gold">Chci podpořit</a>
-        </div>
+        {if isset($components['ContentVersion']['cta'])}
+            {control content_version_cta}
+        {/if}
+
     </section>
 
     {* 4. AKTUALITY (Swiper Slider) *}
@@ -64,5 +58,4 @@
 
 {block scripts}
     {include parent}
-
 {/block}
