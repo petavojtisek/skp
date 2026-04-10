@@ -30,4 +30,5 @@ class ContentVersionFacade
     {
         $this->service->delete($id);
     }
+
 }

@@ -157,6 +157,8 @@ abstract class ADao
 		return null;
 	}
 
+
+
 	/**
 	 * count rows
 	 * @param array $where if is not set count all

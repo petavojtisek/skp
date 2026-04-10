@@ -18,6 +18,11 @@ class ElementService extends BaseService
         return $this->elementDao->find($id) ?: null;
     }
 
+    public function findFront(int $id): ?ElementEntity
+    {
+        return $this->elementDao->findFront($id);
+    }
+
     public function save(ElementEntity $entity, ?int $authorId = null): int
     {
         if (!$entity->getId()) {

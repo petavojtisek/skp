@@ -36,7 +36,7 @@ final class ToolsPresenter extends AdminPresenter
             if (!$this->loggedUserEntity->hasModuleRight($mod->getModuleCodeName(), 'list')) {
                 continue;
             }
-            $this->availableSystemModules[ $mod->getModuleName()] = $mod;
+            $this->availableSystemModules[$mod->getModuleClassName()] = $mod;
         }
     }
 
@@ -47,12 +47,13 @@ final class ToolsPresenter extends AdminPresenter
         // Znovu profiltrujeme moduly, aby se zobrazily jen ty, které mají i fyzický soubor
         $finalModules = [];
         foreach ($this->availableSystemModules as $code => $mod) {
-
             // Jen pro dashboard zkusíme vytvořit komponentu, abychom potvrdili existenci
             if ($this->getComponent($mod->getModuleClassName(), false)) {
                 $finalModules[$mod->getModuleClassName()] = $mod;
             }
         }
+
+
         $this->template->systemModules = $finalModules;
     }
 
@@ -69,7 +70,6 @@ final class ToolsPresenter extends AdminPresenter
 
     protected function createComponent($name): ?IComponent
     {
-
         // Nejdříve zkusíme standardní parent logic (pro fixní komponenty)
         $component = parent::createComponent($name);
         if ($component) {

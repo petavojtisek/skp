@@ -29,6 +29,11 @@ class BaseMapper extends AMapper
         $this->application = $application;
     }
 
+    public function getPrimaryKey(): string
+    {
+        return $this->primaryKey;
+    }
+
     public function save(IEntity $entity): IEntity
     {
 

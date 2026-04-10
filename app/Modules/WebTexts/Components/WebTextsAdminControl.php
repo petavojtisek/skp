@@ -34,9 +34,6 @@ class WebTextsAdminControl extends Control implements IToolsControl
      */
     public function render(): void
     {
-        $presenter = $this->getPresenter();
-
-        // Dashboard view (Small Box)
 
         // Detail view (List or Edit)
         if ($this->view === 'edit') {

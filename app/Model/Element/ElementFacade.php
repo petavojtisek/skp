@@ -16,6 +16,11 @@ class ElementFacade
         return $this->elementService->find($id);
     }
 
+    public function findFront(int $id): ?ElementEntity
+    {
+        return $this->elementService->findFront($id);
+    }
+
     public function save(ElementEntity $entity, ?int $authorId = null): int
     {
         return $this->elementService->save($entity, $authorId);

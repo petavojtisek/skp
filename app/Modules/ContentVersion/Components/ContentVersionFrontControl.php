@@ -2,6 +2,7 @@
 
 namespace App\Modules\ContentVersion\Components;
 
+use App\Model\Element\ElementFacade;
 use App\Model\Helper\IObjectControl;
 use App\Modules\ContentVersion\Model\ContentVersionFacade;
 use App\Model\Version\VersionFacade;
@@ -11,6 +12,7 @@ class ContentVersionFrontControl extends Control implements IObjectControl
 {
     private ContentVersionFacade $facade;
     private VersionFacade $versionFacade;
+    private ElementFacade $elementFacade;
     private int $componentId;
     private string $name;
     private string $code;
@@ -19,10 +21,12 @@ class ContentVersionFrontControl extends Control implements IObjectControl
 
     public function __construct(
         ContentVersionFacade $facade,
-        VersionFacade $versionFacade
+        VersionFacade $versionFacade,
+        ElementFacade $elementFacade
     ) {
         $this->facade = $facade;
         $this->versionFacade = $versionFacade;
+        $this->elementFacade = $elementFacade;
     }
 
     public function setComponentId(int $componentId): void
@@ -38,12 +42,14 @@ class ContentVersionFrontControl extends Control implements IObjectControl
 
     public function render(): void
     {
+        $this->template->content = '';
         $activeElementId = $this->versionFacade->getActiveElementId($this->componentId);
         if ($activeElementId) {
-            $content = $this->facade->find($activeElementId);
-            $this->template->content = $content ? $content->getContent() : '';
-        } else {
-            $this->template->content = '';
+            $element = $this->elementFacade->findFront($activeElementId);
+            if($element) {
+                $content = $this->facade->find($activeElementId);
+                $this->template->content = $content ? $content->getContent() : '';
+            }
         }
 
         $this->template->setFile(__DIR__ . '/../templates/Front/list.latte');
