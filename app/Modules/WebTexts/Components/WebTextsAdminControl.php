@@ -10,18 +10,18 @@ use Nette\Application\UI\Form;
 class WebTextsAdminControl extends Control
 {
     private WebTextFacade $webTextFacade;
-    
+
     /** @var int|null @persistent */
     public $id = null;
-    
+
     /** @var int @persistent */
     public $page = 1;
-    
+
     /** @var string|null @persistent */
     public $code = null;
 
     /** @var string @persistent */
-    public $view = 'list';
+    public $view = 'default';
 
     public function __construct(WebTextFacade $webTextFacade)
     {
@@ -34,35 +34,36 @@ class WebTextsAdminControl extends Control
     public function render(): void
     {
         $presenter = $this->getPresenter();
-        
+
         // Dashboard view (Small Box)
-        if ($presenter->getAction() === 'default') {
-            $this->template->setFile(__DIR__ . '/../templates/Admin/default.latte');
-            $this->template->render();
+
+        // Detail view (List or Edit)
+        if ($this->view === 'edit') {
+            $this->renderEdit();
+            return;
+        } elseif($this->view === 'list') {
+            $this->renderList();
             return;
         }
 
-        // Full view (List or Edit)
-        if ($this->view === 'edit') {
-            $this->renderEdit();
-        } else {
-            $this->renderList();
-        }
+       $this->template->setFile(__DIR__ . '/../templates/Admin/default.latte');
+       $this->template->render();
+
     }
 
     public function renderList(): void
     {
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
-        
+
         $texts = $this->webTextFacade->findWebTexts($this->code, $limit, $offset);
         $totalCount = $this->webTextFacade->countWebTexts($this->code);
-        
+
         $this->template->webTexts = $texts;
         $this->template->page = $this->page;
         $this->template->lastPage = ceil($totalCount / $limit);
         $this->template->code = $this->code;
-        
+
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
     }
@@ -75,10 +76,35 @@ class WebTextsAdminControl extends Control
                 $this['webTextForm']->setDefaults($webText->toArray());
             }
         }
-        
+
         $this->template->setFile(__DIR__ . '/../templates/Admin/edit.latte');
         $this->template->render();
     }
+
+    /* --- SIGNALS --- */
+
+    public function handleList(): void
+    {
+        $this->view = 'list';
+        $this->id = null;
+        $this->redirect('this');
+    }
+
+    public function handleEdit(?int $id = null): void
+    {
+        $this->view = 'edit';
+        $this->id = $id;
+        $this->redirect('this');
+    }
+
+    public function handleDelete(int $id): void
+    {
+        $this->webTextFacade->deleteWebText($id);
+        $this->getPresenter()->flashMessage('Text byl smazán.');
+        $this->redirect('this', ['view' => 'list', 'id' => null]);
+    }
+
+    /* --- COMPONENTS --- */
 
     protected function createComponentSearchForm(): Form
     {
@@ -104,7 +130,7 @@ class WebTextsAdminControl extends Control
         $form->addTextArea('text', 'Text')
             ->setHtmlAttribute('class', 'editor');
         $form->addSubmit('send', 'Uložit');
-        
+
         $form->onSuccess[] = [$this, 'webTextFormSucceeded'];
         return $form;
     }
@@ -115,12 +141,5 @@ class WebTextsAdminControl extends Control
         $this->webTextFacade->saveWebText($entity);
         $this->getPresenter()->flashMessage('Text byl uložen.');
         $this->redirect('this', ['view' => 'list', 'id' => null]);
-    }
-
-    public function handleDelete(int $id): void
-    {
-        $this->webTextFacade->deleteWebText($id);
-        $this->getPresenter()->flashMessage('Text byl smazán.');
-        $this->redirect('this');
     }
 }

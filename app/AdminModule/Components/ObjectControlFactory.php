@@ -15,17 +15,18 @@ class ObjectControlFactory
 
     public function create(string $moduleClassName, int $componentId, string $name, string $code): ?IObjectControl
     {
-        // Předpokládáme, že ModuleClassName z databáze (např. ContentVersionFacade) 
+
+        // Předpokládáme, že ModuleClassName z databáze (např. ContentVersionFacade)
         // nám napoví, jakou továrničku hledat.
         // Pokud je v DB ContentVersionFacade, budeme hledat IContentVersionControlFactory.
         $moduleBase = str_replace('Facade', '', $moduleClassName);
         $factoryClass = "App\\Modules\\{$moduleBase}\\Components\\I{$moduleBase}ControlFactory";
-        
+
         if (interface_exists($factoryClass)) {
             try {
                 $factory = $this->container->getByType($factoryClass);
                 $control = $factory->create();
-                
+
                 if ($control instanceof IObjectControl) {
                     $control->setComponentId($componentId);
                     $control->setComponentInfo($name, $code);

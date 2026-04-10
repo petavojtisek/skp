@@ -4,7 +4,7 @@
             <div class="card-header">
                 <h3 class="card-title">Seznam webových textů</h3>
                 <div class="card-tools">
-                    <a href="{link this, view => edit, id => null}" class="btn btn-sm btn-primary">
+                    <a href="{link edit!}" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus"></i> Přidat text
                     </a>
                 </div>
@@ -19,7 +19,7 @@
                                 <button n:name="send" class="btn btn-sm btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                <a n:if="$code" href="{link this, code => null, page => 1}" class="btn btn-sm btn-warning">
+                                <a n:if="$code" href="{link list!, code => null, page => 1}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-times"></i>
                                 </a>
                             </div>
@@ -43,7 +43,7 @@
                                 <td><strong>{$text->getCode()}</strong></td>
                                 <td>{$text->getText()|striptags|truncate:100}</td>
                                 <td>
-                                    <a href="{link this, view => edit, id => $text->getWebTextId()}" class="btn btn-xs btn-info">
+                                    <a href="{link edit!, id => $text->getWebTextId()}" class="btn btn-xs btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                     <a href="{link delete!, id => $text->getWebTextId()}" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
