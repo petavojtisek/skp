@@ -46,7 +46,6 @@ services:
 	- App\Model\AdminGroup\AdminGroupMapper
 	- App\Model\Object\ObjectMapper
 	- App\Model\PageGroup\PageGroupMapper
-	- App\Modules\WebTexts\Model\WebTextMapper
 	- App\Model\AdminRight\AdminRightMapper
 	- App\Model\AdminGroupRight\AdminGroupRightMapper
 	- App\Model\Module\ModuleMapper
@@ -74,7 +73,6 @@ services:
 	- App\Model\AdminGroup\AdminGroupDao
 	- App\Model\Object\ObjectDao
 	- App\Model\PageGroup\PageGroupDao
-	- App\Modules\WebTexts\Model\WebTextDao
 	- App\Model\AdminRight\AdminRightDao
 	- App\Model\AdminGroupRight\AdminGroupRightDao
 	- App\Model\Module\ModuleDao
@@ -94,9 +92,8 @@ services:
 	- App\Model\Admin\LoggedUserEntity
 
 	# SERVICE
-	- App\Model\Helper\FrontControlFactory
-	- App\Model\Helper\AdminControlFactory
-	- App\AdminModule\Components\ObjectControlFactory
+	- App\Model\Helper\FrontObjectControlFactory
+	- App\Model\Helper\ObjectControlFactory
 	- App\Model\Page\SpecParamPageService
 	- App\Model\Component\ComponentService
 	- App\Model\Element\ElementService
@@ -116,7 +113,6 @@ services:
 	- App\Model\AdminGroup\AdminGroupService
 	- App\Model\Object\ObjectService
 	- App\Model\PageGroup\PageGroupService
-	- App\Modules\WebTexts\Model\WebTextService
 	- App\Model\AdminRight\AdminRightService
 	- App\Model\AdminGroupRight\AdminGroupRightService
 	- App\Model\Module\ModuleService
@@ -153,7 +149,6 @@ services:
 	- App\Model\AdminGroup\AdminGroupFacade
 	- App\Model\Object\ObjectFacade
 	- App\Model\PageGroup\PageGroupFacade
-	- App\Modules\WebTexts\Model\WebTextFacade
 	- App\Model\AdminRight\AdminRightFacade
 	- App\Model\Module\ModuleFacade
 	- App\Model\ModulePermission\ModulePermissionFacade

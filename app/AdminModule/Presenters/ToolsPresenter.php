@@ -2,8 +2,9 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\Model\Helper\ObjectControlFactory;
 use App\Model\Module\ModuleFacade;
-use App\Model\Helper\AdminControlFactory;
+
 use Nette\ComponentModel\IComponent;
 
 final class ToolsPresenter extends AdminPresenter
@@ -11,7 +12,7 @@ final class ToolsPresenter extends AdminPresenter
     /** @var ModuleFacade @inject */
     public $moduleFacade;
 
-    /** @var AdminControlFactory @inject */
+    /** @var ObjectControlFactory @inject */
     public $adminControlFactory;
 
     /** @var string|null @persistent */
@@ -48,8 +49,8 @@ final class ToolsPresenter extends AdminPresenter
         foreach ($this->availableSystemModules as $code => $mod) {
 
             // Jen pro dashboard zkusíme vytvořit komponentu, abychom potvrdili existenci
-            if ($this->getComponent($mod->getModuleName(), false)) {
-                $finalModules[$mod->getModuleName()] = $mod;
+            if ($this->getComponent($mod->getModuleClassName(), false)) {
+                $finalModules[$mod->getModuleClassName()] = $mod;
             }
         }
         $this->template->systemModules = $finalModules;

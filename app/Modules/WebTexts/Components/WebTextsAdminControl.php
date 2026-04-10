@@ -2,12 +2,13 @@
 
 namespace App\Modules\WebTexts\Components;
 
+use App\Model\Helper\IToolsControl;
 use App\Modules\WebTexts\Model\WebTextFacade;
 use App\Modules\WebTexts\Model\WebTextEntity;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 
-class WebTextsAdminControl extends Control
+class WebTextsAdminControl extends Control implements IToolsControl
 {
     private WebTextFacade $webTextFacade;
 
@@ -142,4 +143,9 @@ class WebTextsAdminControl extends Control
         $this->getPresenter()->flashMessage('Text byl uložen.');
         $this->redirect('this', ['view' => 'list', 'id' => null]);
     }
+}
+
+interface IWebTextsAdminControlFactory
+{
+    public function create(): WebTextsAdminControl;
 }

@@ -1,7 +1,7 @@
 {
     "name": "ContentVersion",
     "code_name": "content_version",
-    "class_name": "ContentVersionFacade",
+    "class_name": "ContentVersion",
     "type": 301,
     "description": "Modul pro správu verzovaného obsahu (Content Version)."
 }

@@ -3,4 +3,5 @@ services:
     - App\Modules\ContentVersion\Model\ContentVersionDao
     - App\Modules\ContentVersion\Model\ContentVersionService
     - App\Modules\ContentVersion\Model\ContentVersionFacade
-    - App\Modules\ContentVersion\Components\IContentVersionControlFactory
+    - App\Modules\ContentVersion\Components\IContentVersionAdminControlFactory
+    - App\Modules\ContentVersion\Components\IContentVersionFrontControlFactory

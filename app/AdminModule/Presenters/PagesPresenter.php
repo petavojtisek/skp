@@ -2,13 +2,13 @@
 
 namespace App\AdminModule\Presenters;
 
-use App\Model\Page\PageFacade;
-use App\Model\Template\TemplateFacade;
-use App\Model\Lookup\LookupFacade;
-use App\Model\Page\SpecParamPageEntity;
-use App\Model\Page\PageEntity;
 use App\Model\AdminGroup\AdminGroupFacade;
+use App\Model\Lookup\LookupFacade;
+use App\Model\Page\PageEntity;
+use App\Model\Page\PageFacade;
+use App\Model\Page\SpecParamPageEntity;
 use App\Model\PageGroup\PageGroupFacade;
+use App\Model\Template\TemplateFacade;
 
 final class PagesPresenter extends AdminPresenter
 {
@@ -30,7 +30,7 @@ final class PagesPresenter extends AdminPresenter
     /** @var \App\Model\Component\ComponentFacade @inject */
     public $componentFacade;
 
-    /** @var \App\AdminModule\Components\ObjectControlFactory @inject */
+    /** @var \App\Model\Helper\ObjectControlFactory @inject */
     public $objectControlFactory;
 
     /** @var int|null @persistent */

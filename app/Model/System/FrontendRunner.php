@@ -9,7 +9,7 @@ use App\Model\Presentation\PresentationEntity;
 use App\Model\Presentation\PresentationFacade;
 use App\Model\System\Cache;
 use App\Model\Template\TemplateFacade;
-use App\Model\Helper\FrontControlFactory;
+use App\Model\Helper\FrontObjectControlFactory;
 use App\Model\Component\ComponentFacade;
 use App\Modules\WebTexts\Model\WebTextFacade;
 use Nette\ComponentModel\IComponent;
@@ -33,8 +33,8 @@ class FrontendRunner
     /** @var TemplateFacade @inject */
     public TemplateFacade $templateFacade;
 
-    /** @var FrontControlFactory @inject */
-    public FrontControlFactory $frontControlFactory;
+    /** @var FrontObjectControlFactory @inject */
+    public FrontObjectControlFactory $frontControlFactory;
 
     /** @var ComponentFacade @inject */
     public ComponentFacade $componentFacade;
@@ -63,7 +63,7 @@ class FrontendRunner
         PageFacade $pageFacade,
         Cache $cache,
         TemplateFacade $templateFacade,
-        FrontControlFactory $frontControlFactory,
+        FrontObjectControlFactory $frontControlFactory,
         ComponentFacade $componentFacade,
         WebTextFacade $webTextFacade,
         IRequest $httpRequest

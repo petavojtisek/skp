@@ -32,17 +32,14 @@ abstract class FrontPresenter extends BasePresenter
 
     public function createComponent(string $name): ?IComponent
     {
+
         foreach ($this->frontRunner->componentsConfig as $moduleKey => $instances) {
             foreach ($instances as $componentId => $config) {
                 $expectedName = $this->frontRunner->generateComponentName($moduleKey, $componentId, $config['code_name']);
 
                 if ($name === $expectedName) {
-                    $control = $this->frontRunner->frontControlFactory->create($config['module_original']);
+                    $control = $this->frontRunner->frontControlFactory->create($config['module_original'],$componentId, $config['module_original'], $config['code_name']);
                     if ($control) {
-                        if (method_exists($control, 'setComponentId')) {
-                            $control->setComponentId($componentId);
-                        }
-
                         foreach ($config['calls'] as $call) {
                             $method = 'action' . ucfirst($call['action']);
                             if (method_exists($control, $method)) {

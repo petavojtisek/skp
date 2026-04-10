@@ -1,8 +1,6 @@
 <?php
 
-namespace App\AdminModule\Components;
-
-use Nette\Application\UI\Control;
+namespace App\Model\Helper;
 
 interface IObjectControl
 {
@@ -16,8 +14,5 @@ interface IObjectControl
      */
     public function setComponentInfo(string $name, string $code): void;
 
-    /**
-     * Render the component
-     */
     public function render(): void;
 }

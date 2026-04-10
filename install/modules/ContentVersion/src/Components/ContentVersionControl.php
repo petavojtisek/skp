@@ -2,13 +2,13 @@
 
 namespace App\Modules\ContentVersion\Components;
 
-use App\AdminModule\Components\IObjectControl;
-use App\Modules\ContentVersion\Model\ContentVersionFacade;
-use App\Modules\ContentVersion\Model\ContentVersionEntity;
-use App\Model\Element\ElementFacade;
 use App\Model\Element\ElementEntity;
-use App\Model\Version\VersionFacade;
+use App\Model\Element\ElementFacade;
+use App\Model\Helper\IObjectControl;
 use App\Model\Lookup\LookupFacade;
+use App\Model\Version\VersionFacade;
+use App\Modules\ContentVersion\Model\ContentVersionEntity;
+use App\Modules\ContentVersion\Model\ContentVersionFacade;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\Security\User;

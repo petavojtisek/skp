@@ -2,15 +2,20 @@
 
 namespace App\Modules\ContentVersion\Components;
 
+use App\Model\Helper\IObjectControl;
 use App\Modules\ContentVersion\Model\ContentVersionFacade;
 use App\Model\Version\VersionFacade;
 use Nette\Application\UI\Control;
 
-class ContentVersionFrontControl extends Control
+class ContentVersionFrontControl extends Control implements IObjectControl
 {
     private ContentVersionFacade $facade;
     private VersionFacade $versionFacade;
     private int $componentId;
+    private string $name;
+    private string $code;
+
+
 
     public function __construct(
         ContentVersionFacade $facade,
@@ -23,6 +28,12 @@ class ContentVersionFrontControl extends Control
     public function setComponentId(int $componentId): void
     {
         $this->componentId = $componentId;
+    }
+
+    public function setComponentInfo(string $name, string $code): void
+    {
+        $this->name = $name;
+        $this->code = $code;
     }
 
     public function render(): void
@@ -47,3 +58,9 @@ class ContentVersionFrontControl extends Control
         // For ContentVersion, default action might not need special logic
     }
 }
+
+interface IContentVersionFrontControlFactory
+{
+    public function create(): ContentVersionFrontControl;
+}
+
