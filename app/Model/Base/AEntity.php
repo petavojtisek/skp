@@ -40,10 +40,12 @@ abstract class AEntity implements IEntity
 	 * @param array $data
 	 * @param bool $new
 	 */
-	public function __construct(array|Row|\ArrayObject $data = [], bool $new = true)
+	public function __construct(array|Row|\ArrayObject|ArrayHash $data = [], bool $new = true)
 	{
 
         if($data instanceof Row){
+            $data = (array) $data;
+        }elseif($data instanceof \ArrayObject or $data instanceof ArrayHash){
             $data = (array) $data;
         }
 

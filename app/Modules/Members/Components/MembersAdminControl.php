@@ -85,8 +85,9 @@ class MembersAdminControl extends Control implements IToolsControl
                 $this['memberForm']->setDefaults($values);
             }
         }
-
+        $this->template->id = $this->id;
         $this->template->setFile(__DIR__ . '/../templates/Admin/edit.latte');
+
         $this->template->render();
     }
 
@@ -120,6 +121,7 @@ class MembersAdminControl extends Control implements IToolsControl
     {
         $this->facade->deleteMember($id);
         $this->getPresenter()->flashMessage('Člen byl smazán.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
         $this->handleList();
     }
 
@@ -190,9 +192,14 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function memberFormSucceeded(Form $form, $values): void
     {
+        if(empty($values->member_id)) {
+            $values->member_id = 0;
+        }
+
         $entity = new MembersEntity($values);
         $this->facade->saveMember($entity);
         $this->getPresenter()->flashMessage('Člen byl uložen.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
         $this->handleList();
     }
 }

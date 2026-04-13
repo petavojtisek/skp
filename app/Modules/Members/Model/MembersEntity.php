@@ -7,7 +7,7 @@ use App\Model\Base\BaseEntity;
 class MembersEntity extends BaseEntity
 {
     public ?int $member_id = null;
-    public ?int $member_number = null;
+    public ?string $member_number = null;
     public ?string $name = null;
     public ?string $surname = null;
     public ?string $degree = null;
@@ -29,14 +29,14 @@ class MembersEntity extends BaseEntity
         $this->setVariable('member_id', $id, self::VALUE_TYPE_INTEGER);
     }
 
-    public function getMemberNumber(): ?int
+    public function getMemberNumber(): ?string
     {
         return $this->member_number;
     }
 
-    public function setMemberNumber(?int $memberNumber): void
+    public function setMemberNumber(?string $memberNumber): void
     {
-        $this->setVariable('member_number', $memberNumber, self::VALUE_TYPE_INTEGER);
+        $this->setVariable('member_number', $memberNumber, self::VALUE_TYPE_STRING);
     }
 
     public function getName(): ?string
@@ -79,14 +79,14 @@ class MembersEntity extends BaseEntity
         $this->setVariable('birth_date', $birthDate, self::VALUE_TYPE_DATE);
     }
 
-    public function getAddress(): ?string
+    public function getStreet(): ?string
     {
-        return $this->address;
+        return $this->street;
     }
 
-    public function setAddress(?string $address): void
+    public function setStreet(?string $street): void
     {
-        $this->setVariable('address', $address, self::VALUE_TYPE_STRING);
+        $this->setVariable('street', $street, self::VALUE_TYPE_STRING);
     }
 
     public function getEmail(): ?string
