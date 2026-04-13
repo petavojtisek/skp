@@ -28,12 +28,12 @@ class MembersMapper extends BaseMapper
         return (int)$lastNumber + 1;
     }
 
-    public function findMembers(int $limit , int $offset , ?string $search = null): array
+    public function findMembers(int $limit, int $offset, ?string $search = null): array
     {
         $selection = $this->db->select('*')->from($this->tableName);
 
         if ($search) {
-            $selection->where('name LIKE %like~ OR surname LIKE %like~ OR member_number LIKE %like~ OR email LIKE %like~', $search, $search, $search, $search);
+            $selection->where('name LIKE %like~ OR surname LIKE %like~ OR member_number LIKE %like~ OR email LIKE %like~ OR city LIKE %like~ OR zip LIKE %like~', $search, $search, $search, $search, $search, $search);
         }
 
         if ($limit) {
@@ -52,7 +52,7 @@ class MembersMapper extends BaseMapper
         $selection = $this->db->select('COUNT(*)')->from($this->tableName);
 
         if ($search) {
-            $selection->where('name LIKE %like~ OR surname LIKE %like~ OR member_number LIKE %like~ OR email LIKE %like~', $search, $search, $search, $search);
+            $selection->where('name LIKE %like~ OR surname LIKE %like~ OR member_number LIKE %like~ OR email LIKE %like~ OR city LIKE %like~ OR zip LIKE %like~', $search, $search, $search, $search, $search, $search);
         }
 
         return (int)$selection->fetchSingle();

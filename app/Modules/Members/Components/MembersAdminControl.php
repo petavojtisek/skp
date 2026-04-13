@@ -172,8 +172,9 @@ class MembersAdminControl extends Control implements IToolsControl
 
         $form->addText('phone', 'Telefon');
 
-        $form->addTextArea('address', 'Adresa')
-            ->setHtmlAttribute('rows', 3);
+        $form->addText('street', 'Ulice a č.p.');
+        $form->addText('city', 'Město');
+        $form->addText('zip', 'PSČ');
 
         $form->addText('last_member_payment', 'Poslední platba')
             ->setHtmlType('date');

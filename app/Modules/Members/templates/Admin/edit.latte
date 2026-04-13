@@ -61,10 +61,31 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label n:name="street">Ulice a č.p.</label>
+                            <input n:name="street" class="form-control" placeholder="Např. Pražská 123">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label n:name="city">Město</label>
+                            <input n:name="city" class="form-control" placeholder="Např. Praha">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label n:name="zip">PSČ</label>
+                            <input n:name="zip" class="form-control" placeholder="Např. 110 00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-8">
                         <div class="form-group">
-                            <label n:name="address">Adresa</label>
-                            <textarea n:name="address" class="form-control" rows="3"></textarea>
+                            <label n:name="note">Poznámka</label>
+                            <textarea n:name="note" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -74,17 +95,13 @@
                         </div>
                         <div class="form-group">
                             <div class="custom-control custom-checkbox mt-2">
-                                <input n:name="active" class="custom-control-input">
-                                <label n:name="active" class="custom-control-label">Aktivní člen</label>
+                                <input n:name="active" class="custom-control-input" id="member-active">
+                                <label for="member-active" class="custom-control-label">Aktivní člen</label>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label n:name="note">Poznámka</label>
-                    <textarea n:name="note" class="form-control" rows="3"></textarea>
-                </div>
             </div>
             <div class="card-footer">
                 <button n:name="send" class="btn btn-primary"><i class="fas fa-save"></i> Uložit člena</button>

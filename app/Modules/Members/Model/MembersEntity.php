@@ -12,7 +12,9 @@ class MembersEntity extends BaseEntity
     public ?string $surname = null;
     public ?string $degree = null;
     public mixed $birth_date = null;
-    public ?string $address = null;
+    public ?string $street = null;
+    public ?string $zip = null;
+    public ?string $city = null;
     public ?string $email = null;
     public ?string $phone = null;
     public ?string $note = null;
@@ -87,6 +89,26 @@ class MembersEntity extends BaseEntity
     public function setStreet(?string $street): void
     {
         $this->setVariable('street', $street, self::VALUE_TYPE_STRING);
+    }
+
+    public function getZip(): ?string
+    {
+        return $this->zip;
+    }
+
+    public function setZip(?string $zip): void
+    {
+        $this->setVariable('zip', $zip, self::VALUE_TYPE_STRING);
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): void
+    {
+        $this->setVariable('city', $city, self::VALUE_TYPE_STRING);
     }
 
     public function getEmail(): ?string
