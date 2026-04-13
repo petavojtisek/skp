@@ -48,6 +48,6 @@ class WebTextService
 
     public function getWebText(int $id): ?WebTextEntity
     {
-        return $this->webTextDao->findById($id);
+        return $this->webTextDao->find($id);
     }
 }

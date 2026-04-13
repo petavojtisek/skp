@@ -2,6 +2,7 @@
 
 namespace App\Modules\WebTexts\Components;
 
+use App\Model\Admin\LoggedUserEntity;
 use App\Model\Helper\IToolsControl;
 use App\Modules\WebTexts\Model\WebTextFacade;
 use App\Modules\WebTexts\Model\WebTextEntity;
@@ -18,17 +19,22 @@ class WebTextsAdminControl extends Control implements IToolsControl
     /** @var int @persistent */
     public $page = 1;
 
-    /** @var string|null @persistent */
+    /** @var string|null  */
     public $code = null;
+
+    /** @var string|null @persistent */
+    public $search = null;
 
     /** @var string @persistent */
     public $view = 'default';
 
+    public LoggedUserEntity $loggedUser;
 
 
-    public function __construct(WebTextFacade $webTextFacade)
+    public function __construct(WebTextFacade $webTextFacade, LoggedUserEntity $loggedUser)
     {
         $this->webTextFacade = $webTextFacade;
+        $this->loggedUser = $loggedUser;
     }
 
     public function setCode(String $code): void
@@ -42,6 +48,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
     public function render(): void
     {
 
+        $this->template->loggedUserEntity = $this->loggedUser;
         // Detail view (List or Edit)
         if ($this->view === 'edit') {
             $this->renderEdit();
@@ -58,16 +65,18 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     public function renderList(): void
     {
+
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
 
-        $texts = $this->webTextFacade->findWebTexts($this->code, $limit, $offset);
-        $totalCount = $this->webTextFacade->countWebTexts($this->code);
+        $texts = $this->webTextFacade->findWebTexts($this->search, $limit, $offset);
+        $totalCount = $this->webTextFacade->countWebTexts($this->search);
 
         $this->template->webTexts = $texts;
         $this->template->page = $this->page;
         $this->template->lastPage = ceil($totalCount / $limit);
-        $this->template->code = $this->code;
+        $this->template->search = $this->search
+        ;
 
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -77,8 +86,9 @@ class WebTextsAdminControl extends Control implements IToolsControl
     {
         if ($this->id && !$this->getComponent('webTextForm')->isSubmitted()) {
             $webText = $this->webTextFacade->getWebText($this->id);
+
             if ($webText) {
-                $this['webTextForm']->setDefaults($webText->toArray());
+                $this['webTextForm']->setDefaults($webText->getEntityData());
             }
         }
 
@@ -100,36 +110,58 @@ class WebTextsAdminControl extends Control implements IToolsControl
             $presenter->redrawControl('tools');
             $presenter->redrawControl('webtexts');
         }
-        //$this->redirect('this');
+
     }
 
     public function handleEdit(?int $id = null): void
     {
+
+        $presenter = $this->getPresenter();
+        $presenter->activeControl = $this->code;
         $this->view = 'edit';
         $this->id = $id;
-        $this->redirect('this');
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $presenter->redrawControl('webtextsEdit');
+        }
+
+
     }
 
     public function handleDelete(int $id): void
     {
+
         $this->webTextFacade->deleteWebText($id);
+        $presenter = $this->getPresenter();
+        $presenter->activeControl = $this->code;
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $presenter->redrawControl('webtexts');
+        }
+
         $this->getPresenter()->flashMessage('Text byl smazán.');
-        $this->redirect('this', ['view' => 'list', 'id' => null]);
+
     }
 
     /* --- COMPONENTS --- */
 
     protected function createComponentSearchForm(): Form
     {
+
         $form = new Form;
-        $form->addText('code', 'Kód')
+        $form->addText('search', 'Kód')
             ->setHtmlAttribute('placeholder', 'Vyhledat podle kódu...');
         $form->addSubmit('send', 'Hledat');
-        $form->setDefaults(['code' => $this->code]);
+        $form->setDefaults(['search' => $this->search]);
         $form->onSuccess[] = function (Form $form, $values) {
-            $this->code = $values->code;
+
+            $this->search = $values->search;
             $this->page = 1;
-            $this->redirect('this');
+            if ($this->getPresenter()->isAjax()) {
+                $this->redrawControl('webtexts');
+            } else {
+                $this->redirect('this');
+            }
         };
         return $form;
     }
@@ -143,6 +175,9 @@ class WebTextsAdminControl extends Control implements IToolsControl
         $form->addTextArea('text', 'Text')
             ->setHtmlAttribute('class', 'editor');
         $form->addSubmit('send', 'Uložit');
+
+
+
 
         $form->onSuccess[] = [$this, 'webTextFormSucceeded'];
         return $form;

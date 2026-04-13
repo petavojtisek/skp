@@ -15,6 +15,16 @@ class WebTextEntity extends AEntity
         return $this->web_text_id;
     }
 
+    public function getId() :mixed
+    {
+        return $this->web_text_id;
+    }
+
+    public function setId($id) : void
+    {
+        $this->web_text_id =$id;
+    }
+
     public function getCode(): ?string
     {
         return $this->code;
@@ -22,7 +32,7 @@ class WebTextEntity extends AEntity
 
     public function setCode(?string $code): void
     {
-        $this->code = $code;
+        $this->setVariable('code',$code, self::VALUE_TYPE_STRING);
     }
 
     public function getText(): ?string
@@ -32,6 +42,6 @@ class WebTextEntity extends AEntity
 
     public function setText(?string $text): void
     {
-        $this->text = $text;
+        $this->setVariable('text',$text, self::VALUE_TYPE_STRING);
     }
 }

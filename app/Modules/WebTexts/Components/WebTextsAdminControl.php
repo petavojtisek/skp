@@ -47,6 +47,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
      */
     public function render(): void
     {
+
         $this->template->loggedUserEntity = $this->loggedUser;
         // Detail view (List or Edit)
         if ($this->view === 'edit') {
@@ -64,7 +65,6 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     public function renderList(): void
     {
-
 
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
@@ -86,8 +86,9 @@ class WebTextsAdminControl extends Control implements IToolsControl
     {
         if ($this->id && !$this->getComponent('webTextForm')->isSubmitted()) {
             $webText = $this->webTextFacade->getWebText($this->id);
+
             if ($webText) {
-                $this['webTextForm']->setDefaults($webText->toArray());
+                $this['webTextForm']->setDefaults($webText->getEntityData());
             }
         }
 
@@ -114,21 +115,25 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     public function handleEdit(?int $id = null): void
     {
+
         $presenter = $this->getPresenter();
-        if ($presenter->isAjax()) {
-            $presenter->redrawControl('tools');
-            $presenter->redrawControl('webtexts');
-        }
+        $presenter->activeControl = $this->code;
         $this->view = 'edit';
         $this->id = $id;
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $presenter->redrawControl('webtextsEdit');
+        }
+
 
     }
 
     public function handleDelete(int $id): void
     {
-        xdebug_break();
+
         $this->webTextFacade->deleteWebText($id);
         $presenter = $this->getPresenter();
+        $presenter->activeControl = $this->code;
         if ($presenter->isAjax()) {
             $presenter->redrawControl('tools');
             $presenter->redrawControl('webtexts');
@@ -142,6 +147,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     protected function createComponentSearchForm(): Form
     {
+
         $form = new Form;
         $form->addText('search', 'Kód')
             ->setHtmlAttribute('placeholder', 'Vyhledat podle kódu...');
@@ -169,6 +175,9 @@ class WebTextsAdminControl extends Control implements IToolsControl
         $form->addTextArea('text', 'Text')
             ->setHtmlAttribute('class', 'editor');
         $form->addSubmit('send', 'Uložit');
+
+
+
 
         $form->onSuccess[] = [$this, 'webTextFormSucceeded'];
         return $form;

@@ -79,7 +79,7 @@ class MembersAdminControl extends Control implements IToolsControl
         if ($this->id && !$this->getComponent('memberForm')->isSubmitted()) {
             $item = $this->facade->getMember($this->id);
             if ($item) {
-                $values = $item->toArray();
+                $values = $item->getEntityData();
                 if ($item->getBirthDate()) $values['birth_date'] = $item->getBirthDate('Y-m-d');
                 if ($item->getLastMemberPayment()) $values['last_member_payment'] = $item->getLastMemberPayment('Y-m-d');
                 $this['memberForm']->setDefaults($values);

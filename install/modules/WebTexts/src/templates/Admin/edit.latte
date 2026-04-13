@@ -1,4 +1,4 @@
-{snippet webtexts}
+{snippet webtextsEdit}
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="card-footer">
-                    <button n:name="send" class="btn btn-primary">Uložit</button>
+                    <button n:if="$loggedUserEntity->hasModuleRight('web_text', 'edit')" n:name="send" class="btn btn-primary">Uložit</button>
                     <a href="{link list!}" class="btn btn-default">Zrušit</a>
                 </div>
             </form>

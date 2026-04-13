@@ -41,10 +41,10 @@
                             <td>{$item->getCreatedDt()|date:'d.m.Y H:i'}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
+                                    <a  n:if="$loggedUserEntity->hasModuleRight('content_version','edit')"  n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
                                     <button class="btn btn-xs btn-info" title="Preview"><i class="fas fa-eye"></i></button>
-                                    <a n:href="copy!, elementId => $item->getId()" class="btn btn-xs btn-success ajax" title="Kopírovat"><i class="fas fa-plus"></i></a>
-                                    <a n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto verzi?')"><i class="fas fa-trash"></i></a>
+                                    <a  n:if="$loggedUserEntity->hasModuleRight('content_version','copy')" n:href="copy!, elementId => $item->getId()" class="btn btn-xs btn-success ajax" title="Kopírovat"><i class="fas fa-plus"></i></a>
+                                    <a  n:if="$loggedUserEntity->hasModuleRight('content_version','delete')"  n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto verzi?')"><i class="fas fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -54,7 +54,7 @@
         </div>
 
         <div class="p-3 bg-light border-top">
-            <a n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nová verze</a>
+            <a  n:if="$loggedUserEntity->hasModuleRight('content_version','insert')" n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nová verze</a>
             <button class="btn btn-sm btn-info"><i class="fas fa-copy"></i> Kopírovat</button>
             <button class="btn btn-sm btn-warning btn-edit-component"
                     data-id="{$componentId}"
@@ -62,8 +62,8 @@
                     data-save-url="{plink updateObject!, compId => $componentId}">
                 <i class="fas fa-edit"></i> Editace objektu
             </button>
-            <a n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
-            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a> 
+            <a n:if="$loggedUserEntity->hasGroupRight('REMOVE_OBJECT')"  n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('DELETE_OBJECT')" n:href="deleteFromPresentation!" class="btn btn-sm btn-secondary ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a>
         </div>
     </div>
 </div>

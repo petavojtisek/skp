@@ -59,9 +59,14 @@ class MembersEntity extends BaseEntity
         $this->setVariable('surname', $surname, self::VALUE_TYPE_STRING);
     }
 
-    public function getFullName(): string
+    public function getDegree(): ?string
     {
-        return trim(($this->degree ? $this->degree . ' ' : '') . $this->name . ' ' . $this->surname);
+        return $this->degree;
+    }
+
+    public function setDegree(?string $degree): void
+    {
+        $this->setVariable('degree', $degree, self::VALUE_TYPE_STRING);
     }
 
     public function getBirthDate($format = null)
@@ -69,13 +74,73 @@ class MembersEntity extends BaseEntity
         return $this->getDateTime($this->birth_date, $format);
     }
 
+    public function setBirthDate(mixed $birthDate): void
+    {
+        $this->setVariable('birth_date', $birthDate, self::VALUE_TYPE_DATE);
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): void
+    {
+        $this->setVariable('address', $address, self::VALUE_TYPE_STRING);
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): void
+    {
+        $this->setVariable('email', $email, self::VALUE_TYPE_STRING);
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->setVariable('phone', $phone, self::VALUE_TYPE_STRING);
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): void
+    {
+        $this->setVariable('note', $note, self::VALUE_TYPE_STRING);
+    }
+
     public function getLastMemberPayment($format = null)
     {
         return $this->getDateTime($this->last_member_payment, $format);
     }
 
+    public function setLastMemberPayment(mixed $lastMemberPayment): void
+    {
+        $this->setVariable('last_member_payment', $lastMemberPayment, self::VALUE_TYPE_DATE);
+    }
+
     public function isActive(): bool
     {
         return (bool)$this->active;
+    }
+
+    public function setActive(mixed $active): void
+    {
+        $this->setVariable('active', $active, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getFullName(): string
+    {
+        return trim(($this->degree ? $this->degree . ' ' : '') . $this->name . ' ' . $this->surname);
     }
 }

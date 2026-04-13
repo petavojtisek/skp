@@ -2,6 +2,7 @@
 
 namespace App\Modules\ContentVersion\Components;
 
+use App\Model\Admin\LoggedUserEntity;
 use App\Model\Element\ElementEntity;
 use App\Model\Element\ElementFacade;
 use App\Model\Helper\IObjectControl;
@@ -31,18 +32,22 @@ class ContentVersionControl extends Control implements IObjectControl
     private LookupFacade $lookupFacade;
     private User $user;
 
+    private LoggedUserEntity $loggedUserEntity;
+
     public function __construct(
         ContentVersionFacade $facade,
         ElementFacade $elementFacade,
         VersionFacade $versionFacade,
         LookupFacade $lookupFacade,
-        User $user
+        User $user,
+        LoggedUserEntity $loggedUser
     ) {
         $this->facade = $facade;
         $this->elementFacade = $elementFacade;
         $this->versionFacade = $versionFacade;
         $this->lookupFacade = $lookupFacade;
         $this->user = $user;
+        $this->loggedUserEntity = $loggedUser;
     }
 
     public function setComponentId(int $componentId): void
@@ -58,6 +63,8 @@ class ContentVersionControl extends Control implements IObjectControl
 
     public function render(): void
     {
+        $this->template->loggedUserEntity = $this->loggedUserEntity;
+
         $this->template->name = $this->name;
         $this->template->code = $this->code;
         $this->template->componentId = $this->componentId;
