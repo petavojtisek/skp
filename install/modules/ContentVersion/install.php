@@ -42,27 +42,27 @@ $moduleId = $moduleFacade->save($module); // Returns int
 
 // 5. Register Permissions & Rights
 $rights = [
-    'VIEW' => 'Zobrazení',
-    'ADD' => 'Přidání',
-    'EDIT' => 'Editace',
-    'DELETE' => 'Mazání',
-    'COPY' => 'Kopírování'
+    'list' => 'Zobrazení',
+    'insert' => 'Přidání',
+    'edit' => 'Editace',
+    'delete' => 'Mazání',
+    'copy' => 'Kopírování'
 ];
 
 foreach ($rights as $code => $rightName) {
     // Check if permission exists
     $permId = $db->select('permission_id')->from('module_permission')->where('right_code_name = %s', $code)->fetchSingle();
-    
+
     if (!$permId) {
         $perm = new ModulePermissionEntity();
         $perm->setRightCodeName($code);
         $perm->setName($rightName);
         $permId = $modulePermissionFacade->save($perm); // returns int
     }
-    
+
     // Link right to module
     $db->query("REPLACE INTO `module_right` (`module_id`, `permission_id`) VALUES (%i, %i)", $moduleId, $permId);
-    
+
     // Grant to SuperAdmin (group 1)
     $db->query("REPLACE INTO `module_group_right` (`admin_group_id`, `module_id`, `permission_id`) VALUES (1, %i, %i)", $moduleId, $permId);
 }

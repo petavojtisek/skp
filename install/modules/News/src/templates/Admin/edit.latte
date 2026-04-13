@@ -8,7 +8,7 @@
             <a n:href="back!" class="btn btn-tool ajax" title="Zpět na seznam"><i class="fas fa-times"></i></a>
         </div>
     </div>
-    
+
     <form n:name="editForm" class="ajax">
         <div class="card-body">
             <div class="row">
@@ -71,17 +71,17 @@
                         <small class="text-muted">Nahráním nového obrázku nahradíte ten stávající.</small>
                     </div>
                 </div>
-                {var $newsEntity = $facade->find($item->getId())}
+
                 <div class="col-md-6" n:if="$newsEntity && $newsEntity->getImage()">
                     <div class="mt-2">
                         <label>Aktuální obrázek:</label><br>
-                        <img src="/storage/private/news/thumb/{$newsEntity->getImage()}" class="img-thumbnail" style="max-height: 100px;">
+                        <img src="/web_storage/news/thumb/{$newsEntity->getImage()}" class="img-thumbnail" style="max-height: 100px;">
                     </div>
                 </div>
             </div>
         </div>
         <div class="card-footer">
-            <button n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit aktualitu</button>
+            <button n:if="$loggedUserEntity->hasModuleRight('news', 'publish')" n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit aktualitu</button>
             <a n:href="back!" class="btn btn-default float-right ajax">Zrušit</a>
         </div>
     </form>

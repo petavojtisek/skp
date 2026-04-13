@@ -2,11 +2,12 @@
 
 namespace App\Modules\News\Components;
 
+use App\Model\Admin\LoggedUserEntity;
 use App\Model\Element\ElementEntity;
 use App\Model\Element\ElementFacade;
+use App\Model\Helper\ImageResizer;
 use App\Model\Helper\IObjectControl;
 use App\Model\Lookup\LookupFacade;
-use App\Modules\News\Model\Helper\ImageResizer;
 use App\Modules\News\Model\NewsEntity;
 use App\Modules\News\Model\NewsFacade;
 use Nette\Application\UI\Control;
@@ -15,6 +16,9 @@ use Nette\Security\User;
 
 class NewsAdminControl extends Control implements IObjectControl
 {
+
+    public static $imagePath =   'news';
+
     /** @persistent */
     public string $view = 'list';
 
@@ -31,18 +35,22 @@ class NewsAdminControl extends Control implements IObjectControl
     private ImageResizer $imageResizer;
     private User $user;
 
+    private LoggedUserEntity $loggedUserEntity;
+
     public function __construct(
         NewsFacade $facade,
         ElementFacade $elementFacade,
         LookupFacade $lookupFacade,
         ImageResizer $imageResizer,
-        User $user
+        User $user,
+        LoggedUserEntity $loggedUser
     ) {
         $this->facade = $facade;
         $this->elementFacade = $elementFacade;
         $this->lookupFacade = $lookupFacade;
         $this->imageResizer = $imageResizer;
         $this->user = $user;
+        $this->loggedUserEntity = $loggedUser;
     }
 
     public function setComponentId(int $componentId): void
@@ -58,6 +66,9 @@ class NewsAdminControl extends Control implements IObjectControl
 
     public function render(): void
     {
+
+        $this->template->loggedUserEntity = $this->loggedUserEntity;
+
         $this->template->name = $this->name;
         $this->template->code = $this->code;
         $this->template->componentId = $this->componentId;
@@ -76,37 +87,12 @@ class NewsAdminControl extends Control implements IObjectControl
         $this->template->render();
     }
 
-    public function handleCopy(int $elementId): void
-    {
-        $oldElement = $this->elementFacade->find($elementId);
-        $oldNews = $this->facade->find($elementId);
-
-        if ($oldElement && $oldNews) {
-            $newElement = clone $oldElement;
-            $newElement->setId(null);
-            $newElement->setAuthorId($this->user->getId());
-            $newElement->setInserted(new \DateTime());
-            $newElement->setName($oldElement->getName() . ' (kopie)');
-
-            $newId = $this->elementFacade->save($newElement);
-
-            $newNews = new NewsEntity();
-            $newNews->setId($newId);
-            $newNews->setTitle($oldNews->getTitle());
-            $newNews->setShortText($oldNews->getShortText());
-            $newNews->setContent($oldNews->getContent());
-            $this->facade->save($newNews);
-
-            $this->getPresenter()->flashMessage("Aktualita byla zkopírována.", 'success');
-        }
-        $this->redrawControl();
-    }
 
     public function handleDelete(int $elementId): void
     {
         $news = $this->facade->find($elementId);
         if ($news && $news->getImage()) {
-            $this->imageResizer->deleteNewsImage($news->getImage());
+            $this->imageResizer->deleteNewsImage($news->getImage(),self::$imagePath);
         }
         $this->facade->delete($elementId);
         $this->elementFacade->delete($elementId);
@@ -118,8 +104,10 @@ class NewsAdminControl extends Control implements IObjectControl
     {
         $this->view = 'edit';
         $this->elementId = $elementId;
+        $this->template->newsEntity = $this->facade->find($this->elementId);
         $this->redrawControl();
     }
+
 
     public function handleBack(): void
     {
@@ -138,7 +126,7 @@ class NewsAdminControl extends Control implements IObjectControl
         $items = $this->facade->getByComponentId($this->componentId);
         foreach ($items as $item) {
             if ($item->getImage()) {
-                $this->imageResizer->deleteNewsImage($item->getImage());
+                $this->imageResizer->deleteNewsImage($item->getImage(),self::$imagePath,self::$imagePath);
             }
             $this->facade->delete($item->getId());
             $this->elementFacade->delete($item->getId());
@@ -223,9 +211,9 @@ class NewsAdminControl extends Control implements IObjectControl
         $image = $values['image'];
         if ($image->isOk()) {
             if ($news->getImage()) {
-                $this->imageResizer->deleteNewsImage($news->getImage());
+                $this->imageResizer->deleteNewsImage($news->getImage(), self::$imagePath);
             }
-            $filename = $this->imageResizer->processNewsImage($image);
+            $filename = $this->imageResizer->processNewsImage($image, self::$imagePath);
             $news->setImage($filename);
         }
 

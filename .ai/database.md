@@ -218,6 +218,16 @@
 | module_id | int | NO | MUL | NULL |  |
 | permission_id | int | NO |  | NULL |  |
 
+## Table: `news`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| element_id | int | YES |  | NULL |  |
+| title | varchar(255) | YES |  | NULL |  |
+| short_text | varchar(255) | YES |  | NULL |  |
+| content | longtext | YES |  | NULL |  |
+| image | varchar(255) | YES |  | NULL |  |
+
 ## Table: `page`
 
 | Field | Type | Null | Key | Default | Extra |

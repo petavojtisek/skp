@@ -5,9 +5,9 @@ namespace App\Modules\News\Components;
 use App\Model\Admin\LoggedUserEntity;
 use App\Model\Element\ElementEntity;
 use App\Model\Element\ElementFacade;
+use App\Model\Helper\ImageResizer;
 use App\Model\Helper\IObjectControl;
 use App\Model\Lookup\LookupFacade;
-use App\Modules\News\Model\Helper\ImageResizer;
 use App\Modules\News\Model\NewsEntity;
 use App\Modules\News\Model\NewsFacade;
 use Nette\Application\UI\Control;
@@ -16,6 +16,9 @@ use Nette\Security\User;
 
 class NewsAdminControl extends Control implements IObjectControl
 {
+
+    public static $imagePath =   'news';
+
     /** @persistent */
     public string $view = 'list';
 
@@ -89,7 +92,7 @@ class NewsAdminControl extends Control implements IObjectControl
     {
         $news = $this->facade->find($elementId);
         if ($news && $news->getImage()) {
-            $this->imageResizer->deleteNewsImage($news->getImage());
+            $this->imageResizer->deleteNewsImage($news->getImage(),self::$imagePath);
         }
         $this->facade->delete($elementId);
         $this->elementFacade->delete($elementId);
@@ -123,7 +126,7 @@ class NewsAdminControl extends Control implements IObjectControl
         $items = $this->facade->getByComponentId($this->componentId);
         foreach ($items as $item) {
             if ($item->getImage()) {
-                $this->imageResizer->deleteNewsImage($item->getImage());
+                $this->imageResizer->deleteNewsImage($item->getImage(),self::$imagePath,self::$imagePath);
             }
             $this->facade->delete($item->getId());
             $this->elementFacade->delete($item->getId());
@@ -208,9 +211,9 @@ class NewsAdminControl extends Control implements IObjectControl
         $image = $values['image'];
         if ($image->isOk()) {
             if ($news->getImage()) {
-                $this->imageResizer->deleteNewsImage($news->getImage());
+                $this->imageResizer->deleteNewsImage($news->getImage(), self::$imagePath);
             }
-            $filename = $this->imageResizer->processNewsImage($image);
+            $filename = $this->imageResizer->processNewsImage($image, self::$imagePath);
             $news->setImage($filename);
         }
 
