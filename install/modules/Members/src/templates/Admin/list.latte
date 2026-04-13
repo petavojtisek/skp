@@ -1,0 +1,76 @@
+<div n:snippet="members">
+    <div class="card card-outline card-secondary">
+        <div class="card-header">
+            <h3 class="card-title">Seznam členů</h3>
+            <div class="card-tools">
+                <a n:if="$loggedUserEntity->hasModuleRight('members','edit')" n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nový člen</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <form n:name="searchForm" class="form-inline mb-3 ajax">
+                <div class="input-group input-group-sm">
+                    <input n:name="search" class="form-control">
+                    <div class="input-group-append">
+                        <button n:name="send" class="btn btn-default"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <a n:if="$search" n:href="this, search => null" class="btn btn-sm btn-link ajax ml-2">Zrušit filtr</a>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px">Číslo člena</th>
+                            <th>Jméno a příjmení</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th style="width: 100px">Stav</th>
+                            <th style="width: 120px">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {if empty($items)}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Žádní členové nebyli nalezeni.</td>
+                            </tr>
+                        {else}
+                            <tr n:foreach="$items as $item">
+                                <td>{$item->getMemberNumber()}</td>
+                                <td>{$item->getFullName()}</td>
+                                <td>{$item->email}</td>
+                                <td>{$item->phone}</td>
+                                <td>
+                                    {if $item->isActive()}
+                                        <span class="badge badge-success">Aktivní</span>
+                                    {else}
+                                        <span class="badge badge-danger">Neaktivní</span>
+                                    {/if}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a n:if="$loggedUserEntity->hasModuleRight('members','edit')" n:href="edit!, id => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editovat"><i class="fas fa-edit"></i></a>
+                                        <a n:if="$loggedUserEntity->hasModuleRight('members','delete')" n:href="delete!, id => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tohoto člena?')"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer clearfix" n:if="$lastPage > 1">
+            <ul class="pagination pagination-sm m-0 float-right">
+                <li n:class="page-item, $page == 1 ? disabled">
+                    <a class="page-link ajax" n:href="this, page => $page - 1">&laquo;</a>
+                </li>
+                <li n:foreach="range(1, $lastPage) as $p" n:class="page-item, $page == $p ? active">
+                    <a class="page-link ajax" n:href="this, page => $p">{$p}</a>
+                </li>
+                <li n:class="page-item, $page == $lastPage ? disabled">
+                    <a class="page-link ajax" n:href="this, page => $page + 1">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

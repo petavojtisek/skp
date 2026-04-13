@@ -1,0 +1,16 @@
+
+<div class="col-md-3" n:snippet="webtexts">
+    <div class="small-box bg-warning">
+        <div class="inner">
+            <h3>Members</h3>
+            <p>Správce členů</p>
+        </div>
+        <div class="icon">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <a n:if="$loggedUserEntity->hasModuleRight('members','list')" href="{link list!}" class="ajax small-box-footer">
+            Otevřít <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>
+

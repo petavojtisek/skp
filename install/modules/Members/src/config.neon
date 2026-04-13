@@ -1,0 +1,6 @@
+services:
+    - App\Modules\Members\Model\MembersMapper
+    - App\Modules\Members\Model\MembersDao
+    - App\Modules\Members\Model\MembersService
+    - App\Modules\Members\Model\MembersFacade
+    - App\Modules\Members\Components\IMembersAdminControlFactory
