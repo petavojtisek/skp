@@ -2,6 +2,7 @@
 
 namespace App\Modules\WebTexts\Components;
 
+use App\Model\Admin\LoggedUserEntity;
 use App\Model\Helper\IToolsControl;
 use App\Modules\WebTexts\Model\WebTextFacade;
 use App\Modules\WebTexts\Model\WebTextEntity;
@@ -24,11 +25,13 @@ class WebTextsAdminControl extends Control implements IToolsControl
     /** @var string @persistent */
     public $view = 'default';
 
+    public LoggedUserEntity $loggedUser;
 
 
-    public function __construct(WebTextFacade $webTextFacade)
+    public function __construct(WebTextFacade $webTextFacade, LoggedUserEntity $loggedUser)
     {
         $this->webTextFacade = $webTextFacade;
+        $this->loggedUser = $loggedUser;
     }
 
     public function setCode(String $code): void
@@ -41,7 +44,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
      */
     public function render(): void
     {
-
+        $this->template->loggedUserEntity = $this->loggedUser;
         // Detail view (List or Edit)
         if ($this->view === 'edit') {
             $this->renderEdit();
