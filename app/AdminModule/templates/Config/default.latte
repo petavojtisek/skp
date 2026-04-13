@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Seznam systémových nastavení</h3>
         <div class="card-tools">
-            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nové nastavení</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONFIG_EDIT')" n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nové nastavení</a>
         </div>
     </div>
     <div class="card-body table-responsive p-0">
@@ -22,8 +22,8 @@
                     <td><strong>{$config->item}</strong></td>
                     <td>{$config->value|truncate:100}</td>
                     <td>
-                        <a n:href="edit, id => $config->config_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:href="delete, id => $config->config_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONFIG_EDIT')" n:href="edit, id => $config->config_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONGIG_DELETE')" n:href="delete, id => $config->config_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$configs">

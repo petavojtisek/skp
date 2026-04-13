@@ -21,15 +21,15 @@
                     <td>{$module->install_id}</td>
                     <td><strong>{$module->module_name}</strong></td>
                     <td class="text-center">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input ajax-toggle" id="mod_{$module->install_id}" 
-                                   n:attr="checked => $activeStates[$module->install_id]" 
+                        <div  n:if="$loggedUserEntity->hasGroupRight('INSTALL_MODULE_ACTIVATION')" class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input ajax-toggle" id="mod_{$module->install_id}"
+                                   n:attr="checked => $activeStates[$module->install_id]"
                                    data-url="{link toggleActive!, id => $module->install_id}">
                             <label class="custom-control-label" for="mod_{$module->install_id}"></label>
                         </div>
                     </td>
                     <td>
-                        <a n:href="uninstall!, id => $module->install_id" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu odinstalovat?')">
+                        <a n:if="$loggedUserEntity->hasGroupRight('INSTALL_REMOVE_MODULE')" n:href="uninstall!, id => $module->install_id" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu odinstalovat?')">
                             <i class="fas fa-trash"></i> Odinstalovat
                         </a>
                     </td>
@@ -61,7 +61,7 @@
                 <tr n:foreach="$availableModules as $name">
                     <td><code>{$name}</code></td>
                     <td>
-                        <a n:href="install!, name => $name" class="btn btn-sm btn-primary">
+                        <a n:if="$loggedUserEntity->hasGroupRight('INSTALL_MODULE')" n:href="install!, name => $name" class="btn btn-sm btn-primary">
                             <i class="fas fa-plus"></i> Instalovat
                         </a>
                     </td>

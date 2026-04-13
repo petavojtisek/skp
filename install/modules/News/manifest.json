@@ -1,0 +1,7 @@
+{
+    "name": "News",
+    "code_name": "news",
+    "class_name": "News",
+    "type": 302,
+    "description": "Modul pro správu aktualit a novinek."
+}

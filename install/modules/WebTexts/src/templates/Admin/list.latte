@@ -1,0 +1,83 @@
+{snippet webtexts}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Seznam webových textů</h3>
+                <div class="card-tools">
+                    <a href="{link edit!}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Přidat text
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form n:name="searchForm" class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input n:name="code" class="form-control form-control-sm">
+                            <div class="input-group-append">
+                                <button n:name="send" class="btn btn-sm btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <a n:if="$code" href="{link list!, code => null, page => 1}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px">ID</th>
+                            <th>Kód</th>
+                            <th>Text (náhled)</th>
+                            <th style="width: 150px">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $webTexts as $text}
+                            <tr>
+                                <td>{$text->getWebTextId()}</td>
+                                <td><strong>{$text->getCode()}</strong></td>
+                                <td>{$text->getText()|striptags|truncate:100}</td>
+                                <td>
+                                    <a href="{link edit!, id => $text->getWebTextId()}" class="btn btn-xs btn-info">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{link delete!, id => $text->getWebTextId()}" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
+                                        <i class="fas fa-trash"></i> Smazat
+                                    </a>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer clearfix" n:if="$lastPage > 1">
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li n:class="page-item, $page <= 1 ? disabled">
+                        <a class="page-link" href="{link this, page => $page - 1}">&laquo;</a>
+                    </li>
+
+                    {for $i = 1; $i <= $lastPage; $i++}
+                        <li n:class="page-item, $page == $i ? active">
+                            <a class="page-link" href="{link this, page => $i}">{$i}</a>
+                        </li>
+                    {/for}
+
+                    <li n:class="page-item, $page >= $lastPage ? disabled">
+                        <a class="page-link" href="{link this, page => $page + 1}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{/snippet}
+
+
+

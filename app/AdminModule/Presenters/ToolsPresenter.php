@@ -36,10 +36,11 @@ final class ToolsPresenter extends AdminPresenter
     public function beforeRender()
     {
 
-
+        $this->template->activeControl = $this->activeControl;
         if($this->activeControl){
             $this->template->setFile(__DIR__.'/../templates/Tools/detail.latte');
             $this->template->module = $this->activeControl;
+
         }
 
         $this->template->showTool = $this->showTool;

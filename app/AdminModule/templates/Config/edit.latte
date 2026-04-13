@@ -9,7 +9,7 @@
     <div class="card-header">
         <h3 class="card-title">Formulář nastavení</h3>
     </div>
-    <form n:name="configForm">
+    <form n:name="configForm"  n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONFIG_EDIT')">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">

@@ -67,19 +67,19 @@
             </a>
           </li>
           <li class="nav-item">
-            <a n:href="Pages:, id => null, spec_param_id => null" class="nav-link {if $presenter->isLinkCurrent('Pages:*')}active{/if}">
+            <a  n:if="$loggedUserEntity->hasGroupRight('PAGES')"  n:href="Pages:, id => null, spec_param_id => null" class="nav-link {if $presenter->isLinkCurrent('Pages:*')}active{/if}">
               <i class="nav-icon fas fa-file-alt"></i>
               <p>Stránky</p>
             </a>
           </li>
           <li class="nav-item">
-            <a n:href="Accounts:, id => null, spec_param_id => null" class="nav-link {if $presenter->isLinkCurrent('Accounts:*')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('ACCOUNTS')"  n:href="Accounts:, id => null, spec_param_id => null" class="nav-link {if $presenter->isLinkCurrent('Accounts:*')}active{/if}">
               <i class="nav-icon fas fa-users"></i>
               <p>Účty</p>
             </a>
           </li>
           <li class="nav-item {if $presenter->isPresenter('Presentation') || $presenter->isPresenter('Config') || $presenter->isPresenter('Lookup') || $presenter->isPresenter('Template') || $presenter->isPresenter('Install') || $presenter->isPresenter('Log')}menu-open{/if}">
-            <a href="#" class="nav-link {if $presenter->isPresenter('Presentation') || $presenter->isPresenter('Config') || $presenter->isPresenter('Lookup') || $presenter->isPresenter('Template') || $presenter->isPresenter('Install') || $presenter->isPresenter('Log')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('CONFIG')" href="#" class="nav-link {if $presenter->isPresenter('Presentation') || $presenter->isPresenter('Config') || $presenter->isPresenter('Lookup') || $presenter->isPresenter('Template') || $presenter->isPresenter('Install') || $presenter->isPresenter('Log')}active{/if}">
               <i class="nav-icon fas fa-cog"></i>
               <p>
                 Nastavení
@@ -88,31 +88,31 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a n:href="Presentation:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Presentation')}active{/if}">
+                <a  n:if="$loggedUserEntity->hasGroupRight('PRESENTATION')" n:href="Presentation:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Presentation')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Prezentace</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="Config:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Config')}active{/if}">
+                <a  n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONFIG')"  n:href="Config:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Config')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Nastavení systému</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="Lookup:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Lookup')}active{/if}">
+                <a  n:if="$loggedUserEntity->hasGroupRight('LOOKUP')" n:href="Lookup:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Lookup')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Číselníky</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="Template:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Template')}active{/if}">
+                <a  n:if="$loggedUserEntity->hasGroupRight('TEMPLATES')"  n:href="Template:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Template')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Šablony</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="Install:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Install')}active{/if}">
+                <a n:if="$loggedUserEntity->hasGroupRight('INSTALL_MODULE')"  n:href="Install:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Install')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Instalované moduly</p>
                 </a>
@@ -120,7 +120,7 @@
             </ul>
           </li>
           <li class="nav-item {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModuleRights') || $presenter->isPresenter('PageGroups')}menu-open{/if}">
-            <a href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModuleRights') || $presenter->isPresenter('PageGroups')}active{/if}">
+            <a   href="#" class="nav-link {if $presenter->isPresenter('Groups') || $presenter->isPresenter('ModuleRights') || $presenter->isPresenter('PageGroups')}active{/if}">
               <i class="nav-icon fas fa-user-shield"></i>
               <p>
                 Práva
@@ -129,19 +129,19 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a n:href="Groups:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Groups')}active{/if}">
+                <a n:if="$loggedUserEntity->hasGroupRight('GROUPS')" n:href="Groups:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Groups')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Skupiny</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="ModuleRights:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('ModuleRights')}active{/if}">
+                <a n:if="$loggedUserEntity->hasGroupRight('RIGHTS')" n:href="ModuleRights:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('ModuleRights')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Práva modulů</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a n:href="PageGroups:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('PageGroups')}active{/if}">
+                <a n:if="$loggedUserEntity->hasGroupRight('PAGE_GROUP')"  n:href="PageGroups:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('PageGroups')}active{/if}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Skupina stránek</p>
                 </a>
@@ -149,25 +149,25 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a n:href="Tools:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Tools')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('TOOLS')" n:href="Tools:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Tools')}active{/if}">
               <i class="nav-icon fas fa-tools"></i>
               <p>Nástroje</p>
             </a>
           </li>
           <li class="nav-item">
-            <a n:href="Files:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Files')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('FILEMANAGER')" n:href="Files:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Files')}active{/if}">
               <i class="nav-icon fas fa-folder-open"></i>
               <p>Správce souborů</p>
             </a>
           </li>
           <li class="nav-item">
-            <a n:href="Objects:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Objects')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('OBJECTS')" n:href="Objects:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Objects')}active{/if}">
               <i class="nav-icon fas fa-cubes"></i>
               <p>Objekty</p>
             </a>
           </li>
           <li class="nav-item">
-            <a n:href="Log:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Log')}active{/if}">
+            <a n:if="$loggedUserEntity->hasGroupRight('LOG')"  n:href="Log:, id => null, spec_param_id => null" class="nav-link {if $presenter->isPresenter('Log')}active{/if}">
               <i class="nav-icon fas fa-history"></i>
               <p>Log</p>
             </a>

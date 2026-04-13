@@ -1,23 +1,23 @@
 {block content}
 <div class="mb-3">
-    <a n:href="edit, parentId => 1" class="btn btn-primary"><i class="fas fa-plus"></i> Nový Master číselník</a>
+    <a  n:if="$loggedUserEntity->hasGroupRight('ADD_LOOKUP')" n:href="edit, parentId => 1" class="btn btn-primary"><i class="fas fa-plus"></i> Nový Master číselník</a>
 </div>
 
 <div n:foreach="$tree as $masterId => $node" class="card card-outline card-secondary mb-4">
     <div class="card-header">
         <h3 class="card-title">
             <span class="badge badge-secondary mr-2">ID: {$masterId}</span>
-            <strong>{$node[master]->item}</strong> 
+            <strong>{$node[master]->item}</strong>
             <small class="text-muted ml-2">{$node[master]->constant}</small>
         </h3>
         <div class="card-tools">
-            <a n:href="edit, parentId => $masterId" class="btn btn-tool text-primary" title="Přidat položku">
+            <a  n:if="$loggedUserEntity->hasGroupRight('ADD_LOOKUP')" n:href="edit, parentId => $masterId" class="btn btn-tool text-primary" title="Přidat položku">
                 <i class="fas fa-plus-circle"></i> Přidat položku
             </a>
-            <a n:if="$masterId != 1" n:href="edit, id => $masterId" class="btn btn-tool" title="Editovat kategorii">
+            <a  n:if="$loggedUserEntity->hasGroupRight('ADD_LOOKUP') and $masterId != 1" n:href="edit, id => $masterId" class="btn btn-tool" title="Editovat kategorii">
                 <i class="fas fa-edit"></i>
             </a>
-            <a n:if="$masterId != 1" n:href="delete, id => $masterId" class="btn btn-tool text-danger" title="Smazat kategorii" onclick="return confirm('Smazat celou kategorii včetně položek?')">
+            <a   n:if="$loggedUserEntity->hasGroupRight('DELETE_LOOKUP') and $masterId != 1" n:href="delete, id => $masterId" class="btn btn-tool text-danger" title="Smazat kategorii" onclick="return confirm('Smazat celou kategorii včetně položek?')">
                 <i class="fas fa-trash"></i>
             </a>
             <button type="button" class="btn btn-tool" data-card-widget="collapse">

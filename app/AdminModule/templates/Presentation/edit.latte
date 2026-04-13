@@ -12,17 +12,17 @@
                 <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní nastavení</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {if !$presentationId}disabled{/if}" id="tab-spec-params-tab" data-toggle="pill" href="#tab-spec-params" role="tab" aria-controls="tab-spec-params" aria-selected="false">Speciální parametry</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_PARAMS')" class="nav-link {if !$presentationId}disabled{/if}" id="tab-spec-params-tab" data-toggle="pill" href="#tab-spec-params" role="tab" aria-controls="tab-spec-params" aria-selected="false">Speciální parametry</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {if !$presentationId}disabled{/if}" id="tab-module-settings-tab" data-toggle="pill" href="#tab-module-settings" role="tab" aria-controls="tab-module-settings" aria-selected="false">Nastavení modulů</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_MODULES')" class="nav-link {if !$presentationId}disabled{/if}" id="tab-module-settings-tab" data-toggle="pill" href="#tab-module-settings" role="tab" aria-controls="tab-module-settings" aria-selected="false">Nastavení modulů</a>
             </li>
         </ul>
     </div>
     <div class="card-body">
         <div class="tab-content" id="presentation-tabs-content">
             <!-- Basic settings -->
-            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_EDIT')" class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
                 {snippet basicFormSnippet}
                 <form n:name="basicForm" class="ajax">
                     <div class="form-group">
@@ -63,7 +63,7 @@
             </div>
 
             <!-- Special Parameters -->
-            <div class="tab-pane fade" id="tab-spec-params" role="tabpanel" aria-labelledby="tab-spec-params-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_PARAMS')" class="tab-pane fade" id="tab-spec-params" role="tabpanel" aria-labelledby="tab-spec-params-tab">
                 <div class="row">
                     <div class="col-md-4">
                         {snippet specParamFormSnippet}
@@ -123,11 +123,11 @@
             </div>
 
             <!-- Module Settings -->
-            <div class="tab-pane fade" id="tab-module-settings" role="tabpanel" aria-labelledby="tab-module-settings-tab">
+            <div  n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_MODULES')"  class="tab-pane fade" id="tab-module-settings" role="tabpanel" aria-labelledby="tab-module-settings-tab">
                 <div class="mb-3">
                     <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Přidat modul</button>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead>

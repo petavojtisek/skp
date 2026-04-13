@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Seznam šablon</h3>
         <div class="card-tools">
-            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová šablona</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('EDIT_TEMPLATE')"  n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová šablona</a>
         </div>
     </div>
     <div class="card-body table-responsive p-0">
@@ -24,8 +24,8 @@
                     <td><code>{$tpl->template_filename}</code></td>
                     <td>{$tpl->template_path}</td>
                     <td>
-                        <a n:href="edit, id => $tpl->template_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:href="delete, id => $tpl->template_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a  n:if="$loggedUserEntity->hasGroupRight('EDIT_TEMPLATE')"  n:href="edit, id => $tpl->template_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a  n:if="$loggedUserEntity->hasGroupRight('DELETE_TEMPLATE')"  n:href="delete, id => $tpl->template_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$templates">

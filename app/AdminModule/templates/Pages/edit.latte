@@ -6,25 +6,25 @@
                 <a class="nav-link active" id="tab-objects-tab" data-toggle="pill" href="#tab-objects" role="tab" aria-controls="tab-objects" aria-selected="true">Objekty</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="false">Základní nastavení</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGES')" class="nav-link" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="false">Základní nastavení</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-params-tab" data-toggle="pill" href="#tab-params" role="tab" aria-controls="tab-params" aria-selected="false">Speciální parametry</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_PARAM')" class="nav-link" id="tab-params-tab" data-toggle="pill" href="#tab-params" role="tab" aria-controls="tab-params" aria-selected="false">Speciální parametry</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-module-config-tab" data-toggle="pill" href="#tab-module-config" role="tab" aria-controls="tab-module-config" aria-selected="false">Konfigurace modulu</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_MODULE')" class="nav-link" id="tab-module-config-tab" data-toggle="pill" href="#tab-module-config" role="tab" aria-controls="tab-module-config" aria-selected="false">Konfigurace modulu</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="tab-page-groups-tab" data-toggle="pill" href="#tab-page-groups" role="tab" aria-controls="tab-page-groups" aria-selected="false">Editace skupin stránek</a>
+                <a  n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_GROUP')" class="nav-link" id="tab-page-groups-tab" data-toggle="pill" href="#tab-page-groups" role="tab" aria-controls="tab-page-groups" aria-selected="false">Editace skupin stránek</a>
             </li>
         </ul>
     </div>
     <div class="card-body">
         <div class="tab-content" id="page-tabs-content">
             <!-- Objects -->
-            <div class="tab-pane fade show active" id="tab-objects" role="tabpanel" aria-labelledby="tab-objects-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('PAGES')" class="tab-pane fade show active" id="tab-objects" role="tabpanel" aria-labelledby="tab-objects-tab">
                 <div class="mb-3">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-object">
+                    <button n:if="$loggedUserEntity->hasGroupRight('ADD_OBJECT')" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-object">
                         <i class="fas fa-plus"></i> Přidat objekt
                     </button>
                 </div>
@@ -40,7 +40,7 @@
             </div>
 
             <!-- Basic settings -->
-            <div class="tab-pane fade" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGES')" class="tab-pane fade" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
                 <form n:snippet="pageForm" method="post" action="{link save! id => $pageId, parentId => $parentId}">
                     <div class="row">
                         <div class="col-md-6">
@@ -144,7 +144,7 @@
             </div>
 
             <!-- Special parameters -->
-            <div class="tab-pane fade" id="tab-params" role="tabpanel" aria-labelledby="tab-params-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_PARAM')" class="tab-pane fade" id="tab-params" role="tabpanel" aria-labelledby="tab-params-tab">
                 <div class="row" n:if="!$pageId">
                     <div class="col-12">
                         <div class="alert alert-warning">
@@ -187,14 +187,14 @@
             </div>
 
             <!-- Module config -->
-            <div class="tab-pane fade" id="tab-module-config" role="tabpanel" aria-labelledby="tab-module-config-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_MODULE')"  class="tab-pane fade" id="tab-module-config" role="tabpanel" aria-labelledby="tab-module-config-tab">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i> Konfigurace modulu přiřazeného k této stránce.
                 </div>
             </div>
 
             <!-- Page groups -->
-            <div class="tab-pane fade" id="tab-page-groups" role="tabpanel" aria-labelledby="tab-page-groups-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('EDIT_PAGE_GROUP')"  class="tab-pane fade" id="tab-page-groups" role="tabpanel" aria-labelledby="tab-page-groups-tab">
                 <div class="row" n:if="!$pageId">
                     <div class="col-12">
                         <div class="alert alert-warning">

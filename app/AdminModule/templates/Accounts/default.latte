@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Seznam uživatelských účtů</h3>
         <div class="card-tools">
-            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nový účet</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('ADD_ADMIN')" n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nový účet</a>
         </div>
     </div>
     <div class="card-body table-responsive p-0">
@@ -26,8 +26,8 @@
                     <td><a href="mailto:{$acc->email}">{$acc->email}</a></td>
                     <td><span class="badge badge-secondary">{$acc->admin_group_name ?: 'Bez skupiny'}</span></td>
                     <td>
-                        <a n:href="edit, id => $acc->admin_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:href="delete, id => $acc->admin_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu odstranit tento účet?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN')"  n:href="edit, id => $acc->admin_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('DELETE_ADMIN')"  n:href="delete, id => $acc->admin_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu odstranit tento účet?')"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$accounts">

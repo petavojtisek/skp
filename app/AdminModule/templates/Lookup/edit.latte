@@ -5,7 +5,7 @@
     </div>
 </div>
 
-<div class="card card-primary">
+<div class="card card-primary"  n:if="$loggedUserEntity->hasGroupRight('ADD_LOOKUP')">
     <div class="card-header">
         <h3 class="card-title">Formulář číselníku</h3>
     </div>

@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Seznam prezentací</h3>
         <div class="card-tools">
-            <a n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová prezentace</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_ADD')" n:href="edit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nová prezentace</a>
         </div>
     </div>
     <div class="card-body table-responsive p-0">
@@ -35,8 +35,8 @@
                         <i n:if="!$presentation->is_default" class="far fa-star text-muted"></i>
                     </td>
                     <td>
-                        <a n:href="edit, id => $presentation->presentation_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:href="delete, id => $presentation->presentation_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_EDIT')" n:href="edit, id => $presentation->presentation_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_DELETE')"  n:href="delete, id => $presentation->presentation_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$presentations">

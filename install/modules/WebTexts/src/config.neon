@@ -1,0 +1,6 @@
+services:
+    - App\Modules\WebTexts\Model\WebTextMapper
+    - App\Modules\WebTexts\Model\WebTextDao
+    - App\Modules\WebTexts\Model\WebTextService
+    - App\Modules\WebTexts\Model\WebTextFacade
+    - App\Modules\WebTexts\Components\IWebTextsAdminControlFactory

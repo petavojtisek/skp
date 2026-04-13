@@ -3,7 +3,7 @@
     <div class="card-header">
         <h3 class="card-title">Seznam skupin stránek</h3>
         <div class="card-tools">
-            <a n:href="edit" class="btn btn-primary btn-sm">Nová skupina</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('ADD_PAGE_GROUP')" n:href="edit" class="btn btn-primary btn-sm">Nová skupina</a>
         </div>
     </div>
     <div class="card-body">
@@ -23,8 +23,8 @@
                         <td>{$pg->id}</td>
                         <td>{$pg->name}</td>
                         <td>
-                            <a n:href="edit id => $pg->id" class="btn btn-info btn-sm">Editovat</a>
-                            <a n:href="delete! id => $pg->id" class="btn btn-danger btn-sm ajax" data-confirm="Opravdu smazat?">Smazat</a>
+                            <a n:if="$loggedUserEntity->hasGroupRight('ADD_PAGE_GROUP')" n:href="edit id => $pg->id" class="btn btn-info btn-sm">Editovat</a>
+                            <a n:if="$loggedUserEntity->hasGroupRight('DELETE_PAGE_GROUP')" n:href="delete! id => $pg->id" class="btn btn-danger btn-sm ajax" data-confirm="Opravdu smazat?">Smazat</a>
                         </td>
                     </tr>
                 {else}

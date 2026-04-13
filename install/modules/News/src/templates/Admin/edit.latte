@@ -1,0 +1,88 @@
+<div class="card card-primary card-outline" n:snippet="news">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-edit mr-1"></i>
+            {if $item->getId()}Editace aktuality: {$item->getName()}{else}Nová aktualita{/if}
+        </h3>
+        <div class="card-tools">
+            <a n:href="back!" class="btn btn-tool ajax" title="Zpět na seznam"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+    
+    <form n:name="editForm" class="ajax">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="name">Interní název</label>
+                        <input n:name="name" class="form-control" placeholder="Např. Aktuální nabídka - Léto 2024">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="status_id">Stav</label>
+                        <select n:name="status_id" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label n:name="title">Titulek</label>
+                        <input n:name="title" class="form-control" placeholder="Veřejný titulek aktuality">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_from">Platnost od</label>
+                        <input n:name="valid_from" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_to">Platnost do</label>
+                        <input n:name="valid_to" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label n:name="short_text">Krátký text (perex)</label>
+                <textarea n:name="short_text" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label n:name="content">Obsah</label>
+                <textarea n:name="content" class="form-control wysiwyg" data-fm-url="{$presenter->link(':Admin:Files:default')}"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="image">Obrázek</label>
+                        <div class="custom-file">
+                            <input n:name="image" class="custom-file-input" id="news-image">
+                            <label class="custom-file-label" for="news-image">Vybrat soubor</label>
+                        </div>
+                        <small class="text-muted">Nahráním nového obrázku nahradíte ten stávající.</small>
+                    </div>
+                </div>
+                {var $newsEntity = $facade->find($item->getId())}
+                <div class="col-md-6" n:if="$newsEntity && $newsEntity->getImage()">
+                    <div class="mt-2">
+                        <label>Aktuální obrázek:</label><br>
+                        <img src="/storage/private/news/thumb/{$newsEntity->getImage()}" class="img-thumbnail" style="max-height: 100px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit aktualitu</button>
+            <a n:href="back!" class="btn btn-default float-right ajax">Zrušit</a>
+        </div>
+    </form>
+</div>

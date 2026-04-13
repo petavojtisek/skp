@@ -1,0 +1,57 @@
+<div class="card card-outline card-secondary mb-4" n:snippet="news">
+    <div class="card-header">
+        <h3 class="card-title">{$name} <code>{$code}</code></h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 150px">Stav</th>
+                        <th>Interní název</th>
+                        <th>Titulek</th>
+                        <th style="width: 180px">Datum vložení</th>
+                        <th style="width: 150px">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if empty($items)}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Žádné aktuality k zobrazení.</td>
+                        </tr>
+                    {else}
+                        <tr n:foreach="$items as $item">
+                            <td>
+                                <span class="badge badge-info">{ifset $states[$item->getStatus()]}{$states[$item->getStatus()]}{else}{$item->getStatus()}{/ifset}</span>
+                            </td>
+                            <td>{$item->getName()}</td>
+                            <td>{$item->getTitle()}</td>
+                            <td>{$item->getCreatedDt()|date:'d.m.Y H:i'}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
+                                    <a n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto aktualitu?')"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 bg-light border-top">
+            <a n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nová aktualita</a>
+            <button class="btn btn-sm btn-warning btn-edit-component"
+                    data-id="{$componentId}"
+                    data-url="{plink getEditData!, compId => $componentId}"
+                    data-save-url="{plink updateObject!, compId => $componentId}">
+                <i class="fas fa-edit"></i> Editace objektu
+            </button>
+            <a n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
+            <a n:href="deleteFromPresentation!" class="btn btn-sm btn-dark ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a>
+        </div>
+    </div>
+</div>

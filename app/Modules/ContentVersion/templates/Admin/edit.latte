@@ -8,7 +8,7 @@
             <a n:href="back!" class="btn btn-tool ajax" title="Zpět na seznam"><i class="fas fa-times"></i></a>
         </div>
     </div>
-    
+
     <form n:name="editForm" class="ajax">
         <div class="card-body">
             <div class="row">
@@ -47,7 +47,7 @@
             </div>
         </div>
         <div class="card-footer">
-            <button n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit verzi</button>
+            <button  n:if="$loggedUserEntity->hasModuleRight('contentVersion','publish')" n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit verzi</button>
             <a n:href="back!" class="btn btn-default float-right ajax">Zrušit</a>
         </div>
     </form>

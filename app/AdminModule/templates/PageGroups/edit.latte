@@ -9,7 +9,7 @@
     <div class="card-header">
         <h3 class="card-title">{$title}</h3>
     </div>
-    <form n:name="pageGroupForm">
+    <form n:name="pageGroupForm" n:if="$loggedUserEntity->hasGroupRight('ADD_PAGE_GROUP')">
         <div class="card-body">
             <div class="form-group">
                 <label n:name="name">Název skupiny stránek</label>
@@ -39,7 +39,7 @@
                     <td>{$adminGroup->admin_group_name}</td>
                     <td class="text-center">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input ajax-page-group-toggle" 
+                            <input type="checkbox" class="custom-control-input ajax-page-group-toggle"
                                    id="admin-group-{$adminGroup->admin_group_id}"
                                    data-admin-group-id="{$adminGroup->admin_group_id}"
                                    data-url="{link toggleAdminGroup!}"

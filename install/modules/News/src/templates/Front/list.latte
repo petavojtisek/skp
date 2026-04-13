@@ -1,0 +1,19 @@
+<div class="news-list" n:if="!empty($items)">
+    <div n:foreach="$items as $item" class="news-item mb-4">
+        <div class="row">
+            <div class="col-md-3" n:if="$item->getImage()">
+                <img src="/storage/private/news/thumb/{$item->getImage()}" class="img-fluid rounded">
+            </div>
+            <div n:class="$item->getImage() ? col-md-9 : col-md-12">
+                <h3 class="news-title">{$item->getTitle()}</h3>
+                <div class="news-date text-muted small mb-2">{$item->getCreatedDt()|date:'d.m.Y'}</div>
+                <div class="news-short-text mb-2">
+                    {$item->getShortText()|noescape}
+                </div>
+                <div class="news-content">
+                    {$item->getContent()|noescape}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

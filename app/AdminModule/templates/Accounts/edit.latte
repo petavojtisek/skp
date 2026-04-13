@@ -9,20 +9,20 @@
     <div class="card-header p-0 border-bottom-0">
         <ul class="nav nav-tabs" id="account-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní údaje</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN') or $loggedUserEntity->hasGroupRight('ADD_ADMIN')" class="nav-link active" id="tab-basic-tab" data-toggle="pill" href="#tab-basic" role="tab" aria-controls="tab-basic" aria-selected="true">Základní údaje</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {if !$accountId}disabled{/if}" id="tab-groups-tab" data-toggle="pill" href="#tab-groups" role="tab" aria-controls="tab-groups" aria-selected="false">Skupiny</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('ADD_GROUPS')"  class="nav-link {if !$accountId}disabled{/if}" id="tab-groups-tab" data-toggle="pill" href="#tab-groups" role="tab" aria-controls="tab-groups" aria-selected="false">Skupiny</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {if !$accountId}disabled{/if}" id="tab-presentations-tab" data-toggle="pill" href="#tab-presentations" role="tab" aria-controls="tab-presentations" aria-selected="false">Přístup k prezentacím</a>
+                <a n:if="$loggedUserEntity->hasGroupRight('ADD_GROUPS')" class="nav-link {if !$accountId}disabled{/if}" id="tab-presentations-tab" data-toggle="pill" href="#tab-presentations" role="tab" aria-controls="tab-presentations" aria-selected="false">Přístup k prezentacím</a>
             </li>
         </ul>
     </div>
     <div class="card-body">
         <div class="tab-content" id="account-tabs-content">
             <!-- Basic settings -->
-            <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
+            <div n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN') or $loggedUserEntity->hasGroupRight('ADD_ADMIN')" class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-tab">
                 <form n:name="accountForm">
                     <div class="row">
                         <div class="col-md-6">
@@ -86,7 +86,7 @@
 
             <!-- Groups -->
             <div class="tab-pane fade" id="tab-groups" role="tabpanel" aria-labelledby="tab-groups-tab">
-                <form n:name="groupsForm">
+                <form n:name="groupsForm" n:if="$loggedUserEntity->hasGroupRight('ADD_GROUPS')" >
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -115,7 +115,7 @@
 
             <!-- Presentations -->
             <div class="tab-pane fade" id="tab-presentations" role="tabpanel" aria-labelledby="tab-presentations-tab">
-                <form n:name="presentationsForm">
+                <form n:name="presentationsForm" n:if="$loggedUserEntity->hasGroupRight('ADMIN_PRESENTATIONS')" >
                     <div class="row">
                         <div n:foreach="$form[presentations]->items as $key => $label" class="col-md-4">
                             <div class="custom-control custom-checkbox mb-2">

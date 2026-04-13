@@ -9,7 +9,7 @@
     <div class="card-header">
         <h3 class="card-title">{$title}</h3>
     </div>
-    <form n:name="groupForm">
+    <form n:name="groupForm" n:if="$loggedUserEntity->hasGroupRight('ADD_ADMIN_GROUPS') or $loggedUserEntity->hasGroupRight('EDIT_ADMIN_GROUPS')">
         <div class="card-body">
             <div class="form-group">
                 <label n:name="pid">Nadřazená skupina</label>
@@ -49,7 +49,7 @@
                     <td><code>{$right->right_code_name}</code></td>
                     <td class="text-center">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input ajax-right-toggle" 
+                            <input type="checkbox" class="custom-control-input ajax-right-toggle"
                                    id="right-{$right->admin_right_id}"
                                    data-right-id="{$right->admin_right_id}"
                                    data-url="{link toggleRight!}"

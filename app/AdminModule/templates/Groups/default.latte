@@ -3,7 +3,7 @@
     {var $userGroupId = $loggedUserEntity->getAdminGroupId()}
     {var $userGroupPid = ($loggedUserEntity->group ? $loggedUserEntity->group->pid : 0)}
     {var $defaultParentId = ($userGroupId <= 2 ? $userGroupPid : $userGroupId)}
-    <a n:href="edit, parentId => $defaultParentId" class="btn btn-primary"><i class="fas fa-plus"></i> Nová skupina</a>
+    <a n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN_GROUPS')" n:href="edit, parentId => $defaultParentId" class="btn btn-primary"><i class="fas fa-plus"></i> Nová skupina</a>
 </div>
 
 <div class="card card-outline card-secondary">
@@ -36,7 +36,7 @@
         {var $canEdit = $presenter->canEditGroup($groupId)}
         {var $canDelete = $presenter->canDeleteGroup($groupId)}
         {var $userGroupId = $loggedUserEntity->getAdminGroupId()}
-        
+
         <td><small class="text-muted">#{$groupId}</small></td>
         <td>
             <div style="padding-left: {($node[level]-1) * 30}px">
@@ -49,13 +49,13 @@
         <td><code n:if="$node[entity]->code_name">{$node[entity]->code_name}</code></td>
         <td class="text-right">
             <div class="btn-group">
-                <a n:if="$canAddChild && $node[level] < 4" n:href="edit, parentId => $groupId" class="btn btn-xs btn-outline-primary" title="Přidat podskupinu">
+                <a  n:if="$loggedUserEntity->hasGroupRight('ADD_ADMIN_GROUPS') and $canAddChild && $node[level] < 4" n:href="edit, parentId => $groupId" class="btn btn-xs btn-outline-primary" title="Přidat podskupinu">
                     <i class="fas fa-plus-circle"></i>
                 </a>
-                <a n:if="$canEdit" n:href="edit, id => $groupId" class="btn btn-xs btn-info" title="Editovat">
+                <a   n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN_GROUPS') and $canEdit" n:href="edit, id => $groupId" class="btn btn-xs btn-info" title="Editovat">
                     <i class="fas fa-edit"></i>
                 </a>
-                <a n:if="$canDelete" n:href="delete, id => $groupId" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat tuto skupinu? Pokud má podskupiny, mohou se odpojit.')" title="Smazat">
+                <a   n:if="$loggedUserEntity->hasGroupRight('DELETE_ADMIN_GROUPS') and $canDelete" n:href="delete, id => $groupId" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat tuto skupinu? Pokud má podskupiny, mohou se odpojit.')" title="Smazat">
                     <i class="fas fa-trash"></i>
                 </a>
             </div>

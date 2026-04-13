@@ -5,7 +5,7 @@
     </div>
 </div>
 
-<div class="card card-primary card-outline shadow-sm">
+<div class="card card-primary card-outline shadow-sm" n:if="$loggedUserEntity->hasGroupRight('EDIT_MODULE_RIGHTS')">
     <div class="card-header">
         <h3 class="card-title"><i class="fas fa-shield-alt mr-2"></i> {$title}</h3>
     </div>
@@ -13,8 +13,8 @@
         <form n:name="groupForm" class="form-inline">
             <div class="form-group mb-0">
                 <label n:name="groupId" class="mr-3 font-weight-bold">Administrátorská skupina:</label>
-                <select n:name="groupId" class="form-control form-control-sm select2-no-search" 
-                        style="min-width: 250px;" 
+                <select n:name="groupId" class="form-control form-control-sm select2-no-search"
+                        style="min-width: 250px;"
                         data-autosubmit-signal="{link selectGroup!}"
                         onchange="naja.makeRequest('GET', this.dataset.autosubmitSignal, { groupId: this.value })"></select>
             </div>
@@ -43,7 +43,7 @@
                             <td><span class="font-weight-bold">{$perm->name}</span></td>
                             <td class="text-center">
                                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                    <input type="checkbox" class="custom-control-input ajax-module-right-toggle" 
+                                    <input type="checkbox" class="custom-control-input ajax-module-right-toggle"
                                            id="perm-{$perm->module_permission_id}"
                                            data-url="{link togglePermission!, id => $moduleId, groupId => $groupId, permissionId => $perm->module_permission_id, state => 0}"
                                            n:attr="checked => $perm->is_active">
@@ -61,7 +61,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div n:if="!$groupId" class="alert alert-info mt-4 shadow-sm">
             <i class="fas fa-info-circle mr-2"></i> Vyberte administrátorskou skupinu pro zobrazení a editaci práv.
         </div>

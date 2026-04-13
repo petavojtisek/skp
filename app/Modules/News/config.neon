@@ -1,0 +1,8 @@
+services:
+    - App\Modules\News\Model\Helper\ImageResizer(%storageDir%)
+    - App\Modules\News\Model\NewsMapper
+    - App\Modules\News\Model\NewsDao
+    - App\Modules\News\Model\NewsService
+    - App\Modules\News\Model\NewsFacade
+    - App\Modules\News\Components\INewsAdminControlFactory
+    - App\Modules\News\Components\INewsFrontControlFactory

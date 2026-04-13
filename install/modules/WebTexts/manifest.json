@@ -1,0 +1,7 @@
+{
+    "name": "WebTexts",
+    "code_name": "web_text",
+    "class_name": "WebTexts",
+    "type": 302,
+    "description": "Modul pro správu webovych textů."
+}
