@@ -1,7 +1,9 @@
 {block content}
-    {if $module}
-        {control $module}
-    {else}
-        <div class="alert alert-warning">Modul nebyl specifikován.</div>
-    {/if}
+    {snippet  tools}
+        {if $module}
+            {control $module}
+        {else}
+            <div class="alert alert-warning">Modul nebyl specifikován.</div>
+        {/if}
+    {/snippet}
 {/block}

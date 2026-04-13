@@ -1,4 +1,9 @@
 <footer class="main-footer">
+    {if isset($webTexts['FOOTER_TEXT'])}
+        {$webTexts['FOOTER_TEXT'] | noescape}
+    {/if}
+
+    {*
     <div class="container footer-grid">
         <div class="footer-col">
             <h4>Kontakt</h4>
@@ -22,4 +27,5 @@
             </a>
         </p>
     </div>
+    *}
 </footer>

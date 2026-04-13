@@ -292,6 +292,7 @@ class FrontendRunner
     {
         $cacheKey = 'all_web_texts';
 
+        $texts = $this->webTextFacade->getAllWebTexts();
         $this->webTexts = $this->cache->load($cacheKey, function() {
             $texts = $this->webTextFacade->getAllWebTexts();
             $result = [];
@@ -300,6 +301,15 @@ class FrontendRunner
             }
             return $result;
         }, ['web_text']);
+
+        $latte = new \Latte\Engine;
+        $latte->setLoader(new \Latte\Loaders\StringLoader);
+        if(!empty($this->webTexts)) {
+            foreach ($this->webTexts as $code => $text) {
+                $parsed = $latte->renderToString($text);
+                $this->webTexts[$code] = $parsed;
+            }
+        }
     }
 
     public function generateComponentName(string $module, int $componentId, ?string $codeName): string

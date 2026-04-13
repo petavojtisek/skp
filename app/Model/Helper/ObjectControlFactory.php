@@ -22,6 +22,7 @@ class ObjectControlFactory
     {
         $control = null;
 
+
         // 1. Try explicit interface factory
         $factoryClass = "App\\Modules\\{$moduleClassName}\\Components\\I{$moduleClassName}AdminControlFactory";
 
@@ -50,6 +51,9 @@ class ObjectControlFactory
             if ($name !== null && $code !== null) {
                 $control->setComponentInfo($name, $code);
             }
+        }elseif($control instanceof IToolsControl) {
+            // No additional initialization needed for tools control
+              $control->setCode($moduleClassName);
         }
 
         // Return if it's a valid admin control (either Object or Tool)

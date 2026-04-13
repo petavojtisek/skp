@@ -12,4 +12,6 @@ interface IToolsControl
      * Render the component
      */
     public function render(): void;
+
+    public function setCode(string $code): void;
 }

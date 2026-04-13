@@ -24,9 +24,16 @@ class WebTextsAdminControl extends Control implements IToolsControl
     /** @var string @persistent */
     public $view = 'default';
 
+
+
     public function __construct(WebTextFacade $webTextFacade)
     {
         $this->webTextFacade = $webTextFacade;
+    }
+
+    public function setCode(String $code): void
+    {
+        $this->code = $code;
     }
 
     /**
@@ -83,9 +90,17 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     public function handleList(): void
     {
+
         $this->view = 'list';
         $this->id = null;
-        $this->redirect('this');
+        $presenter = $this->getPresenter();
+
+        $presenter->activeControl = $this->code;
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $presenter->redrawControl('webtexts');
+        }
+        //$this->redirect('this');
     }
 
     public function handleEdit(?int $id = null): void

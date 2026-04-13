@@ -18,14 +18,33 @@ final class ToolsPresenter extends AdminPresenter
     /** @var string|null @persistent */
     public $module = null;
 
+    public $activeControl = false;
+
+
     /** @var array Seznam ověřených a dostupných modulů (module_code => module_entity) */
     private array $availableSystemModules = [];
+
+    public $showTool = false;
 
     public function startup(): void
     {
         parent::startup();
         $this->loadAvailableModules();
+
     }
+
+    public function beforeRender()
+    {
+
+
+        if($this->activeControl){
+            $this->template->setFile(__DIR__.'/../templates/Tools/detail.latte');
+            $this->template->module = $this->activeControl;
+        }
+
+        $this->template->showTool = $this->showTool;
+    }
+
 
     private function loadAvailableModules(): void
     {
@@ -43,6 +62,7 @@ final class ToolsPresenter extends AdminPresenter
     public function renderDefault(): void
     {
         $this->template->title = 'Nástroje';
+
 
         // Znovu profiltrujeme moduly, aby se zobrazily jen ty, které mají i fyzický soubor
         $finalModules = [];
