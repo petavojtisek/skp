@@ -5,22 +5,23 @@
             <div class="card-header">
                 <h3 class="card-title">Seznam webových textů</h3>
                 <div class="card-tools">
-                    <a n:if="$loggedUserEntity->hasModuleRight('web_text', 'insert')" href="{link edit!}" class="btn btn-sm btn-primary">
+                    <a n:if="$loggedUserEntity->hasModuleRight('web_text', 'insert')" href="{link edit!}" class="ajax btn btn-sm btn-primary">
                         <i class="fas fa-plus"></i> Přidat text
                     </a>
                 </div>
             </div>
 
             <div class="card-body">
-                <form n:name="searchForm" class="row mb-3">
+                <form n:name="searchForm" class="row mb-3 ajax">
                     <div class="col-md-4">
                         <div class="input-group">
-                            <input n:name="code" class="form-control form-control-sm">
+                            <input n:name="search" class="form-control form-control-sm">
                             <div class="input-group-append">
                                 <button n:name="send" class="btn btn-sm btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                <a n:if="$code" href="{link list!, code => null, page => 1}" class="btn btn-sm btn-warning">
+
+                                <a n:if="$search" href="{link list!, search => null, page => 1}" class="ajax btn btn-sm btn-warning">
                                     <i class="fas fa-times"></i>
                                 </a>
                             </div>
@@ -44,10 +45,10 @@
                                 <td><strong>{$text->getCode()}</strong></td>
                                 <td>{$text->getText()|striptags|truncate:100}</td>
                                 <td>
-                                    <a n:if="$loggedUserEntity->hasModuleRight('web_text', 'edit')" href="{link edit!, id => $text->getWebTextId()}" class="btn btn-xs btn-info">
+                                    <a n:if="$loggedUserEntity->hasModuleRight('web_text', 'edit')" href="{link edit!, id => $text->getWebTextId()}" class="ajax btn btn-xs btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <a  n:if="$loggedUserEntity->hasModuleRight('web_text', 'delete')" href="{link delete!, id => $text->getWebTextId()}" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
+                                    <a  n:if="$loggedUserEntity->hasModuleRight('web_text', 'delete')" href="{link delete!, id => $text->getWebTextId()}" class="ajax btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
                                         <i class="fas fa-trash"></i> Smazat
                                     </a>
                                 </td>

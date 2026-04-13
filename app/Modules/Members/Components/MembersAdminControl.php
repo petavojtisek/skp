@@ -25,7 +25,7 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @var string @persistent */
     public $view = 'default';
 
-    /** @var string|null @persistent */
+    /** @var string|null */
     public $code = null;
 
     public LoggedUserEntity $loggedUser;
@@ -133,8 +133,10 @@ class MembersAdminControl extends Control implements IToolsControl
         $form->addSubmit('send', 'Hledat');
         $form->setDefaults(['search' => $this->search]);
         $form->onSuccess[] = function (Form $form, $values) {
+            xdebug_break();
             $this->search = $values->search;
             $this->page = 1;
+
             if ($this->getPresenter()->isAjax()) {
                 $this->redrawControl('members');
             } else {
