@@ -17,7 +17,7 @@ use Nette\Security\User;
 class NewsAdminControl extends Control implements IObjectControl
 {
 
-    public static $imagePath =   'news';
+    public static $imagePath = 'news';
 
     /** @persistent */
     public string $view = 'list';
@@ -126,7 +126,7 @@ class NewsAdminControl extends Control implements IObjectControl
         $items = $this->facade->getByComponentId($this->componentId);
         foreach ($items as $item) {
             if ($item->getImage()) {
-                $this->imageResizer->deleteNewsImage($item->getImage(),self::$imagePath,self::$imagePath);
+                $this->imageResizer->deleteNewsImage($item->getImage(), self::$imagePath);
             }
             $this->facade->delete($item->getId());
             $this->elementFacade->delete($item->getId());

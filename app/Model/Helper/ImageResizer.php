@@ -24,53 +24,48 @@ class ImageResizer
 
     /**
      * @param FileUpload $file
-     * @param string $subDir Subdirectory within storagePath
+     * @param string $modulePath Subdirectory within storagePath
      * @return string Filename
      */
     public function processNewsImage(FileUpload $file, string $modulePath): string
     {
-        xdebug_break();
         if (!$file->isOk() || !$file->isImage()) {
             throw new \InvalidArgumentException("Soubor není platný obrázek.");
         }
 
-        $baseDir = $this->storagePath . DIRECTORY_SEPARATOR .  DIRECTORY_SEPARATOR . $modulePath;
+        $baseDir = $this->storagePath . DIRECTORY_SEPARATOR . $modulePath;
 
-
-        foreach ($this->dirs as $dirPath=>$dirData) {
-            FileSystem::createDir($dirPath);
+        foreach ($this->dirs as $dirName => $dirData) {
+            FileSystem::createDir($baseDir . DIRECTORY_SEPARATOR . $dirName);
         }
 
         $extension = strtolower(pathinfo($file->getUntrustedName(), PATHINFO_EXTENSION));
         $filename = uniqid('news_', true) . '.' . $extension;
 
-        // Origin
-        $file->move($this->dirs['origin'] . DIRECTORY_SEPARATOR . $filename);
+        // Origin path
+        $originPath = $baseDir . DIRECTORY_SEPARATOR . 'origin' . DIRECTORY_SEPARATOR . $filename;
 
-        foreach ($this->dirs as $dirPath=>$dirData) {
-            if($dirPath === 'origin') {
+        // Origin
+        $file->move($originPath);
+
+        foreach ($this->dirs as $dirName => $dirData) {
+            if($dirName === 'origin') {
                 continue;
             }
 
-            $image800 = Image::fromFile($this->dirs['origin'] . DIRECTORY_SEPARATOR . $filename);
-            $image800->resize($dirData['width'], $dirData['height'], Image::SHRINK_ONLY);
-            $image800->save($dirPath . DIRECTORY_SEPARATOR . $filename);
+            $img = Image::fromFile($originPath);
+            $img->resize($dirData['width'], $dirData['height'], Image::SHRINK_ONLY);
+            $img->save($baseDir . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR . $filename);
         }
-
 
         return $filename;
     }
 
     public function deleteNewsImage(string $filename, string $modulePath): void
     {
-        $baseDir = $this->storagePath . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . $modulePath;
-        $paths = [
-            $baseDir . DIRECTORY_SEPARATOR . 'origin' . DIRECTORY_SEPARATOR . $filename,
-            $baseDir . DIRECTORY_SEPARATOR . '800x600' . DIRECTORY_SEPARATOR . $filename,
-            $baseDir . DIRECTORY_SEPARATOR . 'thumb' . DIRECTORY_SEPARATOR . $filename,
-        ];
-
-        foreach ($paths as $path) {
+        $baseDir = $this->storagePath . DIRECTORY_SEPARATOR . $modulePath;
+        foreach (array_keys($this->dirs) as $dirName) {
+            $path = $baseDir . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR . $filename;
             if (file_exists($path)) {
                 FileSystem::delete($path);
             }

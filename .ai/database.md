@@ -61,6 +61,7 @@
 | admin_right_id | int | NO | PRI | NULL | auto_increment |
 | name | varchar(255) | YES | MUL | NULL |  |
 | right_code_name | varchar(255) | NO | MUL | NULL |  |
+| group | varchar(255) | YES |  | NULL |  |
 
 ## Table: `cms_log`
 
@@ -180,6 +181,23 @@
 | lookup_id | int | NO | MUL | NULL |  |
 | lang_id | int | NO |  | NULL |  |
 | value | varchar(255) | YES |  | NULL |  |
+
+## Table: `members`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| member_id | int | NO | PRI | NULL | auto_increment |
+| member_number | int | YES |  | NULL |  |
+| name | varchar(255) | YES |  | NULL |  |
+| surname | varchar(255) | YES |  | NULL |  |
+| degree | varchar(255) | YES |  | NULL |  |
+| birth_date | date | YES |  | NULL |  |
+| address | text | YES |  | NULL |  |
+| email | varchar(255) | YES |  | NULL |  |
+| phone | varchar(255) | YES |  | NULL |  |
+| note | varchar(255) | YES |  | NULL |  |
+| last_member_payment | date | YES |  | NULL |  |
+| active | tinyint | YES |  | NULL |  |
 
 ## Table: `module`
 

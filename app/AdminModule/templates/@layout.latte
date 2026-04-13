@@ -311,8 +311,21 @@
     });
   };
 
-  document.addEventListener('DOMContentLoaded', initWysiwyg);
-  naja.addEventListener('success', initWysiwyg);
+  const initCustomFileInputs = () => {
+    $(document).on('change', '.custom-file-input', function() {
+      let fileName = $(this).val().split('\\').pop();
+      $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initWysiwyg();
+    initCustomFileInputs();
+  });
+  naja.addEventListener('success', () => {
+    initWysiwyg();
+    initCustomFileInputs();
+  });
 </script>
 
 {ifset scripts}{include scripts}{/ifset}
