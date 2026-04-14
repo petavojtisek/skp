@@ -1,0 +1,78 @@
+<div class="card card-primary card-outline" n:snippet="documents">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-edit mr-1"></i>
+            {if $item->getId()}Editace dokumentu: {$item->getName()}{else}Nový dokument{/if}
+        </h3>
+        <div class="card-tools">
+            <a n:href="back!" class="btn btn-tool ajax" title="Zpět na seznam"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+    
+    <form n:name="editForm" class="ajax">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="name">Interní název</label>
+                        <input n:name="name" class="form-control" placeholder="Např. Výroční zpráva 2023">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="status_id">Stav</label>
+                        <select n:name="status_id" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label n:name="text">Popis dokumentu (veřejný)</label>
+                        <input n:name="text" class="form-control" placeholder="Popis, který uvidí uživatel">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Vybraný soubor</label>
+                        <div class="input-group">
+                            <input n:name="file_id" id="document-file-picker" class="d-none">
+                            <div class="form-control bg-light" id="document-file-picker-name">
+                                {if $selectedFile}{$selectedFile->original_name}{else}<span class="text-muted italic">Nebyl vybrán žádný soubor</span>{/if}
+                            </div>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" 
+                                        onclick="window.open({link :Admin:Files:default, picker => 1, baseType => 'documents', callback => 'document-file-picker'}, 'FileManager', 'width=1100,height=700')">
+                                    <i class="fas fa-search"></i> Vybrat soubor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_from">Platnost od</label>
+                        <input n:name="valid_from" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_to">Platnost do</label>
+                        <input n:name="valid_to" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button n:name="save" class="btn btn-primary"><i class="fas fa-save"></i> Uložit dokument</button>
+            <a n:href="back!" class="btn btn-default float-right ajax">Zrušit</a>
+        </div>
+    </form>
+</div>

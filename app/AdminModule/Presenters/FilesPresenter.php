@@ -28,6 +28,9 @@ final class FilesPresenter extends AdminPresenter
     /** @persistent */
     public bool $picker = false;
 
+    /** @persistent */
+    public ?string $callback = null;
+
     public function actionDefault(): void
     {
         // For picker, we allow access if the user has been recently logged in (via cookie)

@@ -1,9 +1,7 @@
 -- install.sql
-CREATE TABLE `web_text` (
- `web_text_id` int NOT NULL AUTO_INCREMENT,
- `code` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
- `text` longtext COLLATE utf8mb4_bin,
- PRIMARY KEY (`web_text_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
-
+CREATE TABLE IF NOT EXISTS `web_text` (
+  `web_text_id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `text` longtext,
+  PRIMARY KEY (`web_text_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;

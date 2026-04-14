@@ -2,9 +2,10 @@
 
 namespace App\Modules\WebTexts\Model;
 
-use App\Model\Base\AEntity;
 
-class WebTextEntity extends AEntity
+use App\Model\Base\BaseEntity;
+
+class WebTextEntity extends BaseEntity
 {
     public int $web_text_id;
     public ?string $code = null;
@@ -22,7 +23,8 @@ class WebTextEntity extends AEntity
 
     public function setId($id) : void
     {
-        $this->web_text_id =$id;
+        $this->setVariable('web_text_id', $id, self::VALUE_TYPE_INTEGER);
+
     }
 
     public function getCode(): ?string

@@ -96,7 +96,7 @@
                                     </td>
                                     <td><small class="text-muted">{$file->size|bytes}</small></td>
                                     <td class="text-right">
-                                        <button class="btn btn-xs btn-success" onclick="selectFile({link //:Front:File:get, id =>  $file->getEncodedId()})">
+                                        <button class="btn btn-xs btn-success" onclick="selectFile({$file->file_id}, {link //:Front:File:get, id => $file->getEncodedId()}, {$file->original_name})">
                                             <i class="fas fa-check"></i> Vybrat
                                         </button>
                                     </td>
@@ -121,9 +121,14 @@
     Dropzone.autoDiscover = false;
 
     $(function() {
-        window.selectFile = function(url) {
+        window.selectFile = function(fileId, url, name) {
             if (window.opener) {
-                window.opener.postMessage({ mceAction: 'selectFile', url: url }, '*');
+                var callback = {$callback};
+                if (callback) {
+                    window.opener.postMessage({ mceAction: 'selectFile', callback: callback, fileId: fileId, url: url, name: name }, '*');
+                } else {
+                    window.opener.postMessage({ mceAction: 'selectFile', url: url }, '*');
+                }
                 window.close();
             }
         };

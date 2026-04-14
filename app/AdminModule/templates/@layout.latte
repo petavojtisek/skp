@@ -318,6 +318,21 @@
     });
   };
 
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.mceAction === 'selectFile' && event.data.callback) {
+      const callbackId = event.data.callback;
+      const input = document.getElementById(callbackId);
+      const nameDisplay = document.getElementById(callbackId + '-name');
+      if (input) {
+        input.value = event.data.fileId;
+        $(input).trigger('change');
+      }
+      if (nameDisplay) {
+        nameDisplay.innerText = event.data.name;
+      }
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     initWysiwyg();
     initCustomFileInputs();

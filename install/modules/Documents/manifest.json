@@ -1,0 +1,7 @@
+{
+    "name": "Documents",
+    "code_name": "documents",
+    "class_name": "Documents",
+    "type": 304,
+    "description": "Modul pro správu dokumentů ke stažení."
+}

@@ -1,0 +1,7 @@
+services:
+    - App\Modules\Documents\Model\DocumentsMapper
+    - App\Modules\Documents\Model\DocumentsDao
+    - App\Modules\Documents\Model\DocumentsService
+    - App\Modules\Documents\Model\DocumentsFacade
+    - App\Modules\Documents\Components\IDocumentsAdminControlFactory
+    - App\Modules\Documents\Components\IDocumentsFrontControlFactory

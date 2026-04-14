@@ -60,4 +60,16 @@ class AdministratorEntity extends SecurityEntity implements IEntity
 
     public function getAdminLang(): ?int { return $this->admin_lang; }
     public function setAdminLang(?int $admin_lang): void { $this->setVariable('admin_lang', $admin_lang, self::VALUE_TYPE_INTEGER); }
+
+    public function getAdminGroupName() : ?string
+    {
+        return $this->admin_group_name;
+    }
+
+    public function setAdminGroupName(?string $adminGroupName) : void
+    {
+        $this->admin_group_name = $adminGroupName;
+    }
+
+
 }

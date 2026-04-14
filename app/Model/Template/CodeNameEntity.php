@@ -25,4 +25,9 @@ class CodeNameEntity extends BaseEntity
     public function setCodeName(?string $code_name): void { $this->setVariable('code_name', $code_name, self::VALUE_TYPE_STRING); }
 
     public function getModuleName(): ?string { return $this->module_name; }
+
+    public function setModuleName(?string $moduleName) : void
+    {
+        $this->module_name = $moduleName;
+    }
 }
