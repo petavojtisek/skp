@@ -1,6 +1,6 @@
 <?php
 /**
- * Install script for Forms module (Tool)
+ * Install script for FormsData module (Tool)
  */
 use App\Model\Install\InstallEntity;
 use App\Model\Module\ModuleEntity;

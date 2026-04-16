@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Forms\Model;
+namespace App\Modules\FormsData\Model;
 
 use App\Model\Base\BaseEntity;
 
-class FormsEntity extends BaseEntity
+class FormsDataEntity extends BaseEntity
 {
     public ?int $id = null;
     public ?string $form_name = null;

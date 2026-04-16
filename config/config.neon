@@ -110,7 +110,7 @@ services:
 	- App\Model\Config\ConfigService
 	- App\Model\Template\TemplateService
 	- App\Model\Install\InstallService
-	- App\Model\Install\InstallManager
+	- App\Model\Install\InstallManager(%tempDir%)
 	- App\Model\Log\LogService
 	- App\Model\Admin\AdminService
 	- App\Model\AdminGroup\AdminGroupService

@@ -1,6 +1,0 @@
-services:
-    - App\Modules\Forms\Model\FormsMapper
-    - App\Modules\Forms\Model\FormsDao
-    - App\Modules\Forms\Model\FormsService
-    - App\Modules\Forms\Model\FormsFacade
-    - App\Modules\Forms\Components\IFormsAdminControlFactory

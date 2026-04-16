@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Modules\Forms\Model;
+namespace App\Modules\FormsData\Model;
 
 use App\Model\Base\BaseMapper;
 
-class FormsMapper extends BaseMapper
+class FormsDataMapper extends BaseMapper
 {
     protected string $tableName = 'form_data';
     protected string $primaryKey = 'id';
 
-    public function findForms(int $limit, int $offset, ?string $search = null): array
+    public function findFormsData(int $limit, int $offset, ?string $search = null): array
     {
         $selection = $this->db->select('*')->from($this->tableName);
 
@@ -28,7 +28,7 @@ class FormsMapper extends BaseMapper
         return $selection->orderBy('created_dt DESC')->fetchAll();
     }
 
-    public function countForms(?string $search = null): int
+    public function countFormsData(?string $search = null): int
     {
         $selection = $this->db->select('COUNT(*)')->from($this->tableName);
 

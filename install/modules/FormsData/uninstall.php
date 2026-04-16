@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall script for Forms module
+ * Uninstall script for FormsData module
  */
 
 $manifest = json_decode(file_get_contents(__DIR__ . '/manifest.json'), true);

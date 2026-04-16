@@ -1,0 +1,14 @@
+<div class="col-md-3" n:snippet="forms_data">
+    <div class="small-box bg-warning">
+        <div class="inner">
+            <h3>Forms</h3>
+            <p>Data z formulářů</p>
+        </div>
+        <div class="icon">
+            <i class="fas fa-paper-plane"></i>
+        </div>
+        <a n:if="$loggedUserEntity->hasModuleRight('forms_data','list')" n:href="list!" class="ajax small-box-footer">
+            Otevřít <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>

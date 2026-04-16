@@ -1,7 +1,7 @@
 {
-    "name": "Forms",
-    "code_name": "forms",
-    "class_name": "Forms",
+    "name": "FormsData",
+    "code_name": "forms_data",
+    "class_name": "FormsData",
     "type": 303,
     "description": "Modul pro správu dat z formulářů (Nástroj)."
 }

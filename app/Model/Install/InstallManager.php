@@ -15,14 +15,17 @@ class InstallManager
     private ModuleFacade $moduleFacade;
     private ModulePermissionFacade $modulePermissionFacade;
     private ModuleGroupRightFacade $moduleGroupRightFacade;
+    private string $tempDir;
 
     public function __construct(
+        string $tempDir,
         Connection $db,
         InstallService $installService,
         ModuleFacade $moduleFacade,
         ModulePermissionFacade $modulePermissionFacade,
         ModuleGroupRightFacade $moduleGroupRightFacade
     ) {
+        $this->tempDir = $tempDir;
         $this->db = $db;
         $this->installService = $installService;
         $this->moduleFacade = $moduleFacade;
@@ -63,6 +66,10 @@ class InstallManager
             }
 
             $this->db->commit();
+            
+            // 4. Clear cache after success
+            $this->clearCache();
+            
         } catch (\Throwable $e) {
             $this->db->rollback();
             
@@ -110,9 +117,28 @@ class InstallManager
             }
 
             $this->db->commit();
+            
+            // 5. Clear cache after success
+            $this->clearCache();
+            
         } catch (\Throwable $e) {
             $this->db->rollback();
             throw $e;
+        }
+    }
+
+    private function clearCache(): void
+    {
+        $cacheDir = $this->tempDir . '/cache';
+        if (is_dir($cacheDir)) {
+            // We delete only content of the cache directory to preserve the directory itself
+            foreach (glob($cacheDir . '/*') as $file) {
+                if (is_dir($file)) {
+                    FileSystem::delete($file);
+                } else {
+                    unlink($file);
+                }
+            }
         }
     }
 }

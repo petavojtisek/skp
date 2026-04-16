@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Modules\Forms\Components;
+namespace App\Modules\FormsData\Components;
 
 use App\Model\Admin\LoggedUserEntity;
 use App\Model\Helper\IToolsControl;
-use App\Modules\Forms\Model\FormsFacade;
-use App\Modules\Forms\Model\FormsEntity;
+use App\Modules\FormsData\Model\FormsDataFacade;
+use App\Modules\FormsData\Model\FormsDataEntity;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 
-class FormsAdminControl extends Control implements IToolsControl
+class FormsDataAdminControl extends Control implements IToolsControl
 {
-    private FormsFacade $facade;
+    private FormsDataFacade $facade;
 
     /** @var int|null @persistent */
     public $id = null;
@@ -23,14 +23,14 @@ class FormsAdminControl extends Control implements IToolsControl
     public $search = null;
 
     /** @var string @persistent */
-    public $view = 'list';
+    public $view = 'default';
 
     /** @var string|null */
     public $code = null;
 
     public LoggedUserEntity $loggedUser;
 
-    public function __construct(FormsFacade $facade, LoggedUserEntity $loggedUser)
+    public function __construct(FormsDataFacade $facade, LoggedUserEntity $loggedUser)
     {
         $this->facade = $facade;
         $this->loggedUser = $loggedUser;
@@ -48,9 +48,13 @@ class FormsAdminControl extends Control implements IToolsControl
         if ($this->view === 'detail') {
             $this->renderDetail();
             return;
+        } elseif ($this->view === 'list') {
+            $this->renderList();
+            return;
         }
 
-        $this->renderList();
+        $this->template->setFile(__DIR__ . '/../templates/Admin/default.latte');
+        $this->template->render();
     }
 
     public function renderList(): void
@@ -58,8 +62,8 @@ class FormsAdminControl extends Control implements IToolsControl
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
 
-        $items = $this->facade->findForms($limit, $offset, $this->search);
-        $totalCount = $this->facade->countForms($this->search);
+        $items = $this->facade->findFormsData($limit, $offset, $this->search);
+        $totalCount = $this->facade->countFormsData($this->search);
 
         $this->template->items = $items;
         $this->template->page = $this->page;
@@ -72,7 +76,7 @@ class FormsAdminControl extends Control implements IToolsControl
 
     public function renderDetail(): void
     {
-        $item = $this->facade->getForm($this->id);
+        $item = $this->facade->getFormData($this->id);
         if (!$item) {
             $this->handleList();
             return;
@@ -93,7 +97,7 @@ class FormsAdminControl extends Control implements IToolsControl
         $presenter->activeControl = $this->code;
         if ($presenter->isAjax()) {
             $presenter->redrawControl('tools');
-            $this->redrawControl('forms');
+            $this->redrawControl('forms_data');
         } else {
             $this->redirect('this');
         }
@@ -107,7 +111,7 @@ class FormsAdminControl extends Control implements IToolsControl
         $presenter->activeControl = $this->code;
         if ($presenter->isAjax()) {
             $presenter->redrawControl('tools');
-            $this->redrawControl('forms');
+            $this->redrawControl('forms_dataDetail');
         } else {
             $this->redirect('this');
         }
@@ -115,11 +119,29 @@ class FormsAdminControl extends Control implements IToolsControl
 
     public function handleDelete(int $id): void
     {
-        $this->facade->deleteForm($id);
+        $this->facade->deleteFormData($id);
         $this->getPresenter()->flashMessage('Záznam byl smazán.', 'success');
-        if ($this->getPresenter()->isAjax()) {
-            $this->getPresenter()->redrawControl('flashes');
-            $this->handleList();
+        
+        $presenter = $this->getPresenter();
+        $presenter->activeControl = $this->code;
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $this->redrawControl('forms_data');
+            $presenter->redrawControl('flashes');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    public function handleRender(): void
+    {
+        $this->view = 'default';
+        $this->id = null;
+        $presenter = $this->getPresenter();
+        $presenter->activeControl = null;
+        if ($presenter->isAjax()) {
+            $presenter->redrawControl('tools');
+            $this->redrawControl('forms_data');
         } else {
             $this->redirect('this');
         }
@@ -140,7 +162,7 @@ class FormsAdminControl extends Control implements IToolsControl
             $this->view = 'list';
 
             if ($this->getPresenter()->isAjax()) {
-                $this->redrawControl('forms');
+                $this->redrawControl('forms_data');
             } else {
                 $this->redirect('this');
             }
@@ -149,7 +171,7 @@ class FormsAdminControl extends Control implements IToolsControl
     }
 }
 
-interface IFormsAdminControlFactory
+interface IFormsDataAdminControlFactory
 {
-    public function create(): FormsAdminControl;
+    public function create(): FormsDataAdminControl;
 }
