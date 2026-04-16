@@ -1,0 +1,55 @@
+<div class="card card-outline card-primary mb-4" n:snippet="forms">
+    <div class="card-header">
+        <h3 class="card-title">{$item->getId() ? 'Editace nastavení formuláře' : 'Nové nastavení formuláře'}</h3>
+        <div class="card-tools">
+            <a n:href="back!" class="btn btn-sm btn-secondary ajax"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+        </div>
+    </div>
+    <form n:name="editForm" class="ajax">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="name">Interní název</label>
+                        <input n:name="name" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="status_id">Stav</label>
+                        <select n:name="status_id" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label n:name="form_component">Typ formuláře</label>
+                        <select n:name="form_component" class="form-control"></select>
+                        <small class="form-text text-muted">Vyberte, který konkrétní formulář se má na stránce zobrazit.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_from">Platnost od</label>
+                        <input n:name="valid_from" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label n:name="valid_to">Platnost do</label>
+                        <input n:name="valid_to" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button n:name="save" class="btn btn-primary">Uložit nastavení</button>
+            <a n:href="back!" class="btn btn-default ajax">Zrušit</a>
+        </div>
+    </form>
+</div>

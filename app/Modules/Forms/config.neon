@@ -1,0 +1,13 @@
+services:
+    # Model
+    - App\Modules\Forms\Model\FormsMapper
+    - App\Modules\Forms\Model\FormsDao
+    - App\Modules\Forms\Model\FormsService
+    - App\Modules\Forms\Model\FormsFacade
+
+    # Components
+    - App\Modules\Forms\Components\IFormsAdminControlFactory
+    - App\Modules\Forms\Components\IFormsFrontControlFactory
+    
+    # Form Components
+    - App\Modules\Forms\FormsComponents\IContactFormFactory

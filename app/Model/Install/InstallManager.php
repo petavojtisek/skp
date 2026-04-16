@@ -127,16 +127,23 @@ class InstallManager
         }
     }
 
+    /**
+     * Safely clears Nette cache by deleting all files while preserving the directory structure.
+     * This prevents "directory not found" errors when active components (like RobotLoader)
+     * try to write lock files at the end of the request.
+     */
     private function clearCache(): void
     {
         $cacheDir = $this->tempDir . '/cache';
         if (is_dir($cacheDir)) {
-            // We delete only content of the cache directory to preserve the directory itself
-            foreach (glob($cacheDir . '/*') as $file) {
-                if (is_dir($file)) {
-                    FileSystem::delete($file);
-                } else {
-                    unlink($file);
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($cacheDir, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+            
+            foreach ($files as $file) {
+                if ($file->isFile()) {
+                    @unlink($file->getRealPath());
                 }
             }
         }

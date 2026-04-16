@@ -1,0 +1,6 @@
+services:
+    - App\Modules\FormsData\Model\FormsDataMapper
+    - App\Modules\FormsData\Model\FormsDataDao
+    - App\Modules\FormsData\Model\FormsDataService
+    - App\Modules\FormsData\Model\FormsDataFacade
+    - App\Modules\FormsData\Components\IFormsDataAdminControlFactory

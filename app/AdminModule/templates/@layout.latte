@@ -318,6 +318,47 @@
     });
   };
 
+  const cardStatePrefix = 'card_state_';
+  const setCookie = (name, value, days) => {
+    let expires = "";
+    if (days) {
+      let date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  }
+  const getCookie = (name) => {
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
+    for(let i=0;i < ca.length;i++) {
+      let c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+  }
+  const initCardPersistence = () => {
+    $('.card[data-persistence-id]').each(function() {
+      const id = $(this).data('persistence-id');
+      const state = getCookie(cardStatePrefix + id);
+      if (state === 'expanded') {
+        $(this).removeClass('collapsed-card');
+        $(this).find('.btn-tool i.fa-plus').removeClass('fa-plus').addClass('fa-minus');
+      } else if (state === 'collapsed') {
+        $(this).addClass('collapsed-card');
+        $(this).find('.btn-tool i.fa-minus').removeClass('fa-minus').addClass('fa-plus');
+      }
+    });
+  };
+
+  $(document).on('expanded.lte.cardwidget', '.card[data-persistence-id]', function() {
+    setCookie(cardStatePrefix + $(this).data('persistence-id'), 'expanded', 30);
+  });
+  $(document).on('collapsed.lte.cardwidget', '.card[data-persistence-id]', function() {
+    setCookie(cardStatePrefix + $(this).data('persistence-id'), 'collapsed', 30);
+  });
+
   window.addEventListener('message', function(event) {
     if (event.data && event.data.mceAction === 'selectFile' && event.data.callback) {
       const callbackId = event.data.callback;
@@ -336,10 +377,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     initWysiwyg();
     initCustomFileInputs();
+    initCardPersistence();
   });
   naja.addEventListener('success', () => {
     initWysiwyg();
     initCustomFileInputs();
+    initCardPersistence();
   });
 </script>
 
