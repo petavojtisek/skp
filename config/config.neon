@@ -101,6 +101,8 @@ services:
 	- App\Model\Version\VersionService
 	- App\Model\System\Cache
 	- App\Model\System\ModelEventManager
+	- App\Model\System\PdfService(%tempDir%)
+	- App\Model\System\PaymentQrService
 	- App\Model\Login\LoginService
 	- App\Model\Page\PageService
 	- App\Model\Lookup\LookupService

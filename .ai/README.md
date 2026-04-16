@@ -7,6 +7,7 @@ Welcome to the project's knowledge base. This directory contains structured info
 - [**Model Base**](model_base.md): Detailed summary of the base classes in `app/Model/Base/`.
 - [**Database Schema**](database.md): Complete documentation of the `skp` database tables and their structure.
 - [**Frontend Module**](modules/Frontend.md): Documentation for the `FrontendRunner` orchestrator.
+- [**Forms Module**](modules/Forms.md): Documentation for the `Forms` tool module.
 - [**Modules Index**](modules/): Detailed documentation for core modules (Page, PageGroup, Component, Admin, etc.).
 
 ## Architecture Highlights

@@ -155,6 +155,17 @@
 | created_dt | timestamp | YES |  | 'CURRENT_TIMESTAMP' | DEFAULT_GENERATED |
 | admin_id | int | YES |  | NULL |  |
 
+## Table: `form_data`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| id | int | NO | PRI | NULL | auto_increment |
+| form_name | varchar(255) | NO |  | NULL |  |
+| data | json | NO |  | NULL |  |
+| ip_address | varchar(45) | YES |  | NULL |  |
+| created_dt | timestamp | NO |  | 'CURRENT_TIMESTAMP' | DEFAULT_GENERATED |
+| status | int | YES |  | '1' |  |
+
 ## Table: `install`
 
 | Field | Type | Null | Key | Default | Extra |

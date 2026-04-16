@@ -20,7 +20,9 @@
 		"nette/utils": "^4.0",
 		"latte/latte": "^3.1",
 		"tracy/tracy": "^2.10",
-		"dibi/dibi": "^5.1"
+		"dibi/dibi": "^5.1",
+		"endroid/qr-code": "^6.0",
+		"mpdf/mpdf": "^8.3"
 	},
 	"require-dev": {
 		"nette/tester": "^2.5",
