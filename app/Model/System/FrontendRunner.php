@@ -312,17 +312,14 @@ class FrontendRunner
         }, ['web_text']);
 
 
-        $latte = new \Latte\Engine;
-        $latte->setLoader(new \Latte\Loaders\StringLoader);
-        if(!empty($this->systemConstnants)) {
 
+        if(!empty($this->systemConstnants)) {
             foreach ($this->systemConstnants as $code => $text) {
-                $parsed = $latte->renderToString($text);
-                $this->systemConstnants[$code] = $parsed;
-                $this->presenter->template->SYS_CONST = $this->systemConstnants;
+                $this->systemConstnants[$code] = $text;
+                $this->presenter->template->$code = $text;
             }
 
-
+            $this->presenter->template->SYS_CONST = $this->systemConstnants;
         }
     }
 

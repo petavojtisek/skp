@@ -1,4 +1,5 @@
 @use "sass:color";
+@use 'forms';
 // ==========================================================================
 // 1. NASTAVENÍ A PROMĚNNÉ
 // ==========================================================================
@@ -279,6 +280,10 @@ body {
   .feature:hover {
     .icon-circle { background: $primary-green; svg { color: $white; } }
   }
+}
+
+.page-name{
+  display: flow; text-align: center; align-items: center;
 }
 
 .cta-boxes {

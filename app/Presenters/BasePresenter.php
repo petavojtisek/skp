@@ -18,7 +18,7 @@ abstract class BasePresenter extends Presenter
     public function startup(): void
     {
         parent::startup();
-        
+
         $this->initConstants();
     }
 
@@ -32,5 +32,16 @@ abstract class BasePresenter extends Presenter
             }
             $this->template->$constName = $id;
         }
+    }
+
+    protected function createTemplate(?string $class = null): \Nette\Application\UI\Template
+    {
+        $template = parent::createTemplate();
+        $template->addFilter('renderString', function ($content) use ($template) {
+            $latte = $template->getLatte(); // Získáme už existující engine
+            // Použijeme stávající parametry, které už v template jsou
+            return $latte->renderToString($content, $template->getParameters());
+        });
+        return $template;
     }
 }
