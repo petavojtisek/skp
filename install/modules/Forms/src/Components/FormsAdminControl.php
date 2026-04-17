@@ -81,21 +81,37 @@ class FormsAdminControl extends Control implements IObjectControl
         $this->facade->deleteForm($elementId);
         $this->elementFacade->delete($elementId);
         $this->getPresenter()->flashMessage("Formulář byl odstraněn ze stránky.", 'success');
-        $this->redrawControl();
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl('forms');
+            $this->getPresenter()->redrawControl('flashes');
+        } else {
+            $this->redirect('this');
+        }
     }
 
     public function handleEdit(?int $elementId = null): void
     {
         $this->view = 'edit';
         $this->elementId = $elementId;
-        $this->redrawControl();
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl('forms');
+        } else {
+            $this->redirect('this');
+        }
     }
 
     public function handleBack(): void
     {
         $this->view = 'list';
         $this->elementId = null;
-        $this->redrawControl();
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl('forms');
+        } else {
+            $this->redirect('this');
+        }
     }
 
     public function handleRemoveFromPage(): void
@@ -117,7 +133,7 @@ class FormsAdminControl extends Control implements IObjectControl
     {
         $form = new Form();
         $form->addHidden('element_id');
-        
+
         $form->addText('name', 'Interní název')
             ->setRequired('Zadejte interní název');
 
@@ -141,10 +157,10 @@ class FormsAdminControl extends Control implements IObjectControl
             if ($element && $formData) {
                 $values = $element->getEntityData();
                 $values['form_component'] = $formData->getFormComponent();
-                
+
                 if ($element->getValidFrom()) $values['valid_from'] = $element->getValidFrom('Y-m-d');
                 if ($element->getValidTo()) $values['valid_to'] = $element->getValidTo('Y-m-d');
-                
+
                 $form->setDefaults($values);
             }
         }
@@ -166,6 +182,7 @@ class FormsAdminControl extends Control implements IObjectControl
 
         $elementId = $this->elementFacade->save($element, $this->user->getId());
 
+        
         $formData = $id ? $this->facade->getForm($id) : new FormsEntity();
         $formData->setId($elementId);
         $formData->setFormComponent($values['form_component']);
@@ -173,10 +190,12 @@ class FormsAdminControl extends Control implements IObjectControl
         $this->facade->saveForm($formData);
 
         $this->getPresenter()->flashMessage('Nastavení formuláře bylo uloženo.', 'success');
-        $this->handleBack();
-        
+
+        $this->view = 'list';
+        $this->elementId = null;
+
         if ($this->getPresenter()->isAjax()) {
-            $this->redrawControl();
+            $this->redrawControl('forms');
             $this->getPresenter()->redrawControl('flashes');
         } else {
             $this->redirect('this');

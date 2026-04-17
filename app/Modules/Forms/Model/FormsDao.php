@@ -22,4 +22,10 @@ class FormsDao extends BaseDao
         $data = $this->mapper->getByComponentId($componentId);
         return $this->getEntities($this->entityName, $data);
     }
+
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return $this->mapper->getActiveElementId($componentId);
+    }
+
 }

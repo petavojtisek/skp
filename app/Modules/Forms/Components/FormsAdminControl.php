@@ -181,7 +181,8 @@ class FormsAdminControl extends Control implements IObjectControl
         $element->setValidTo($values['valid_to'] ?: null);
 
         $elementId = $this->elementFacade->save($element, $this->user->getId());
-xdebug_break();
+
+
         $formData = $id ? $this->facade->getForm($id) : new FormsEntity();
         $formData->setId($elementId);
         $formData->setFormComponent($values['form_component']);

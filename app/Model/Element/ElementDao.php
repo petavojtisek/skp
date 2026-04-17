@@ -39,4 +39,9 @@ class ElementDao extends BaseDao
         }
         return null;
     }
+
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return  $this->mapper->getActiveElementId($componentId)??0;
+    }
 }

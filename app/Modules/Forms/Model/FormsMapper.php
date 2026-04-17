@@ -19,6 +19,8 @@ class FormsMapper extends BaseMapper
             ->fetchAll();
     }
 
+
+
     public function save(IEntity $entity): IEntity
     {
         if ($this->rowExist([$this->primaryKey => $entity->getId()])) {

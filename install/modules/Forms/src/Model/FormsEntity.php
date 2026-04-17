@@ -41,7 +41,7 @@ class FormsEntity extends BaseEntity
 
     public function setName(?string $name): void
     {
-        $this->name = $name;
+        $this->setVariable('name', $name, self::VALUE_TYPE_STRING);
     }
 
     public function getStatusId(): ?int
@@ -58,5 +58,4 @@ class FormsEntity extends BaseEntity
     {
         return $this->getDateTime($this->created_dt, $format);
     }
- 
 }

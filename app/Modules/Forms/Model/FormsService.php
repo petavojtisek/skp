@@ -19,6 +19,11 @@ class FormsService extends BaseService
         return $this->dao->getByComponentId($componentId);
     }
 
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return $this->dao->getActiveElementId($componentId);
+    }
+
     public function getForm(int $id): ?FormsEntity
     {
         return $this->dao->find($id);

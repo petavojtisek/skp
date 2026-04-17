@@ -1,4 +1,4 @@
-<div class="card card-outline card-secondary collapsed-card" data-persistence-id="comp-{$componentId}">
+<div class="card card-outline card-secondary mb-4 collapsed-card" n:snippet="forms" data-persistence-id="comp-{$componentId}">
     <div class="card-header">
         <h3 class="card-title">Seznam formulářů na stránce</h3>
         <div class="card-tools">
@@ -33,8 +33,8 @@
                             </span>
                         </td>
                         <td>
-                            <a n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-info ajax"><i class="fas fa-edit"></i> Edit</a>
-                            <a n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" onclick="return confirm('Opravdu odstranit tento formulář?')"><i class="fas fa-trash"></i> Smazat</a>
+                            <a n:if="$loggedUserEntity->hasModuleRight('forms','edit')" n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-info ajax"><i class="fas fa-edit"></i> Edit</a>
+                            <a n:if="$loggedUserEntity->hasModuleRight('forms','delete')" n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" onclick="return confirm('Opravdu odstranit tento formulář?')"><i class="fas fa-trash"></i> Smazat</a>
                         </td>
                     </tr>
                 {/if}

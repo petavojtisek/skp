@@ -30,4 +30,10 @@ class ElementFacade
     {
         $this->elementService->delete($id);
     }
+
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return  $this->elementService->getActiveElementId($componentId);
+    }
+
 }

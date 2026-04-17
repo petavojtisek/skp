@@ -38,4 +38,9 @@ class ElementService extends BaseService
     {
         $this->elementDao->delete($id);
     }
+
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return  $this->elementDao->getActiveElementId($componentId);
+    }
 }

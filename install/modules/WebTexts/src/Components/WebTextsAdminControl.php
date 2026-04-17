@@ -140,6 +140,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
         }
 
         $this->getPresenter()->flashMessage('Text byl smazán.');
+        $this->getPresenter()->redrawControl('flashes');
 
     }
 
@@ -173,7 +174,8 @@ class WebTextsAdminControl extends Control implements IToolsControl
         $form->addText('code', 'Kód')
             ->setRequired('Zadejte kód textu');
         $form->addTextArea('text', 'Text')
-            ->setHtmlAttribute('class', 'editor');
+            ->setHtmlAttribute('class', 'wysiwyg')
+            ->setHtmlAttribute('data-fm-url', $this->getPresenter()->link(':Admin:Files:default'));
         $form->addSubmit('send', 'Uložit');
 
 
@@ -185,10 +187,16 @@ class WebTextsAdminControl extends Control implements IToolsControl
 
     public function webTextFormSucceeded(Form $form, $values): void
     {
+
+        if(empty($values->web_text_id)) {
+            $values->web_text_id = 0;
+        }
+
         $entity = new WebTextEntity($values);
         $this->webTextFacade->saveWebText($entity);
         $this->getPresenter()->flashMessage('Text byl uložen.');
-        $this->redirect('this', ['view' => 'list', 'id' => null]);
+        $this->getPresenter()->redrawControl('flashes');
+        $this->handleList();
     }
 }
 

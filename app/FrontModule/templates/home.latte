@@ -6,7 +6,6 @@
         {if isset($components['ContentVersion']['hero'])}
             {control content_version_hero}
         {/if}
-
     </section>
 
     {* 2. NÁŠ ÚČEL (S Ikonami) *}
@@ -21,8 +20,13 @@
         {if isset($components['ContentVersion']['cta'])}
             {control content_version_cta}
         {/if}
-
     </section>
+
+
+    {if isset($components['Forms']['forms'])}
+        {control forms_forms}
+    {/if}
+
 
     {* 4. AKTUALITY (Swiper Slider) *}
     <section class="news section-padding">
