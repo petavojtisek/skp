@@ -25,7 +25,7 @@ abstract class FrontPresenter extends BasePresenter
         parent::startup();
         $this->frontRunner->setPresenter($this);
         $this->frontRunner->run();
-f
+ 
     }
 
 
