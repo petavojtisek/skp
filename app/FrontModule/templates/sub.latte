@@ -1,3 +1,19 @@
 {block content}
+    <section class="page-name">
+        <h1>{$activePage->getPageName()}</h1>
+    </section>
+    {if isset($components['ContentVersion']['main'])}
+        <section class="container section-padding">
+                {control content_version_main}
+        </section>
+    {/if}
+    {if isset($components['Documents']['docs'])}
+    <section class="container section-padding">
+            {if isset($components['ContentVersion']['docs'])}
+                {control content_version_docs}
+            {/if}
 
+            {control documents_docs}
+    </section>
+    {/if}
 {/block}

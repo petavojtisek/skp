@@ -33,6 +33,7 @@ final class FilesPresenter extends AdminPresenter
 
     public function actionDefault(): void
     {
+
         // For picker, we allow access if the user has been recently logged in (via cookie)
         // even if the main session expired, to avoid interrupting the workflow.
 
@@ -56,6 +57,7 @@ final class FilesPresenter extends AdminPresenter
             $this->setView('picker');
         }
         $this->template->baseType = $this->baseType;
+        $this->template->callback = $this->callback;
     }
 
 

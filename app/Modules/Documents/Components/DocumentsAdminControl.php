@@ -68,7 +68,7 @@ class DocumentsAdminControl extends Control implements IObjectControl
         if ($this->view === 'edit') {
             $item = $this->elementId ? $this->elementFacade->find($this->elementId) : new ElementEntity();
             $this->template->item = $item;
-            
+
             $file = null;
             if ($this->elementId) {
                 $doc = $this->facade->find($this->elementId);
