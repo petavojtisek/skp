@@ -1,16 +1,8 @@
 @use "sass:color";
+@use 'myconst' as *;
 // ==========================================================================
 // FORM STYLES
 // ==========================================================================
-
-$primary-green: #4a7c2c;
-$river-blue: #0066cc;
-$gold-accent: #d4a017;
-$text-dark: #333;
-$text-light: #666;
-$white: #fff;
-$font-header: 'Montserrat', sans-serif;
-$font-body: 'Lato', sans-serif;
 
 .form-group {
   margin-bottom: 20px;

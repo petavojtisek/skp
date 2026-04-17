@@ -1,0 +1,14 @@
+<div class="col-md-3" n:snippet="systemConstants">
+    <div class="small-box bg-info">
+        <div class="inner">
+            <h3>Constants</h3>
+            <p>Systémové konstanty</p>
+        </div>
+        <div class="icon">
+            <i class="fas fa-key"></i>
+        </div>
+        <a n:if="$loggedUserEntity->hasModuleRight('system_constants','list')" n:href="list!" class="ajax small-box-footer">
+            Otevřít <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>

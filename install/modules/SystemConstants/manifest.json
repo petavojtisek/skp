@@ -1,0 +1,7 @@
+{
+    "name": "SystemConstants",
+    "code_name": "system_constants",
+    "class_name": "SystemConstants",
+    "type": 303,
+    "description": "Modul pro správu systémových konstant (Nástroj)."
+}

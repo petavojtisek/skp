@@ -1,0 +1,126 @@
+@use 'myconst' as *;
+@use "sass:color";
+
+.wysiwyg-content {
+  color: $text-dark;
+  line-height: 1.7;
+  font-family: $font-body;
+
+  // Nadpisy z editoru
+  h1, h2, h3, h4 {
+    font-family: $font-header;
+    color: $primary-green;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+  }
+
+  h2 { font-size: 2rem; border-bottom: 2px solid rgba($primary-green, 0.1); padding-bottom: 10px; }
+  h3 { font-size: 1.5rem; }
+
+  // Texty a odstavce
+  p {
+    margin-bottom: 1.2rem;
+  }
+
+  strong {
+    color: color.adjust($text-dark, $lightness: -10%);
+    font-weight: 700;
+  }
+
+  h3 {
+    background: none !important; // Odstraní ten modrý flek
+    color: $primary-green;       // Nastaví tvou zelenou
+    font-family: $font-header;
+    font-size: 1.8rem;
+    margin: 40px 0 20px;
+    text-align: center;          // Pokud to chceš mít na střed jako ten hlavní nadpis
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 30px auto; // Vycentruje celý seznam
+    text-align: left;  // Text uvnitř ale bude lícovat vlevo
+
+    li {
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+
+      // Vlastní zelená odrážka
+      &::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: $primary-green;
+        font-size: 2rem;
+        line-height: 1;
+        top: -5px;
+      }
+
+      // Stylování toho tučného úvodu v odrážce
+      strong {
+        color: $primary-green;
+        font-family: $font-header;
+        display: block; // Dá popisek na vlastní řádek pro vzdušnější vzhled
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  // Odkazy vygenerované v textu
+  a {
+    color: $river-blue;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $primary-green;
+      text-decoration: none;
+    }
+  }
+
+  // Seznamy (odrážky) - ty v editoru často vypadají zle
+  ul, ol {
+    margin-bottom: 1.5rem;
+    padding-left: 20px;
+
+    li {
+      margin-bottom: 8px;
+      &::marker {
+        color: $primary-green;
+        font-weight: bold;
+      }
+    }
+  }
+
+  // Automatický styl pro obrázky vložené do textu
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+
+  // Tabulky (pokud je v editoru někdo vytvoří)
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+
+    td, th {
+      padding: 12px;
+      border: 1px solid #eee;
+    }
+
+    th {
+      background: rgba($primary-green, 0.05);
+      color: $primary-green;
+      font-family: $font-header;
+    }
+  }
+
+}

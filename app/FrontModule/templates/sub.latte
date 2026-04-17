@@ -2,21 +2,23 @@
     <section class="page-name">
         <h1>{$activePage->getPageName()}</h1>
     </section>
+
+
     {if isset($components['ContentVersion']['main'])}
         <section class="container section-padding" style="text-align: center">
+            <div class="wysiwyg-content">
                 {control content_version_main}
+            </div>
         </section>
     {/if}
     {if isset($components['Documents']['docs'])}
-    <section class="container section-padding">
+        <section class="container section-padding">
             {if isset($components['ContentVersion']['docs'])}
                 {control content_version_docs}
             {/if}
-
             {control documents_docs}
-    </section>
+        </section>
     {/if}
-
     {if isset($components['Forms']['contact_forms'])}
         {control forms_contact_forms}
     {/if}

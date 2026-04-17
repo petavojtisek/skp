@@ -1,5 +1,8 @@
 @use "sass:color";
+@use 'myconst' as *;
 @use 'forms';
+@use '_wysiwyg';
+
 // ==========================================================================
 // 1. NASTAVENÍ A PROMĚNNÉ
 // ==========================================================================
@@ -9,15 +12,6 @@
   box-sizing: border-box;
 }
 
-$primary-green: #4a7c2c;
-$river-blue: #0066cc;
-$gold-accent: #d4a017;
-$text-dark: #333;
-$text-light: #666;
-$white: #fff;
-
-$font-header: 'Montserrat', sans-serif;
-$font-body: 'Lato', sans-serif;
 
 // ==========================================================================
 // 2. GLOBÁLNÍ STYLY
@@ -390,4 +384,150 @@ body {
 // Speciální oprava pro velmi malé mobily
 @media (max-width: 480px) {
   .btn { width: 100%; text-align: center; }
+}
+
+.documents-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.document-card {
+  background: $white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  border-left: 4px solid $primary-green; // Zvýraznění tvou zelenou
+
+  &:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .doc-icon {
+    font-size: 1.8rem;
+    color: #dc3545; // PDF červená
+    margin-right: 20px;
+  }
+
+  .doc-content {
+    flex-grow: 1;
+    .doc-title {
+      margin: 0;
+      font-family: $font-header;
+      font-size: 1.1rem;
+      color: $text-dark;
+    }
+    .doc-meta {
+      font-size: 0.85rem;
+      color: $text-light;
+    }
+  }
+
+  .btn-outline-green {
+    border: 2px solid $primary-green;
+    color: $primary-green;
+    background: transparent;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: $primary-green;
+      color: $white;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+
+    .doc-icon { margin-right: 0; }
+    .btn-outline-green { width: 100%; }
+  }
+}
+
+
+
+// 1. Horní sekce s textem (WYSIWYG obsah)
+section.container.section-padding {
+  max-width: 900px; // Zúžíme text, aby se lépe četl a nebyl "rozpláclý"
+  margin: 0 auto;
+  // Stylování odkazu na Stanovy a další linky v textu
+  a {
+    color: $river-blue;
+    font-weight: bold;
+    border-bottom: 1px solid rgba($river-blue, 0.3);
+    text-decoration: none;
+    &:hover {
+      color: $primary-green;
+      border-color: $primary-green;
+    }
+  }
+
+  // Zvýraznění adresy/info, pokud je v odstavcích
+  p strong {
+    color: $primary-green;
+    display: inline-block;
+    margin-top: 5px;
+  }
+}
+
+// 2. Spodní sekce s formulářem
+section.contact-section {
+  background-color: #f9f9f9; // Jemné odlišení pozadí pod formulářem
+  border-top: 1px solid #eee;
+
+  .contact-form-card {
+    background: $white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    max-width: 800px;
+    margin: -60px auto 0; // "Vytáhneme" kartu trochu nahoru přes předchozí sekci
+    position: relative;
+    z-index: 10;
+  }
+
+
+  // Hlavní kontejner gridu přepneme na jednosloupcový "flex"
+  .contact-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Vycentrování horizontálně
+    text-align: center;  // Vycentrování textu
+    gap: 30px;           // Přesná mezera mezi textem a formulářem
+    margin: 0 auto;
+    max-width: 800px;    // Omezíme šířku, aby to na desktopu nevypadalo moc roztaženě
+  }
+
+  .contact-info {
+    margin: 0;           // Resetujeme případné marginy
+    padding: 0;
+
+    .section-title {
+      margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+      margin-bottom: 0;  // Aby se to nelepilo ke kartě, o mezeru se stará 'gap' v gridu
+    }
+  }
+
+  .contact-form-card {
+    width: 100%;         // Karta vyplní šířku kontejneru (800px)
+    margin-top: 0;       // ZRUŠIT záporný margin - tohle vyřeší to překrývání!
+    background: $white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: left;    // Vnitřek formuláře (labely) necháme raději vlevo, je to přehlednější
+  }
+
 }
