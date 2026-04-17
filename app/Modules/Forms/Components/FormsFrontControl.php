@@ -59,7 +59,7 @@ class FormsFrontControl extends Control implements IObjectControl
     public function render(): void
     {
         $formData = false;
-        $this->elementId = $this->elementFacade->getActiveElementId($this->componentId);
+            $this->elementId = $this->elementFacade->getActiveElementId($this->componentId);
         if ($this->elementId) {
             $element = $this->elementFacade->findFront($this->elementId);
             if($element) {
@@ -85,10 +85,10 @@ class FormsFrontControl extends Control implements IObjectControl
         }
 
         $componentName = $formData->getFormComponent();
-        return   $this->formControlFactory->create($componentName,$this->componentId,$this->elementId,$componentName);
+        return  $this->formControlFactory->create($componentName,$this->componentId,$this->elementId,$componentName);
 
     }
-}
+        }
 
 interface IFormsFrontControlFactory
 {

@@ -12,6 +12,7 @@ use App\Modules\Forms\Model\FormsFacade;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\Security\User;
+use Nette\Utils\Finder;
 
 class FormsAdminControl extends Control implements IObjectControl
 {
@@ -141,9 +142,10 @@ class FormsAdminControl extends Control implements IObjectControl
         $form->addSelect('status_id', 'Stav', $statuses)
             ->setRequired('Vyberte stav');
 
-        $form->addSelect('form_component', 'Typ formuláře', [
-            'ContactForm' => 'Kontaktní formulář'
-        ])->setPrompt('-- Vyberte formulář --')
+        $files = $this->listDirs();
+
+
+        $form->addSelect('form_component', 'Typ formuláře',$files)->setPrompt('-- Vyberte formulář --')
           ->setRequired('Vyberte typ formuláře');
 
         $form->addText('valid_from', 'Platnost od')->setHtmlType('date');
@@ -167,6 +169,24 @@ class FormsAdminControl extends Control implements IObjectControl
 
         $form->onSuccess[] = [$this, 'editFormSucceeded'];
         return $form;
+    }
+
+
+    protected function listDirs() : ?array
+    {
+        $res = [];
+        $dirPath = __DIR__ . '/../templates/Forms/';
+        $files =   Finder::findFiles('*.latte')
+            ->in($dirPath);
+
+        if($files){
+            foreach ($files as $file){
+
+                $res[$file->getBasename('.latte')]=$file->getBasename('.latte');
+            }
+        }
+
+        return $res;
     }
 
     public function editFormSucceeded(Form $form, array $values): void

@@ -13,6 +13,8 @@ use Nette\ComponentModel\IComponent;
 abstract class FrontPresenter extends BasePresenter
 {
 
+    /** @persistent */
+    public $page_id; // Toto je klíčové. Nette ho teď bude přibalovat ke každému odkazu a signálu.
 
     public PageEntity|null $activePage = null;
     public PresentationEntity|null $activePresentation = null;
