@@ -4,16 +4,13 @@ namespace App\Modules\Forms\FormsComponents;
 
 use App\Modules\FormsData\Model\FormsDataEntity;
 use App\Modules\FormsData\Model\FormsDataFacade;
-use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
-
-class ContactForm extends Control
+class ContactForm extends BaseForm
 {
-    private FormsDataFacade $formsDataFacade;
 
     public function __construct(FormsDataFacade $formsDataFacade)
     {
-        $this->formsDataFacade = $formsDataFacade;
+        parent::__construct($formsDataFacade);
     }
 
     public function render(): void
@@ -48,7 +45,7 @@ class ContactForm extends Control
         $this->formsDataFacade->saveFormData($entity);
 
         $this->getPresenter()->flashMessage('Vaše zpráva byla úspěšně odeslána. Děkujeme!', 'success');
-        
+
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl('contactForm');
             $this->getPresenter()->redrawControl('flashes');

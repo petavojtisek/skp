@@ -5,9 +5,13 @@ services:
     - App\Modules\Forms\Model\FormsService
     - App\Modules\Forms\Model\FormsFacade
 
+
     # Components
     - App\Modules\Forms\Components\IFormsAdminControlFactory
     - App\Modules\Forms\Components\IFormsFrontControlFactory
-    
+    - App\Modules\Forms\Components\IFormControlFactory
+    - App\Modules\Forms\Components\FormControlFactory
+
+
     # Form Components
     - App\Modules\Forms\FormsComponents\IContactFormFactory

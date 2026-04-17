@@ -19,6 +19,11 @@ class FormsFacade extends BaseFacade
         return $this->service->getByComponentId($componentId);
     }
 
+    public function getActiveElementId(int $componentId): ?int
+    {
+        return $this->service->getActiveElementId($componentId);
+    }
+
     public function getForm(int $id): ?FormsEntity
     {
         return $this->service->getForm($id);

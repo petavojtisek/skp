@@ -2,29 +2,51 @@
 
 namespace App\Modules\Forms\Components;
 
+use App\Model\Element\ElementFacade;
+use App\Model\Helper\IObjectControl;
 use App\Modules\Forms\Model\FormsFacade;
 use App\Modules\Forms\Model\FormsEntity;
-use App\Modules\Forms\FormsComponents\IContactFormFactory;
 use Nette\Application\UI\Control;
 
-class FormsFrontControl extends Control
+class FormsFrontControl extends Control implements IObjectControl
 {
     private FormsFacade $facade;
+
+    private ElementFacade $elementFacade;
+    private FormControlFactory $formControlFactory;
     private int $elementId;
+
+    private int $componentId;
+    private string $name;
+    private string $code;
+
     private ?FormsEntity $formData = null;
 
-    // Factories for individual forms
-    private IContactFormFactory $contactFormFactory;
 
     public function __construct(
-        int $elementId,
         FormsFacade $facade,
-        IContactFormFactory $contactFormFactory
+        ElementFacade $elementFacade,
+        FormControlFactory $formControlFactory,
     ) {
-        $this->elementId = $elementId;
+        $this->formControlFactory = $formControlFactory;
         $this->facade = $facade;
-        $this->contactFormFactory = $contactFormFactory;
+        $this->elementFacade = $elementFacade;
+
     }
+
+    // Factories for individual forms
+    public function setComponentId(int $componentId): void
+    {
+        $this->componentId = $componentId;
+    }
+
+    public function setComponentInfo(string $name, string $code): void
+    {
+        $this->name = $name;
+        $this->code = $code;
+    }
+
+
 
     private function getFormData(): ?FormsEntity
     {
@@ -36,7 +58,14 @@ class FormsFrontControl extends Control
 
     public function render(): void
     {
-        $formData = $this->getFormData();
+        $formData = false;
+        $this->elementId = $this->elementFacade->getActiveElementId($this->componentId);
+        if ($this->elementId) {
+            $element = $this->elementFacade->findFront($this->elementId);
+            if($element) {
+                $formData = $this->getFormData();
+            }
+        }
         if (!$formData) {
             return;
         }
@@ -49,24 +78,19 @@ class FormsFrontControl extends Control
 
     protected function createComponentForm(): ?Control
     {
+
         $formData = $this->getFormData();
         if (!$formData) {
             return null;
         }
 
         $componentName = $formData->getFormComponent();
+        return   $this->formControlFactory->create($componentName,$this->componentId,$this->elementId,$componentName);
 
-        switch ($componentName) {
-            case 'ContactForm':
-                return $this->contactFormFactory->create();
-            // Add other forms here
-            default:
-                return null;
-        }
     }
 }
 
 interface IFormsFrontControlFactory
 {
-    public function create(int $elementId): FormsFrontControl;
+    public function create(): FormsFrontControl;
 }

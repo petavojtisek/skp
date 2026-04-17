@@ -166,6 +166,13 @@
 | created_dt | timestamp | NO |  | 'CURRENT_TIMESTAMP' | DEFAULT_GENERATED |
 | status | int | YES |  | '1' |  |
 
+## Table: `forms`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| element_id | int | NO | PRI | NULL |  |
+| form_component | varchar(255) | NO |  | NULL |  |
+
 ## Table: `install`
 
 | Field | Type | Null | Key | Default | Extra |
