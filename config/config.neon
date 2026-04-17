@@ -11,9 +11,13 @@ parameters:
 	# Paths or other global parameters like in ebcar
 
 application:
-	errorPresenter: Front:Error:Error4xx
+	errorPresenter: Error
 	mapping:
+		# První hvězdička řeší moduly (Front, Admin)
 		*: App\*Module\Presenters\*Presenter
+		# Tyto dva řádky musí být ve stejné úrovni jako hvězdička výše
+		Error*: App\Presenters\Error*Presenter
+
 
 decorator:
 	App\Model\Base\AMapper:

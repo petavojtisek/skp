@@ -6,6 +6,7 @@ use App\Model\Page\PageEntity;
 use App\Model\Presentation\PresentationEntity;
 use App\Model\System\FrontendRunner;
 use App\Presenters\BasePresenter;
+use Nette\Application\BadRequestException;
 use Nette\ComponentModel\IComponent;
 
 
@@ -25,8 +26,10 @@ abstract class FrontPresenter extends BasePresenter
         parent::startup();
         $this->frontRunner->setPresenter($this);
         $this->frontRunner->run();
- 
+
     }
+
+
 
 
 
@@ -71,5 +74,6 @@ abstract class FrontPresenter extends BasePresenter
         $this->template->specParamPage =  $this->frontRunner->specParamPage;
         $this->template->webTexts = $this->frontRunner->webTexts;
         $this->template->SYS_CONST = $this->frontRunner->systemConstnants;
+
     }
 }

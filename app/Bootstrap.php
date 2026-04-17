@@ -3,6 +3,7 @@
 namespace App;
 
 use Nette\Bootstrap\Configurator;
+use Tracy\Debugger;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('PROJECT_ROOT_DIR', dirname(__DIR__, 1));
@@ -42,7 +43,7 @@ class Bootstrap
 
 		// --- Debug Mode Toggle ---
 		// Set to true to test production error pages (404, 500)
-		$forceProductionMode = true;
+		$forceProductionMode = false;
 
 		if ($forceProductionMode) {
 			$configurator->setDebugMode(false);
@@ -53,6 +54,7 @@ class Bootstrap
 		$configurator->enableTracy($appDir . '/log');
 
 		$configurator->setTempDirectory($appDir . '/temp');
+        Debugger::$errorTemplate = __DIR__ . '/Presenters/templates/Error/500.phtml';
 
 		$configurator->createRobotLoader()
 			->addDirectory(__DIR__)

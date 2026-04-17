@@ -319,9 +319,10 @@ class FrontendRunner
             foreach ($this->systemConstnants as $code => $text) {
                 $parsed = $latte->renderToString($text);
                 $this->systemConstnants[$code] = $parsed;
+                $this->presenter->template->SYS_CONST = $this->systemConstnants;
             }
 
-            $this->presenter->template->SYS_CONST = $this->systemConstnants;
+
         }
     }
 
@@ -341,7 +342,7 @@ class FrontendRunner
         $latte->setLoader(new \Latte\Loaders\StringLoader);
         if(!empty($this->webTexts)) {
             foreach ($this->webTexts as $code => $text) {
-                $parsed = $latte->renderToString($text);
+                $parsed = $latte->renderToString($text, ['SYS_CONST'=>$this->systemConstnants]);
                 $this->webTexts[$code] = $parsed;
             }
         }
