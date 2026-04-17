@@ -11,6 +11,7 @@ use App\Model\System\Cache;
 use App\Model\Template\TemplateFacade;
 use App\Model\Helper\FrontObjectControlFactory;
 use App\Model\Component\ComponentFacade;
+use App\Modules\SystemConstants\Model\SystemConstantsFacade;
 use App\Modules\WebTexts\Model\WebTextFacade;
 use Nette\ComponentModel\IComponent;
 use Nette\Http\IRequest;
@@ -44,6 +45,8 @@ class FrontendRunner
 
     public IRequest $httpRequest;
     public FrontPresenter $presenter;
+    public SystemConstantsFacade $systemConstantsFacade;
+
 
     public PageEntity|null $activePage = null;
     public PresentationEntity|null $activePresentation = null;
@@ -57,6 +60,7 @@ class FrontendRunner
     public array $menuTree = [];
     public array $pages = [];
     public array $webTexts = [];
+    public array $systemConstnants = [];
 
 
     public function __construct(PresentationFacade $presentationFacade,
@@ -66,7 +70,8 @@ class FrontendRunner
         FrontObjectControlFactory $frontControlFactory,
         ComponentFacade $componentFacade,
         WebTextFacade $webTextFacade,
-        IRequest $httpRequest
+        IRequest $httpRequest,
+        SystemConstantsFacade $systemConstantsFacade
     )
     {
 
@@ -79,6 +84,7 @@ class FrontendRunner
         $this->componentFacade = $componentFacade;
         $this->webTextFacade = $webTextFacade;
         $this->httpRequest = $httpRequest;
+        $this->systemConstantsFacade = $systemConstantsFacade;
     }
 
     public function setPresenter(FrontPresenter $presenter): void
@@ -89,6 +95,8 @@ class FrontendRunner
 
     public function run(): void
     {
+        $this->loadSystemConstants();
+
         $this->getActivePresentation();
         $this->getActivePage();
         $this->getMenuTree();
@@ -288,11 +296,38 @@ class FrontendRunner
         }
     }
 
+    public function loadSystemConstants()
+    {
+        $cacheKey = 'all_system_constants';
+
+
+        $this->systemConstnants = $this->cache->load($cacheKey, function() {
+            $texts = $this->systemConstantsFacade->getAllSystemConstants();
+            $result = [];
+
+            foreach ($texts as $text) {
+                $result[$text->getCode()] = $text->getValue();
+            }
+            return $result;
+        }, ['web_text']);
+
+
+        $latte = new \Latte\Engine;
+        $latte->setLoader(new \Latte\Loaders\StringLoader);
+        if(!empty($this->systemConstnants)) {
+
+            foreach ($this->systemConstnants as $code => $text) {
+                $parsed = $latte->renderToString($text);
+                $this->systemConstnants[$code] = $parsed;
+            }
+
+            $this->presenter->template->SYS_CONST = $this->systemConstnants;
+        }
+    }
+
     public function loadWebTexts(): void
     {
         $cacheKey = 'all_web_texts';
-
-        $texts = $this->webTextFacade->getAllWebTexts();
         $this->webTexts = $this->cache->load($cacheKey, function() {
             $texts = $this->webTextFacade->getAllWebTexts();
             $result = [];

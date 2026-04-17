@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by Jan Pabyška.
- * User: janpabyska
- * Date: 14.12.15
- * Time: 14:15
- */
+
 
 namespace App\Model\Base;
 

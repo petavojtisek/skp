@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 11pt; color: #333; line-height: 1.4; }
+        .container { padding: 10px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d6efd; padding-bottom: 10px; }
+        .title { font-size: 18pt; font-weight: bold; color: #0d6efd; text-transform: uppercase; }
+        .spolek-name { font-size: 13pt; margin-top: 5px; font-weight: bold; }
+        .section-title { font-size: 13pt; font-weight: bold; margin-top: 15px; margin-bottom: 8px; border-left: 4px solid #0d6efd; padding-left: 10px; background: #f8f9fa; }
+        .field { margin-bottom: 5px; }
+        .label { font-weight: bold; color: #555; }
+        .declaration { font-style: italic; font-size: 9pt; margin-top: 15px; background: #fff3cd; padding: 10px; border-radius: 5px; }
+        .payment-info { margin-top: 15px; padding: 15px; border: 1px dashed #0d6efd; background: #e7f1ff; overflow: hidden; }
+        .qr-code { float: right; width: 150px; height: 150px; margin-left: 20px; }
+        .payment-text { float: left; width: 450px; }
+        .footer { margin-top: 30px; font-size: 8pt; text-align: center; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        .highlight { color: #0d6efd; font-weight: bold; }
+        .clearfix { clear: both; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="title">Potvrzení registrace člena</div>
+        <div class="spolek-name">{$spolek_nazev}</div>
+    </div>
+
+    <div class="section-title">Osobní údaje žadatele</div>
+    <div class="field"><span class="label">Jméno a příjmení:</span> {$member->getFullName()}</div>
+    <div class="field"><span class="label">Datum narození:</span> {$member->getBirthDate('j. n. Y')}</div>
+    <div class="field"><span class="label">Adresa:</span> {$member->getStreet()}, {$member->getZip()} {$member->getCity()}</div>
+    <div class="field"><span class="label">E-mail:</span> {$member->getEmail()}</div>
+    <div class="field"><span class="label">Telefon:</span> {$member->getPhone()}</div>
+
+    <div class="section-title">Prohlášení žadatele</div>
+    <div class="declaration">
+        <p>Chci se aktivně podílet na ochraně krajinného rázu a veřejného zdraví v našem regionu.</p>
+        <p>Podáním této žádosti (registrace) projevuji vůli být vázán stanovami spolku a beru na vědomí, že členství vzniká dnem schválení žádosti výborem spolku.</p>
+    </div>
+
+    <div class="payment-info">
+        <img src="{$qr_code}" class="qr-code">
+        <div class="payment-text">
+            <h4 style="margin-top: 0;">Informace k platbě</h4>
+            <p>
+                Zavazuji se k úhradě ročního členského příspěvku ve výši <span class="highlight">{$amount} Kč</span>.<br>
+                Příspěvek zašlete na účet: <span class="highlight">{$account}</span>.<br>
+                Jako variabilní symbol uveďte vaše datum narození: <span class="highlight">{$vs}</span>.
+            </p>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <p> <strong>{$today|date:'j. n. Y'}</strong></p>
+    </div>
+
+    <div class="footer">
+		
+        O rozhodnutí výboru o vašem přijetí vás budeme informovat e-mailem.<br>
+        Dotazy směřujte na: {$kontaktni_email}
+		{$spolek_nazev} Adresa:%nbsp;{$spolekAddress}%nbsp;IČO:%nbsp;{$spolekIco}<br>
+    </div>
+</div>
+
+</body>
+</html>
