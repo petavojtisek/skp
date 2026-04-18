@@ -7,6 +7,8 @@ use App\Model\Presentation\PresentationEntity;
 use App\Model\System\FrontendRunner;
 use App\Presenters\BasePresenter;
 use Nette\Application\BadRequestException;
+use Nette\Application\Request;
+use Nette\Application\Response;
 use Nette\ComponentModel\IComponent;
 
 
@@ -14,8 +16,7 @@ abstract class FrontPresenter extends BasePresenter
 {
 
     /** @persistent */
-    public $page_id; // Toto je klíčové. Nette ho teď bude přibalovat ke každému odkazu a signálu.
-
+    public int $page_id;
     public PageEntity|null $activePage = null;
     public PresentationEntity|null $activePresentation = null;
 
@@ -23,16 +24,15 @@ abstract class FrontPresenter extends BasePresenter
     public FrontendRunner $frontRunner;
 
 
+
     public function startup(): void
     {
-        parent::startup();
+        $this->page_id =  (int)$this->getParameter('page_id');
         $this->frontRunner->setPresenter($this);
         $this->frontRunner->run();
+        parent::startup();
 
     }
-
-
-
 
 
     public function createComponent(string $name): ?IComponent
@@ -60,6 +60,7 @@ abstract class FrontPresenter extends BasePresenter
 
         return null;
     }
+
 
 
     public function beforeRender(): void
