@@ -5,6 +5,5 @@ vendor
 /log
 /node_modules
 /storage
-/bin
 /www/web_storage/news
 /temp

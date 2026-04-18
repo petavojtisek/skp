@@ -100,7 +100,6 @@ class MembersFacade
 
     public function generateRegistrationConfirmation(int $memberId, bool $force = false): string
     {
-
         $member = $this->getMember($memberId);
         if (!$member) throw new \Exception("Člen s ID $memberId nenalezen.");
 
@@ -139,9 +138,9 @@ class MembersFacade
 
         $config = $this->getSystemConfig();
         $qrFile = $this->generateQr($memberId);
+
         $pdfFile = $this->generateRegistrationConfirmation($memberId);
 
-        // 3. Odeslání e-mailu
         $message = $this->emailsFacade->createMessage(
             'registration',
             array_merge($config, [
@@ -150,8 +149,8 @@ class MembersFacade
                 'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
             ]),
             $member->email,
-            [$pdfFile], // Přílohy
-            $qrFile     // QR kód jako inline (cid)
+            [$pdfFile],
+            $qrFile
         );
         $message->setSubject('Registrace do spolku ' . ($config['SKP_NAME'] ?? ''));
 
@@ -166,7 +165,15 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o přijetí do spolku', "Dobrý den,\n\nbyl jste přijat do spolku.");
+        $config = $this->getSystemConfig();
+        $message = $this->emailsFacade->createMessage(
+            'acceptance',
+            array_merge($config, ['member' => $member]),
+            $member->email
+        );
+        $message->setSubject('Potvrzení o přijetí do spolku ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setRegistrationConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
@@ -177,7 +184,15 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o zaplacení příspěvků', "Dobrý den,\n\npotvrzujeme přijetí vaší platby.");
+        $config = $this->getSystemConfig();
+        $message = $this->emailsFacade->createMessage(
+            'payment_confirmation',
+            array_merge($config, ['member' => $member]),
+            $member->email
+        );
+        $message->setSubject('Potvrzení o zaplacení příspěvků - ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setPaymentConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
@@ -188,7 +203,23 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Upomínka platby příspěvků', "Dobrý den,\n\ndovolujeme si vás upozornit na neuhrazené příspěvky.");
+        $config = $this->getSystemConfig();
+        $qrFile = $this->generateQr($memberId);
+
+        $message = $this->emailsFacade->createMessage(
+            'payment_reminder',
+            array_merge($config, [
+                'member' => $member,
+                'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
+            ]),
+            $member->email,
+            [],
+            $qrFile
+        );
+        $message->setSubject('Upomínka platby členských příspěvků - ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setPaymentReminderEmailDt(new \DateTime());
         $this->saveMember($member);

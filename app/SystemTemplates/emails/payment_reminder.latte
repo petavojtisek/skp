@@ -1,0 +1,25 @@
+{layout '@layout.latte'}
+
+{block content}
+    <h2>Upomínka platby členského příspěvku</h2>
+    <p>Dobrý den, <strong>{$member->getFullName()}</strong>,</p>
+    <p>dovolujeme si Vás upozornit, že v naší evidenci jsme dosud nezaznamenali úhradu členského příspěvku pro spolek <strong>{$SKP_NAME}</strong>.</p>
+
+    <div style="background-color: #fef9e7; padding: 20px; border-left: 4px solid #f1c40f; margin: 20px 0;">
+        <h3>Platební údaje</h3>
+        <p>
+            <strong>Číslo účtu:</strong> {$SKP_ACCOUNT_NUMBER}<br>
+            <strong>Variabilní symbol:</strong> {$member->getMemberNumber()}<br>
+            <strong>Částka k úhradě:</strong> {$SKP_REGISTRATION_AMOUNT} Kč
+        </p>
+        
+        {if !empty($qrCodePath)}
+            <p>Platbu můžete provést pohodlně naskenováním QR kódu:</p>
+            <img src="{$qrCodePath|noescape}" alt="QR platba" style="max-width: 200px;">
+        {/if}
+    </div>
+
+    <p>Pokud jste platbu již provedli v posledních dnech, považujte prosím tuto zprávu za bezpředmětnou.</p>
+    
+    <p>V případě nejasností nás neváhejte kontaktovat.</p>
+{/block}

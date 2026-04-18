@@ -39,7 +39,7 @@ class EmailsFacade
             'SKP_ICO' => $map['SKP_ICO'] ?? '',
             'SKP_ADDRESS' => $map['SKP_ADDRESS'] ?? '',
             'SKP_ACCOUNT_NUMBER' => $map['SKP_ACCOUNT_NUMBER'] ?? '',
-            'SKP_MEMBERSHIP_FEE' => $map['SKP_MEMBERSHIP_FEE'] ?? '',
+            'SKP_REGISTRATION_AMOUNT' => $map['SKP_REGISTRATION_AMOUNT'] ?? $map['SKP_MEMBERSHIP_FEE'] ?? '',
         ];
     }
 
@@ -55,16 +55,20 @@ class EmailsFacade
             $message->addTo($to);
         }
 
-        $cidLogo = null;
+        // Logo
+        $logoCid = null;
         if (file_exists($logoPath)) {
             $part = $message->addEmbeddedFile($logoPath);
-            $cidLogo = trim($part->getHeader('Content-ID'), '<>');
+            $logoCid = $part->getHeader('Content-ID');
+            $logoCid = trim($logoCid, '<>');
         }
 
-        $cidQr = null;
+        // QR Kód
+        $qrCid = null;
         if ($qrPath && file_exists($qrPath)) {
             $part = $message->addEmbeddedFile($qrPath);
-            $cidQr = trim($part->getHeader('Content-ID'), '<>');
+            $qrCid = $part->getHeader('Content-ID');
+            $qrCid = trim($qrCid, '<>');
         }
 
         foreach ($attachments as $filePath) {
@@ -73,9 +77,10 @@ class EmailsFacade
             }
         }
 
+        // Parametry pro šablonu
         $tplParams = array_merge($this->config, $params, [
-            'logoPath' => isset($cidLogo) ? 'cid:' . $cidLogo : null,
-            'qrCodePath' => isset($cidQr) ? 'cid:' . $cidQr : null
+            'logoPath' => $logoCid ? 'cid:' . $logoCid : null,
+            'qrCodePath' => $qrCid ? 'cid:' . $qrCid : null
         ]);
 
         $html = $latte->renderToString(APP_DIR . DS . 'SystemTemplates' . DS . 'emails' . DS . $templateName . '.latte', $tplParams);
@@ -99,7 +104,6 @@ class EmailsFacade
             return;
         }
 
-        // V produkci odesíláme skutečně
         $this->mailer->send($message);
     }
 

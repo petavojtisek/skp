@@ -1,0 +1,20 @@
+{layout '@layout.latte'}
+
+{block content}
+    <h2>Potvrzení o přijetí platby</h2>
+    <p>Dobrý den, <strong>{$member->getFullName()}</strong>,</p>
+    <p>potvrzujeme, že jsme v pořádku přijali Vaši platbu členského příspěvku pro spolek <strong>{$SKP_NAME}</strong>.</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee; width: 150px;"><strong>Číslo člena:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->getMemberNumber()}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Datum platby:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->getLastMemberPayment() ? $member->getLastMemberPayment('d.m.Y') : '-'}</td>
+        </tr>
+    </table>
+
+    <p>Vaše členství je nyní plně aktivní a uhrazené pro aktuální období. Děkujeme za Vaši podporu!</p>
+{/block}

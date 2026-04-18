@@ -1,0 +1,15 @@
+{layout '@layout.latte'}
+
+{block content}
+    <h2>Potvrzení o přijetí do spolku</h2>
+    <p>Vážený člene / Vážená členko, <strong>{$member->getFullName()}</strong>,</p>
+    <p>s radostí Vám oznamujeme, že Vaše žádost o členství ve spolku <strong>{$SKP_NAME}</strong> byla schválena.</p>
+
+    <p>Vaše členské číslo je: <strong>{$member->getMemberNumber()}</strong></p>
+
+    <p>Tímto se stáváte řádným členem našeho spolku. Veškeré informace o činnosti, plánovaných akcích a dokumentech naleznete na našich webových stránkách.</p>
+    
+    <p>V případě jakýchkoliv dotazů nás neváhejte kontaktovat.</p>
+
+    <p>Těšíme se na Vaši aktivní účast!</p>
+{/block}
