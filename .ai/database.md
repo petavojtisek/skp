@@ -205,17 +205,25 @@
 | Field | Type | Null | Key | Default | Extra |
 |-------|------|------|-----|---------|-------|
 | member_id | int | NO | PRI | NULL | auto_increment |
-| member_number | int | YES |  | NULL |  |
+| member_number | varchar(255) | YES |  | NULL |  |
 | name | varchar(255) | YES |  | NULL |  |
 | surname | varchar(255) | YES |  | NULL |  |
 | degree | varchar(255) | YES |  | NULL |  |
 | birth_date | date | YES |  | NULL |  |
-| address | text | YES |  | NULL |  |
+| street | text | YES |  | NULL |  |
+| zip | varchar(255) | YES |  | NULL |  |
+| city | varchar(255) | YES |  | NULL |  |
 | email | varchar(255) | YES |  | NULL |  |
 | phone | varchar(255) | YES |  | NULL |  |
 | note | varchar(255) | YES |  | NULL |  |
 | last_member_payment | date | YES |  | NULL |  |
 | active | tinyint | YES |  | NULL |  |
+| source | varchar(100) | YES |  | NULL |  |
+| registration_email_dt | datetime | YES |  | NULL |  |
+| registration_confirm_email_dt | datetime | YES |  | NULL |  |
+| payment_confirm_email_dt | datetime | YES |  | NULL |  |
+| payment_reminder_email_dt | datetime | YES |  | NULL |  |
+| payment_renew_email_dt | datetime | YES |  | NULL |  |
 
 ## Table: `module`
 

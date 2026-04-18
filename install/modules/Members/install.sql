@@ -14,5 +14,12 @@ CREATE TABLE IF NOT EXISTS `members` (
   `note` varchar(255) DEFAULT NULL,
   `last_member_payment` date DEFAULT NULL,
   `active` tinyint(4) DEFAULT '1',
+  `source` varchar(100) DEFAULT NULL,
+  `registration_email_dt` timestamp DEFAULT NULL,
+  `registration_confirm_email_dt` timestamp DEFAULT NULL,
+  `payment_confirm_email_dt` timestamp DEFAULT NULL,
+  `payment_reminder_email_dt` timestamp DEFAULT NULL,
+  `payment_renew_email_dt` timestamp DEFAULT NULL,
+  `created_dt` timestamp DEFAULT NULL,
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;

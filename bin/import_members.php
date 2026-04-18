@@ -9,7 +9,7 @@ use App\Modules\Members\Model\MembersEntity;
 
 $facade = $container->getByType(MembersFacade::class);
 
-$csvFile = __DIR__ . '/../members.csv';
+$csvFile = __DIR__ . 'members.csv';
 
 if (!file_exists($csvFile)) {
     echo "Soubor members.csv nebyl nalezen v rootu projektu.\n";
@@ -55,6 +55,8 @@ while (($data = fgetcsv($file)) !== false) {
     $entity->setNote($data[9] ?: null);
     $entity->setLastMemberPayment($parseDate($data[11]));
     $entity->setActive(1);
+    $entity->setRegistrationEmailDt(new \Dibi\DateTime());
+    $entity->setSource(MembersEntity::SOURCE_IMPORT);
 
     try {
         $facade->saveMember($entity);

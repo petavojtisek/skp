@@ -82,6 +82,14 @@ class MembersAdminControl extends Control implements IToolsControl
                 $values = $item->getEntityData();
                 if ($item->getBirthDate()) $values['birth_date'] = $item->getBirthDate('Y-m-d');
                 if ($item->getLastMemberPayment()) $values['last_member_payment'] = $item->getLastMemberPayment('Y-m-d');
+                
+                // Formátování nových polí pro readonly zobrazení
+                if ($item->getRegistrationEmailDt()) $values['registration_email_dt'] = $item->getRegistrationEmailDt();
+                if ($item->getRegistrationConfirmEmailDt()) $values['registration_confirm_email_dt'] = $item->getRegistrationConfirmEmailDt();
+                if ($item->getPaymentConfirmEmailDt()) $values['payment_confirm_email_dt'] = $item->getPaymentConfirmEmailDt();
+                if ($item->getPaymentReminderEmailDt()) $values['payment_reminder_email_dt'] = $item->getPaymentReminderEmailDt();
+                if ($item->getPaymentRenewEmailDt()) $values['payment_renew_email_dt'] = $item->getPaymentRenewEmailDt();
+
                 $this['memberForm']->setDefaults($values);
             }
         }
@@ -184,6 +192,24 @@ class MembersAdminControl extends Control implements IToolsControl
 
         $form->addTextArea('note', 'Poznámka')
             ->setHtmlAttribute('rows', 3);
+
+        $form->addText('source', 'Zdroj')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('registration_email_dt', 'Email s registrací')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('registration_confirm_email_dt', 'Potvrzení registrace')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_confirm_email_dt', 'Potvrzení platby')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_reminder_email_dt', 'Upomínka platby')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_renew_email_dt', 'Obnovení členství')
+            ->setHtmlAttribute('readonly', true);
 
         $form->addSubmit('send', 'Uložit');
 
