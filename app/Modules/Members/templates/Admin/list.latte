@@ -1,7 +1,7 @@
 <div n:snippet="members">
     <div class="card card-outline card-secondary">
         <div class="card-header">
-            <h3 class="card-title">Seznam členů</h3>
+            <h3 class="card-title">  </h3>
             <div class="card-tools">
                 <a n:if="$loggedUserEntity->hasModuleRight('members','edit')" n:href="edit!" class="btn btn-sm btn-primary ajax"><i class="fas fa-plus"></i> Nový člen</a>
             </div>
@@ -135,8 +135,26 @@
         </div>
     </div>
 
-    <!-- Modaly -->
-    <div class="modal fade" id="modal-email" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Modal Confirm (Univerzální) -->
+    <div class="modal fade" id="modal-confirm" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h4 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Potvrdit akci</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-message"></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zrušit</button>
+                    <button type="button" class="btn btn-warning" id="submit-confirm">Provést akci</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal E-mail -->
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -182,6 +200,14 @@
         </div>
     </div>
 
+        <script>
+            var regink= {link sendRegistrationEmail!}
+            var acceptance= {link sendAcceptanceEmail!}
+            var payc= {link sendPaymentConfirmation!}
+            var payr= {link sendPaymentReminder!}
+            var setPaymentDate= {link setPaymentDate!}
+            var exportLink= {link export!}
+        </script>
     <script n:syntax="off">
         (function() {
             var setup = function() {
@@ -243,6 +269,9 @@
                     updateSelection();
                 });
 
+                var pendingAction = null;
+                var pendingIds = null;
+
                 $(document).off('click', '.action-btn').on('click', '.action-btn', function() {
                     var action = $(this).data('action');
                     var ids = [];
@@ -251,27 +280,42 @@
                     var countText = finalIds ? 'vybraným (' + ids.length + ')' : 'všem';
 
                     if (action === 'export') {
-                        // naja.makeRequest('GET', {link export!}, { ids: finalIds });
+                         naja.makeRequest('GET', exportLink, { ids: finalIds });
                     } else if (action === 'email') {
                         $('#modal-email').modal('show');
                     } else if (action === 'payment') {
                         $('#modal-payment').modal('show');
-                    } else if (action === 'reg-email') {
-                        if (confirm('Opravdu odeslat registrační e-mail ' + countText + '?')) {
-                            // naja.makeRequest('GET', {link sendRegistrationEmail!}, { ids: finalIds });
+                    } else {
+                        // Rychlé akce s potvrzovacím modalem
+                        pendingAction = action;
+                        pendingIds = finalIds;
+                        var msg = '';
+                        switch(action) {
+                            case 'reg-email': msg = 'Opravdu odeslat registrační e-mail ' + countText + '?'; break;
+                            case 'acceptance': msg = 'Opravdu odeslat potvrzení o přijetí do spolku ' + countText + '?'; break;
+                            case 'pay-confirm': msg = 'Opravdu odeslat potvrzení o zaplacení ' + countText + '?'; break;
+                            case 'pay-reminder': msg = 'Opravdu odeslat upomínku o zaplacení ' + countText + '?'; break;
                         }
-                    } else if (action === 'acceptance') {
-                        if (confirm('Opravdu odeslat potvrzení o přijetí do spolku ' + countText + '?')) {
-                            // naja.makeRequest('GET', {link sendAcceptanceEmail!}, { ids: finalIds });
+                        $('#confirm-message').text(msg);
+                        $('#modal-confirm').modal('show');
+                    }
+                });
+
+                $(document).off('click', '#submit-confirm').on('click', '#submit-confirm', function() {
+                    if (pendingAction) {
+                        var link = '';
+
+                        switch(pendingAction) {
+                            case 'reg-email': link = regink; break;
+                            case 'acceptance': link = acceptance; break;
+                            case 'pay-confirm': link = payc; break;
+                            case 'pay-reminder': link = payr; break;
                         }
-                    } else if (action === 'pay-confirm') {
-                        if (confirm('Opravdu odeslat potvrzení o zaplacení ' + countText + '?')) {
-                            // naja.makeRequest('GET', {link sendPaymentConfirmation!}, { ids: finalIds });
-                        }
-                    } else if (action === 'pay-reminder') {
-                        if (confirm('Opravdu odeslat upomínku o zaplacení ' + countText + '?')) {
-                            // naja.makeRequest('GET', {link sendPaymentReminder!}, { ids: finalIds });
-                        }
+
+                        naja.makeRequest('GET', link, { ids: pendingIds });
+                        $('#modal-confirm').modal('hide');
+                        pendingAction = null;
+                        pendingIds = null;
                     }
                 });
 
@@ -292,7 +336,7 @@
                     var ids = [];
                     $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
                     var date = $('#payment-date').val();
-                   // naja.makeRequest('POST', {link setPaymentDate!}, { ids: ids.length > 0 ? ids : null, date: date });
+                    naja.makeRequest('POST', setPaymentDate, { ids: ids.length > 0 ? ids : null, date: date });
                     $('#modal-payment').modal('hide');
                 });
 
@@ -323,4 +367,4 @@
             }
         })();
     </script>
-</div>
+
