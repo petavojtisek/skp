@@ -1,0 +1,124 @@
+<section class="contact-section section-padding">
+    <div class="container">
+        <div n:snippet="registerForm">
+            {if $submitted}
+                <div class="registration-success text-center">
+                    <div class="icon-circle mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="section-title">Děkujeme za registraci!</h2>
+                    <p class="section-subtitle mb-5">Vaše údaje byly úspěšně uloženy. Níže naleznete shrnutí a instrukce k platbě.</p>
+
+                    <div class="row text-left mb-5">
+                        <div class="col-md-6 offset-md-3">
+                            <div class="card p-4 shadow-sm border-0 bg-light">
+                                <h4 class="mb-3 border-bottom pb-2">Shrnutí údajů</h4>
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr><th>Jméno:</th><td>{$formData['degree'] ? $formData['degree'] . ' ' : ''}{$formData['name']} {$formData['surname']}</td></tr>
+                                    <tr><th>E-mail:</th><td>{$formData['email']}</td></tr>
+                                    <tr><th>Datum narození:</th><td>{$formData['birth_date']|date:'j. n. Y'}</td></tr>
+                                    <tr><th>Adresa:</th><td>{$formData['street']}, {$formData['zip']} {$formData['city']}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-actions d-flex justify-content-center gap-3 mt-4">
+                        <a href="#" class="btn btn-primary" onclick="alert('Bude brzy funkční'); return false;">
+                            <i class="fas fa-file-pdf mr-2"></i> Stáhnout potvrzení v PDF
+                        </a>
+                        <a href="#" class="btn btn-gold ml-2" onclick="alert('Bude brzy funkční'); return false;">
+                            <i class="fas fa-qrcode mr-2"></i> Zobrazit QR kód k platbě
+                        </a>
+                    </div>
+                </div>
+            {else}
+                {if isset($error) && $error}
+                    <p class="alert-danger">Registrace nebyla úspěšně!</p>
+                 {/if}
+
+                <form n:name="form" class="ajax no-validation" novalidate data-nette-browser-validation="false">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label n:name="degree">Titul</label>
+                                <input n:name="degree" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label n:name="name">Jméno</label>
+                                <input n:name="name" class="form-control {$form['name']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['name']->error}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label n:name="surname">Příjmení</label>
+                                <input n:name="surname" class="form-control {$form['surname']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['surname']->error}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="email">E-mail</label>
+                                <input n:name="email" class="form-control {$form['email']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['email']->error}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="phone">Telefon</label>
+                                <input n:name="phone" class="form-control {$form['phone']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['phone']->error}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label n:name="birth_date">Datum narození</label>
+                                <input n:name="birth_date" class="form-control {$form['birth_date']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['birth_date']->error}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label n:name="street">Ulice a č.p.</label>
+                                <input n:name="street" class="form-control {$form['street']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['street']->error}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label n:name="city">Město</label>
+                                <input n:name="city" class="form-control {$form['city']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['city']->error}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label n:name="zip">PSČ</label>
+                                <input n:name="zip" class="form-control {$form['zip']->error ? is-invalid}">
+                                <div class="invalid-feedback" n:ifcontent>{$form['zip']->error}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button n:name="send" class="btn btn-primary">Odeslat registraci</button>
+                    </div>
+                </form>
+            {/if}
+        </div>
+    </div>
+</section>
