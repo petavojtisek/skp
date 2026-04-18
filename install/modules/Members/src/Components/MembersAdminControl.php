@@ -22,6 +22,24 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @var string|null @persistent */
     public $search = null;
 
+    /** @var string|null @persistent */
+    public $source = null;
+
+    /** @var string|null @persistent */
+    public $registrationEmail = null;
+
+    /** @var string|null @persistent */
+    public $registrationConfirm = null;
+
+    /** @var string|null @persistent */
+    public $paymentConfirm = null;
+
+    /** @var string|null @persistent */
+    public $isPaid = null;
+
+    /** @var string|null @persistent */
+    public $activeStatus = null;
+
     /** @var string @persistent */
     public $view = 'default';
 
@@ -62,13 +80,37 @@ class MembersAdminControl extends Control implements IToolsControl
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
 
-        $items = $this->facade->findMembers($limit, $offset,$this->search);
-        $totalCount = $this->facade->countMembers($this->search);
+        $items = $this->facade->findMembers(
+            $limit, 
+            $offset, 
+            $this->search, 
+            $this->source,
+            $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+            $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+            $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+            $this->isPaid === null ? null : (bool)$this->isPaid,
+            $this->activeStatus === null ? null : (bool)$this->activeStatus
+        );
+        $totalCount = $this->facade->countMembers(
+            $this->search, 
+            $this->source,
+            $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+            $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+            $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+            $this->isPaid === null ? null : (bool)$this->isPaid,
+            $this->activeStatus === null ? null : (bool)$this->activeStatus
+        );
 
         $this->template->items = $items;
         $this->template->page = $this->page;
         $this->template->lastPage = ceil($totalCount / $limit);
         $this->template->search = $this->search;
+        $this->template->source = $this->source;
+        $this->template->registrationEmail = $this->registrationEmail;
+        $this->template->registrationConfirm = $this->registrationConfirm;
+        $this->template->paymentConfirm = $this->paymentConfirm;
+        $this->template->isPaid = $this->isPaid;
+        $this->template->activeStatus = $this->activeStatus;
 
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -82,6 +124,15 @@ class MembersAdminControl extends Control implements IToolsControl
                 $values = $item->getEntityData();
                 if ($item->getBirthDate()) $values['birth_date'] = $item->getBirthDate('Y-m-d');
                 if ($item->getLastMemberPayment()) $values['last_member_payment'] = $item->getLastMemberPayment('Y-m-d');
+                
+                // Formátování nových polí pro readonly zobrazení
+                if ($item->getRegistrationEmailDt()) $values['registration_email_dt'] = $item->getRegistrationEmailDt();
+                if ($item->getRegistrationConfirmEmailDt()) $values['registration_confirm_email_dt'] = $item->getRegistrationConfirmEmailDt();
+                if ($item->getPaymentConfirmEmailDt()) $values['payment_confirm_email_dt'] = $item->getPaymentConfirmEmailDt();
+                if ($item->getPaymentReminderEmailDt()) $values['payment_reminder_email_dt'] = $item->getPaymentReminderEmailDt();
+                if ($item->getPaymentRenewEmailDt()) $values['payment_renew_email_dt'] = $item->getPaymentRenewEmailDt();
+                if ($item->getCreatedDt()) $values['created_dt'] = $item->getCreatedDt('d.m.Y H:i:s');
+
                 $this['memberForm']->setDefaults($values);
             }
         }
@@ -125,6 +176,111 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->handleList();
     }
 
+    public function handleExport(mixed $ids = null): void
+    {
+        // Podpora pro vše (null), pole (array) i jedno ID (int/string)
+        bdump($ids, 'Export - vstupní IDs');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendEmail(mixed $ids = null, ?string $subject = null, ?string $content = null): void
+    {
+        bdump(['ids' => $ids, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
+        $this->getPresenter()->flashMessage('E-maily byly zařazeny k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSetPaymentDate(mixed $ids = null, ?string $date = null): void
+    {
+        bdump(['ids' => $ids, 'date' => $date], 'Nastavení data platby');
+        $this->getPresenter()->flashMessage('Datum platby bylo u vybraných členů aktualizováno.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendRegistrationEmail(mixed $ids = null): void
+    {
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendRegistrationEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Registrační e-maily byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendAcceptanceEmail(mixed $ids = null): void
+    {
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendAcceptanceEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('E-maily o přijetí byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendPaymentConfirmation(mixed $ids = null): void
+    {
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendPaymentConfirmationEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Potvrzení o platbě byla odeslána.', 'success');
+        $this->getPresenter()->redrawControl('members');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendPaymentReminder(mixed $ids = null): void
+    {
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendPaymentReminderEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Upomínky byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    private function resolveIds(mixed $ids): array
+    {
+        if ($ids === null) {
+            // Získání všech ID členů podle aktuálního filtru
+            $total = $this->facade->countMembers(
+                $this->search, 
+                $this->source,
+                $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+                $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+                $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+                $this->isPaid === null ? null : (bool)$this->isPaid,
+                $this->activeStatus === null ? null : (bool)$this->activeStatus
+            );
+            $members = $this->facade->findMembers(
+                $total, 
+                0, 
+                $this->search, 
+                $this->source,
+                $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+                $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+                $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+                $this->isPaid === null ? null : (bool)$this->isPaid,
+                $this->activeStatus === null ? null : (bool)$this->activeStatus
+            );
+            return array_map(fn($m) => $m->getId(), $members);
+        }
+        
+        return is_array($ids) ? $ids : [$ids];
+    }
+
     /* --- COMPONENTS --- */
 
     protected function createComponentSearchForm(): Form
@@ -132,11 +288,45 @@ class MembersAdminControl extends Control implements IToolsControl
         $form = new Form;
         $form->addText('search', 'Hledat')
             ->setHtmlAttribute('placeholder', 'Jméno, příjmení, číslo, email...');
+        
+        $form->addSelect('source', 'Zdroj', MembersEntity::SOURCES)
+            ->setPrompt('Všechny zdroje');
+
+        $options = [1 => 'Ano', 0 => 'Ne'];
+
+        $form->addSelect('registrationEmail', 'Reg. email', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('registrationConfirm', 'Poděkování', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('paymentConfirm', 'Potvrz. platby', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('isPaid', 'Zaplaceno', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('activeStatus', 'Aktivní', $options)
+            ->setPrompt('?');
+
         $form->addSubmit('send', 'Hledat');
-        $form->setDefaults(['search' => $this->search]);
+        $form->setDefaults([
+            'search' => $this->search,
+            'source' => $this->source,
+            'registrationEmail' => $this->registrationEmail,
+            'registrationConfirm' => $this->registrationConfirm,
+            'paymentConfirm' => $this->paymentConfirm,
+            'isPaid' => $this->isPaid,
+            'activeStatus' => $this->activeStatus
+        ]);
         $form->onSuccess[] = function (Form $form, $values) {
-            xdebug_break();
             $this->search = $values->search;
+            $this->source = $values->source;
+            $this->registrationEmail = $values->registrationEmail;
+            $this->registrationConfirm = $values->registrationConfirm;
+            $this->paymentConfirm = $values->paymentConfirm;
+            $this->isPaid = $values->isPaid;
+            $this->activeStatus = $values->activeStatus;
             $this->page = 1;
 
             if ($this->getPresenter()->isAjax()) {
@@ -184,6 +374,27 @@ class MembersAdminControl extends Control implements IToolsControl
 
         $form->addTextArea('note', 'Poznámka')
             ->setHtmlAttribute('rows', 3);
+
+        $form->addText('source', 'Zdroj')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('registration_email_dt', 'Email s registrací')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('registration_confirm_email_dt', 'Potvrzení registrace')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_confirm_email_dt', 'Potvrzení platby')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_reminder_email_dt', 'Upomínka platby')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('payment_renew_email_dt', 'Obnovení členství')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('created_dt', 'Vytvořeno')
+            ->setHtmlAttribute('readonly', true);
 
         $form->addSubmit('send', 'Uložit');
 

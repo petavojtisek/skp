@@ -6,6 +6,15 @@ use App\Model\Base\BaseEntity;
 
 class MembersEntity extends BaseEntity
 {
+
+    const string  SOURCE_IMPORT = 'import',
+                  SOURCE_WEB = 'web';
+
+    const array SOURCES = [
+        self::SOURCE_IMPORT=> self::SOURCE_IMPORT,
+        self::SOURCE_WEB=> self::SOURCE_WEB,
+    ];
+
     public ?int $member_id = null;
     public ?string $member_number = null;
     public ?string $name = null;
@@ -20,6 +29,13 @@ class MembersEntity extends BaseEntity
     public ?string $note = null;
     public mixed $last_member_payment = null;
     public ?int $active = 1;
+    public ?string $source = null;
+    public mixed $registration_email_dt = null;
+    public mixed $registration_confirm_email_dt = null;
+    public mixed $payment_confirm_email_dt = null;
+    public mixed $payment_reminder_email_dt = null;
+    public mixed $payment_renew_email_dt = null;
+    public mixed $created_dt = null;
 
     public function getId(): ?int
     {
@@ -164,5 +180,65 @@ class MembersEntity extends BaseEntity
     public function getFullName(): string
     {
         return trim(($this->degree ? $this->degree . ' ' : '') . $this->name . ' ' . $this->surname);
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): void
+    {
+        $this->setVariable('source', $source, self::VALUE_TYPE_STRING);
+    }
+
+    public function getRegistrationEmailDt($format = 'd.m.Y H:i:s')
+    {
+        return $this->getDateTime($this->registration_email_dt, $format);
+    }
+
+    public function setRegistrationEmailDt(mixed $dt): void
+    {
+        $this->setVariable('registration_email_dt', $dt, self::VALUE_TYPE_DATE);
+    }
+
+    public function getRegistrationConfirmEmailDt($format = 'd.m.Y H:i:s')
+    {
+        return $this->getDateTime($this->registration_confirm_email_dt, $format);
+    }
+
+    public function setRegistrationConfirmEmailDt(mixed $dt): void
+    {
+        $this->setVariable('registration_confirm_email_dt', $dt, self::VALUE_TYPE_DATE);
+    }
+
+    public function getPaymentConfirmEmailDt($format = 'd.m.Y H:i:s')
+    {
+        return $this->getDateTime($this->payment_confirm_email_dt, $format);
+    }
+
+    public function setPaymentConfirmEmailDt(mixed $dt): void
+    {
+        $this->setVariable('payment_confirm_email_dt', $dt, self::VALUE_TYPE_DATE);
+    }
+
+    public function getPaymentReminderEmailDt($format = 'd.m.Y H:i:s')
+    {
+        return $this->getDateTime($this->payment_reminder_email_dt, $format);
+    }
+
+    public function setPaymentReminderEmailDt(mixed $dt): void
+    {
+        $this->setVariable('payment_reminder_email_dt', $dt, self::VALUE_TYPE_DATE);
+    }
+
+    public function getPaymentRenewEmailDt($format = 'd.m.Y H:i:s')
+    {
+        return $this->getDateTime($this->payment_renew_email_dt, $format);
+    }
+
+    public function setPaymentRenewEmailDt(mixed $dt): void
+    {
+        $this->setVariable('payment_renew_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 }

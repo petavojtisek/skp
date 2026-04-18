@@ -91,9 +91,7 @@ class RegisterForm extends BaseForm
     }
     public function formError(Form $form): void
     {
-
         $this->error = true;
-
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl('registerForm'); // Překreslí formulář i s chybami
             $this->getPresenter()->redrawControl('flashes'); // Překreslí případné flashky
@@ -102,6 +100,7 @@ class RegisterForm extends BaseForm
 
     public function formSucceeded(Form $form, $values): void
     {
+        //todo remove
         $this->memberId = 33;
         $this->submitted = true;
         $this->formData = (array)$values;
@@ -110,6 +109,8 @@ class RegisterForm extends BaseForm
             //$this->getPresenter()->sendPayload();
             }
         return;
+
+
         // 1. Save to Members
         $member = new MembersEntity();
         $member->setDegree($values->degree);
@@ -121,15 +122,16 @@ class RegisterForm extends BaseForm
         $member->setStreet($values->street);
         $member->setCity($values->city);
         $member->setZip($values->zip);
-        $member->setActive(1);
+        $member->setActive(0);
+        $member->setSource(MembersEntity::SOURCE_WEB);
 
 
 
         $this->memberId = $this->membersFacade->saveMember($member);
         if($this->memberId){
-            $this->membersFacade->generateQr($member);
-            $this->membersFacade->generateRegistrationConfirmation($member);
-            $this->membersFacade->sendRegistrationEmail($member);
+            $this->membersFacade->generateQr($this->memberId);
+            $this->membersFacade->generateRegistrationConfirmation($this->memberId);
+            $this->membersFacade->sendRegistrationEmail($this->memberId);
         }
 
 

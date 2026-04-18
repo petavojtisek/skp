@@ -100,7 +100,7 @@ class EmailsFacade
         }
 
         // V produkci odesíláme skutečně
-        //$this->mailer->send($message);
+        $this->mailer->send($message);
     }
 
     public function sendGenericEmail(string $to, string $subject, string $text): void
