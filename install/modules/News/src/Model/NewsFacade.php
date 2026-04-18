@@ -21,8 +21,12 @@ class NewsFacade
         return $this->service->getFrontByComponentId($componentId);
     }
 
-    public function find(int $id): ?NewsEntity
+    public function find(?int $id): ?NewsEntity
     {
+        if(!$id){
+            return null;
+        }
+
         return $this->service->find($id);
     }
 

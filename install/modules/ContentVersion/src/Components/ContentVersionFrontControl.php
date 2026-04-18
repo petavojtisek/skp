@@ -3,12 +3,13 @@
 namespace App\Modules\ContentVersion\Components;
 
 use App\Model\Element\ElementFacade;
+use App\Model\Helper\BaseControl;
 use App\Model\Helper\IObjectControl;
 use App\Modules\ContentVersion\Model\ContentVersionFacade;
 use App\Model\Version\VersionFacade;
 use Nette\Application\UI\Control;
 
-class ContentVersionFrontControl extends Control implements IObjectControl
+class ContentVersionFrontControl extends BaseControl implements IObjectControl
 {
     private ContentVersionFacade $facade;
     private VersionFacade $versionFacade;
@@ -43,12 +44,21 @@ class ContentVersionFrontControl extends Control implements IObjectControl
     public function render(): void
     {
         $this->template->content = '';
+
         $activeElementId = $this->versionFacade->getActiveElementId($this->componentId);
         if ($activeElementId) {
             $element = $this->elementFacade->findFront($activeElementId);
             if($element) {
+
                 $content = $this->facade->find($activeElementId);
-                $this->template->content = $content ? $content->getContent() : '';
+                $ct =  $content ? $content->getContent() : '';
+/*
+                $params = $this->getPresenter()->getTemplate()->getParameters();
+                $latte = new \Latte\Engine;
+                $latte->setLoader(new \Latte\Loaders\StringLoader);
+                $ct = $latte->renderToString($ct, $params);
+*/
+                $this->template->content = $ct;
             }
         }
 

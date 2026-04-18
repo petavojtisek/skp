@@ -1,14 +1,18 @@
-<div class="documents-list" n:if="!empty($items)">
-    <ul class="list-group">
-        <li n:foreach="$items as $item" class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="doc-info">
-                <i class="fas fa-file-pdf mr-2 text-danger"></i>
-                <strong>{$item->getText()}</strong>
-                <div class="text-muted small">{$item->getCreatedDt()|date:'d.m.Y'}</div>
-            </div>
-            <a href="{plink //:Front:File:get, id => \App\Model\System\EncodeDecode::encodeSmallHash($item->file_id)}" class="btn btn-sm btn-outline-primary" target="_blank">
-                <i class="fas fa-download mr-1"></i> Stáhnout
+<div class="documents-grid" n:if="!empty($items)">
+    <div n:foreach="$items as $item" class="document-card">
+        <div class="doc-icon">
+            <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-content">
+            <h4 class="doc-title">{$item->getText()}</h4>
+            <div class="doc-meta">{$item->getCreatedDt()|date:'d.m.Y'}</div>
+        </div>
+        <div class="doc-actions">
+            <a href="{plink //:Front:File:get, id => \App\Model\System\EncodeDecode::encodeSmallHash($item->file_id)}"
+               class="btn btn-outline-green"
+               target="_blank">
+                <i class="fas fa-download"></i> Stáhnout
             </a>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>

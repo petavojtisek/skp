@@ -15,6 +15,7 @@ class DocumentsFrontControl extends Control implements IObjectControl
 
     public function __construct(DocumentsFacade $facade)
     {
+
         $this->facade = $facade;
     }
 
@@ -31,6 +32,7 @@ class DocumentsFrontControl extends Control implements IObjectControl
 
     public function render(): void
     {
+
         $this->template->items = $this->facade->getFrontByComponentId($this->componentId);
         $this->template->setFile(__DIR__ . '/../templates/Front/list.latte');
         $this->template->render();

@@ -124,11 +124,12 @@ class PageRewriteRoute implements Nette\Application\IRouter
         }
 
         if ($pageId) {
-            return [
-                'presenter' => 'Front:Home',
-                'action' => 'default',
-                'page_id' => $pageId,
-            ];
+            $params = $httpRequest->getQuery();
+            // Přidáme k tomu naše identifikované parametry (případně je přepíšeme)
+            $params['presenter'] = 'Front:Home';
+            $params['action'] = 'default';
+            $params['page_id'] = $pageId;
+            return $params;
         }
 
         return null;
