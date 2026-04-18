@@ -32,9 +32,13 @@
                         <div class="input-group-prepend"><span class="input-group-text">Zaplaceno.</span></div>
                         <select n:name="isPaid" class="form-control"></select>
                     </div>
+                    <div class="input-group input-group-sm mr-2 mb-2">
+                        <div class="input-group-prepend"><span class="input-group-text">Aktivní.</span></div>
+                        <select n:name="activeStatus" class="form-control"></select>
+                    </div>
                     <button n:name="send" class="btn btn-sm btn-default mb-2"><i class="fas fa-search"></i> Hledat</button>
-                    <a n:if="$search || $source || $registrationEmail !== null || $registrationConfirm !== null || $paymentConfirm !== null || $isPaid !== null"
-                       n:href="this, search => null, source => null, registrationEmail => null, registrationConfirm => null, paymentConfirm => null, isPaid => null"
+                    <a n:if="$search || $source || $registrationEmail !== null || $registrationConfirm !== null || $paymentConfirm !== null || $isPaid !== null || $activeStatus !== null"
+                       n:href="this, search => null, source => null, registrationEmail => null, registrationConfirm => null, paymentConfirm => null, isPaid => null, activeStatus => null"
                        class="btn btn-sm btn-link ajax ml-2 mb-2">Zrušit filtr</a>
                 </form>
 
@@ -47,6 +51,18 @@
                     </button>
                     <button type="button" class="btn btn-sm btn-outline-primary action-btn" data-action="payment" id="btn-payment">
                         <i class="fas fa-hand-holding-usd"></i> <span class="btn-label">Nastavit datum zaplacení všem</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary action-btn" data-action="reg-email" id="btn-reg-email">
+                        <i class="fas fa-paper-plane"></i> <span class="btn-label">Registrační email všem</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary action-btn" data-action="acceptance" id="btn-acceptance">
+                        <i class="fas fa-user-check"></i> <span class="btn-label">Přijetí do spolku všem</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary action-btn" data-action="pay-confirm" id="btn-pay-confirm">
+                        <i class="fas fa-file-invoice-dollar"></i> <span class="btn-label">Potvrzení o zaplacení všem</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary action-btn" data-action="pay-reminder" id="btn-pay-reminder">
+                        <i class="fas fa-bell"></i> <span class="btn-label">Upomínka o zaplacení všem</span>
                     </button>
                 </div>
             </div>
@@ -184,22 +200,34 @@
                         $('#btn-export .btn-label').text('Exportovat vybrané (' + count + ')');
                         $('#btn-email .btn-label').text('E-mail vybraným (' + count + ')');
                         $('#btn-payment .btn-label').text('Nastavit datum zaplacení vybraným (' + count + ')');
+                        $('#btn-reg-email .btn-label').text('Registrační email vybraným (' + count + ')');
+                        $('#btn-acceptance .btn-label').text('Přijetí do spolku vybraným (' + count + ')');
+                        $('#btn-pay-confirm .btn-label').text('Potvrzení o zaplacení vybraným (' + count + ')');
+                        $('#btn-pay-reminder .btn-label').text('Upomínka o zaplacení vybraným (' + count + ')');
+
                         $('.modal-target-label').text('vybraným: ' + count);
 
                         $('#btn-export').removeClass('btn-outline-success').addClass('btn-success');
                         $('#btn-email').removeClass('btn-outline-info').addClass('btn-info');
                         $('#btn-payment').removeClass('btn-outline-primary').addClass('btn-primary');
+                        $('.action-btn[data-action^="reg-"], .action-btn[data-action^="acceptance"], .action-btn[data-action^="pay-"]').removeClass('btn-outline-secondary').addClass('btn-secondary');
 
                         $('#select-all-members').prop('checked', count === total);
                     } else {
                         $('#btn-export .btn-label').text('Exportovat vše');
                         $('#btn-email .btn-label').text('Odeslat e-mail všem');
                         $('#btn-payment .btn-label').text('Nastavit datum zaplacení všem');
+                        $('#btn-reg-email .btn-label').text('Registrační email všem');
+                        $('#btn-acceptance .btn-label').text('Přijetí do spolku všem');
+                        $('#btn-pay-confirm .btn-label').text('Potvrzení o zaplacení všem');
+                        $('#btn-pay-reminder .btn-label').text('Upomínka o zaplacení všem');
+
                         $('.modal-target-label').text('všem');
 
                         $('#btn-export').addClass('btn-outline-success').removeClass('btn-success');
                         $('#btn-email').addClass('btn-outline-info').removeClass('btn-info');
                         $('#btn-payment').addClass('btn-outline-primary').removeClass('btn-primary');
+                        $('.action-btn[data-action^="reg-"], .action-btn[data-action^="acceptance"], .action-btn[data-action^="pay-"]').addClass('btn-outline-secondary').removeClass('btn-secondary');
 
                         $('#select-all-members').prop('checked', false);
                     }
@@ -207,7 +235,6 @@
 
                 // Eventy přes delegaci na document - funguje i po AJAXu
                 $(document).off('change', '#select-all-members').on('change', '#select-all-members', function() {
-                   console.log('wtf');
                     $('.member-checkbox').prop('checked', $(this).is(':checked'));
                     updateSelection();
                 });
@@ -221,17 +248,31 @@
                     var ids = [];
                     $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
                     var finalIds = ids.length > 0 ? ids : null;
-
+                    var countText = finalIds ? 'vybraným (' + ids.length + ')' : 'všem';
 
                     if (action === 'export') {
-                       // naja.makeRequest('GET', {link export!}, { ids: finalIds });
+                        // naja.makeRequest('GET', {link export!}, { ids: finalIds });
                     } else if (action === 'email') {
                         $('#modal-email').modal('show');
                     } else if (action === 'payment') {
                         $('#modal-payment').modal('show');
+                    } else if (action === 'reg-email') {
+                        if (confirm('Opravdu odeslat registrační e-mail ' + countText + '?')) {
+                            // naja.makeRequest('GET', {link sendRegistrationEmail!}, { ids: finalIds });
+                        }
+                    } else if (action === 'acceptance') {
+                        if (confirm('Opravdu odeslat potvrzení o přijetí do spolku ' + countText + '?')) {
+                            // naja.makeRequest('GET', {link sendAcceptanceEmail!}, { ids: finalIds });
+                        }
+                    } else if (action === 'pay-confirm') {
+                        if (confirm('Opravdu odeslat potvrzení o zaplacení ' + countText + '?')) {
+                            // naja.makeRequest('GET', {link sendPaymentConfirmation!}, { ids: finalIds });
+                        }
+                    } else if (action === 'pay-reminder') {
+                        if (confirm('Opravdu odeslat upomínku o zaplacení ' + countText + '?')) {
+                            // naja.makeRequest('GET', {link sendPaymentReminder!}, { ids: finalIds });
+                        }
                     }
-
-
                 });
 
                 $(document).off('click', '#submit-email').on('click', '#submit-email', function() {

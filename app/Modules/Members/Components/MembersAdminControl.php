@@ -37,6 +37,9 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @var string|null @persistent */
     public $isPaid = null;
 
+    /** @var string|null @persistent */
+    public $activeStatus = null;
+
     /** @var string @persistent */
     public $view = 'default';
 
@@ -85,7 +88,8 @@ class MembersAdminControl extends Control implements IToolsControl
             $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
             $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
             $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
-            $this->isPaid === null ? null : (bool)$this->isPaid
+            $this->isPaid === null ? null : (bool)$this->isPaid,
+            $this->activeStatus === null ? null : (bool)$this->activeStatus
         );
         $totalCount = $this->facade->countMembers(
             $this->search, 
@@ -93,7 +97,8 @@ class MembersAdminControl extends Control implements IToolsControl
             $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
             $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
             $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
-            $this->isPaid === null ? null : (bool)$this->isPaid
+            $this->isPaid === null ? null : (bool)$this->isPaid,
+            $this->activeStatus === null ? null : (bool)$this->activeStatus
         );
 
         $this->template->items = $items;
@@ -105,6 +110,7 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->template->registrationConfirm = $this->registrationConfirm;
         $this->template->paymentConfirm = $this->paymentConfirm;
         $this->template->isPaid = $this->isPaid;
+        $this->template->activeStatus = $this->activeStatus;
 
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -193,6 +199,38 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->getPresenter()->terminate();
     }
 
+    public function handleSendRegistrationEmail(mixed $ids = null): void
+    {
+        bdump($ids, 'Odesílání registračního e-mailu');
+        $this->getPresenter()->flashMessage('Registrační e-maily byly zařazeny k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendAcceptanceEmail(mixed $ids = null): void
+    {
+        bdump($ids, 'Odesílání potvrzení o přijetí');
+        $this->getPresenter()->flashMessage('E-maily o přijetí do spolku byly zařazeny k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendPaymentConfirmation(mixed $ids = null): void
+    {
+        bdump($ids, 'Odesílání potvrzení platby');
+        $this->getPresenter()->flashMessage('Potvrzení o platbě byla zařazena k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendPaymentReminder(mixed $ids = null): void
+    {
+        bdump($ids, 'Odesílání upomínky platby');
+        $this->getPresenter()->flashMessage('Upomínky na platbu byly zařazeny k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
     /* --- COMPONENTS --- */
 
     protected function createComponentSearchForm(): Form
@@ -218,6 +256,9 @@ class MembersAdminControl extends Control implements IToolsControl
         $form->addSelect('isPaid', 'Zaplaceno', $options)
             ->setPrompt('?');
 
+        $form->addSelect('activeStatus', 'Aktivní', $options)
+            ->setPrompt('?');
+
         $form->addSubmit('send', 'Hledat');
         $form->setDefaults([
             'search' => $this->search,
@@ -225,7 +266,8 @@ class MembersAdminControl extends Control implements IToolsControl
             'registrationEmail' => $this->registrationEmail,
             'registrationConfirm' => $this->registrationConfirm,
             'paymentConfirm' => $this->paymentConfirm,
-            'isPaid' => $this->isPaid
+            'isPaid' => $this->isPaid,
+            'activeStatus' => $this->activeStatus
         ]);
         $form->onSuccess[] = function (Form $form, $values) {
             $this->search = $values->search;
@@ -234,6 +276,7 @@ class MembersAdminControl extends Control implements IToolsControl
             $this->registrationConfirm = $values->registrationConfirm;
             $this->paymentConfirm = $values->paymentConfirm;
             $this->isPaid = $values->isPaid;
+            $this->activeStatus = $values->activeStatus;
             $this->page = 1;
 
             if ($this->getPresenter()->isAjax()) {

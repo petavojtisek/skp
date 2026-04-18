@@ -28,7 +28,7 @@ class MembersMapper extends BaseMapper
         return (int)$lastNumber + 1;
     }
 
-    public function findMembers(int $limit, int $offset, ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null): array
+    public function findMembers(int $limit, int $offset, ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): array
     {
         $selection = $this->db->select('*')->from($this->tableName);
 
@@ -56,6 +56,10 @@ class MembersMapper extends BaseMapper
             $selection->where($isPaid ? 'last_member_payment IS NOT NULL' : 'last_member_payment IS NULL');
         }
 
+        if ($active !== null) {
+            $selection->where('active = %i', $active ? 1 : 0);
+        }
+
         if ($limit) {
             $selection->limit($limit);
         }
@@ -67,7 +71,7 @@ class MembersMapper extends BaseMapper
         return $selection->orderBy('surname ASC, name ASC')->fetchAll();
     }
 
-    public function countMembers(?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null): int
+    public function countMembers(?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): int
     {
         $selection = $this->db->select('COUNT(*)')->from($this->tableName);
 
@@ -93,6 +97,10 @@ class MembersMapper extends BaseMapper
 
         if ($isPaid !== null) {
             $selection->where($isPaid ? 'last_member_payment IS NOT NULL' : 'last_member_payment IS NULL');
+        }
+
+        if ($active !== null) {
+            $selection->where('active = %i', $active ? 1 : 0);
         }
 
         return (int)$selection->fetchSingle();
