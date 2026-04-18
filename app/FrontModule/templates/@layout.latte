@@ -11,7 +11,11 @@
 </head>
 <body>
 {include 'header.latte'}
-<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+<div n:snippet="flashes">
+		<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">
+			{$flash->message}
+		</div>
+</div>
 <main>
 	{include content}
 </main>

@@ -43,7 +43,7 @@ class MembersFacade
 
     public function generateRegistrationConfirmation(MembersEntity $membersEntity): void
     {
-        
+
     }
 
     public function sendRegistrationEmail(MembersEntity $membersEntity): void

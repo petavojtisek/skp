@@ -1,12 +1,16 @@
 <section class="contact-section section-padding">
     <div class="container">
-        <div class="contact-grid">
+        <div class="contact-grid" n:snippet="contactForm">
             <div class="contact-info">
                 <h2 class="section-title" style="text-align: left;">Napište nám</h2>
                 <p class="section-subtitle" style="text-align: left;">Máte dotaz nebo zájem o spolupráci? Vyplňte formulář a my se vám ozveme.</p>
             </div>
+
+            {if $success}
+                <p class="alert-success">Vaše zpráva byla úspěšně odeslána. Děkujeme!</p>
+            {else}
             <div class="contact-form-card">
-                <div n:snippet="contactForm">
+                <div>
                     <form n:name="form" class="ajax">
                         <div class="form-group">
                             <label n:name="name">Jméno a příjmení</label>
@@ -24,6 +28,7 @@
                     </form>
                 </div>
             </div>
+            {/if}
         </div>
     </div>
 </section>

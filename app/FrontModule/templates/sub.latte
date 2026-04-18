@@ -5,14 +5,14 @@
 
 
     {if isset($components['ContentVersion']['main'])}
-        <section class="container section-padding" style="text-align: center">
+        <section class="container" style="text-align: center">
             <div class="wysiwyg-content">
                 {control content_version_main}
             </div>
         </section>
     {/if}
     {if isset($components['Documents']['docs'])}
-        <section class="container section-padding">
+        <section class="container">
             {if isset($components['ContentVersion']['docs'])}
                 {control content_version_docs}
             {/if}
@@ -26,4 +26,7 @@
     {if isset($components['Forms']['register_form'])}
         {control forms_register_form}
     {/if}
+
+
+<section class="container section-padding" style="text-align: center"></section>
 {/block}
