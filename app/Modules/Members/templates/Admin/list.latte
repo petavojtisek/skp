@@ -7,24 +7,43 @@
             </div>
         </div>
         <div class="card-body">
-            <form n:name="searchForm" class="form-inline mb-3 ajax">
-                <div class="input-group input-group-sm">
-                    <input n:name="search" class="form-control">
-                    <div class="input-group-append">
-                        <button n:name="send" class="btn btn-default"><i class="fas fa-search"></i></button>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <form n:name="searchForm" class="form-inline ajax">
+                    <div class="input-group input-group-sm mr-2">
+                        <input n:name="search" class="form-control">
                     </div>
+                    <div class="input-group input-group-sm mr-2">
+                        <select n:name="source" class="form-control"></select>
+                    </div>
+                    <button n:name="send" class="btn btn-sm btn-default"><i class="fas fa-search"></i> Hledat</button>
+                    <a n:if="$search || $source" n:href="this, search => null, source => null" class="btn btn-sm btn-link ajax ml-2">Zrušit filtr</a>
+                </form>
+
+                <div id="export-actions" class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-success action-btn" data-action="export" id="btn-export">
+                        <i class="fas fa-file-export"></i> <span class="btn-label">Exportovat vše</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info action-btn" data-action="email" id="btn-email">
+                        <i class="fas fa-envelope"></i> <span class="btn-label">Odeslat e-mail všem</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary action-btn" data-action="payment" id="btn-payment">
+                        <i class="fas fa-hand-holding-usd"></i> <span class="btn-label">Nastavit datum zaplacení všem</span>
+                    </button>
                 </div>
-                <a n:if="$search" n:href="this, search => null" class="btn btn-sm btn-link ajax ml-2">Zrušit filtr</a>
-            </form>
+            </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm">
+                <table class="table table-bordered table-striped table-sm" id="members-table">
                     <thead>
                         <tr>
+                            <th style="width: 40px" class="text-center">
+                                <input type="checkbox" id="select-all-members">
+                            </th>
                             <th style="width: 120px">Číslo člena</th>
                             <th>Jméno a příjmení</th>
                             <th>Email</th>
                             <th>Telefon</th>
+                            <th style="width: 100px">Zdroj</th>
                             <th style="width: 100px">Stav</th>
                             <th style="width: 120px">Akce</th>
                         </tr>
@@ -32,14 +51,20 @@
                     <tbody>
                         {if empty($items)}
                             <tr>
-                                <td colspan="6" class="text-center text-muted">Žádní členové nebyli nalezeni.</td>
+                                <td colspan="8" class="text-center text-muted">Žádní členové nebyli nalezeni.</td>
                             </tr>
                         {else}
                             <tr n:foreach="$items as $item">
+                                <td class="text-center">
+                                    <input type="checkbox" class="member-checkbox" value="{$item->getId()}">
+                                </td>
                                 <td>{$item->getMemberNumber()}</td>
                                 <td>{$item->getFullName()}</td>
                                 <td>{$item->email}</td>
                                 <td>{$item->phone}</td>
+                                <td>
+                                    <span class="badge badge-info">{$item->source}</span>
+                                </td>
                                 <td>
                                     {if $item->isActive()}
                                         <span class="badge badge-success">Aktivní</span>
@@ -59,6 +84,55 @@
                 </table>
             </div>
         </div>
+
+        <!-- Modal E-mail -->
+        <div class="modal fade" id="modal-email" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Odeslat e-mail (<span class="modal-target-label">všem</span>)</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Předmět</label>
+                            <input type="text" id="email-subject" class="form-control" placeholder="Zadejte předmět e-mailu">
+                        </div>
+                        <div class="form-group">
+                            <label>Zpráva</label>
+                            <textarea id="email-content" class="form-control wysiwyg" rows="10"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Zrušit</button>
+                        <button type="button" class="btn btn-primary" id="submit-email">Odeslat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Platba -->
+        <div class="modal fade" id="modal-payment" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Nastavit datum zaplacení (<span class="modal-target-label">všem</span>)</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Datum a čas platby</label>
+                            <input type="datetime-local" id="payment-date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Zrušit</button>
+                        <button type="button" class="btn btn-primary" id="submit-payment">Uložit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card-footer clearfix" n:if="$lastPage > 1">
             <ul class="pagination pagination-sm m-0 float-right">
                 <li n:class="page-item, $page == 1 ? disabled">
@@ -74,3 +148,116 @@
         </div>
     </div>
 </div>
+
+{block scripts}
+<script>
+    var initMembersList = function() {
+        var updateMembersSelection = function() {
+            var $checkboxes = $('.member-checkbox');
+            var $checked = $checkboxes.filter(':checked');
+            var count = $checked.length;
+            var total = $checkboxes.length;
+            
+            if (count > 0) {
+                $('#btn-export .btn-label').text('Exportovat vybrané (' + count + ')');
+                $('#btn-email .btn-label').text('E-mail vybraným (' + count + ')');
+                $('#btn-payment .btn-label').text('Nastavit datum zaplacení vybraným (' + count + ')');
+                $('.modal-target-label').text('vybraným: ' + count);
+                $('.action-btn').removeClass('btn-outline-success btn-outline-info btn-outline-primary')
+                                .addClass('btn-success btn-info btn-primary');
+                
+                $('#select-all-members').prop('checked', count === total);
+            } else {
+                $('#btn-export .btn-label').text('Exportovat vše');
+                $('#btn-email .btn-label').text('Odeslat e-mail všem');
+                $('#btn-payment .btn-label').text('Nastavit datum zaplacení všem');
+                $('.modal-target-label').text('všem');
+                $('#btn-export').addClass('btn-outline-success').removeClass('btn-success');
+                $('#btn-email').addClass('btn-outline-info').removeClass('btn-info');
+                $('#btn-payment').addClass('btn-outline-primary').removeClass('btn-primary');
+                
+                $('#select-all-members').prop('checked', false);
+            }
+        };
+
+        $('#select-all-members').off('change').on('change', function() {
+            $('.member-checkbox').prop('checked', $(this).is(':checked'));
+            updateMembersSelection();
+        });
+
+        $('.member-checkbox').off('change').on('change', function() {
+            updateMembersSelection();
+            if (!$(this).is(':checked')) {
+                $('#select-all-members').prop('checked', false);
+            } else if ($('.member-checkbox:not(:checked)').length === 0) {
+                $('#select-all-members').prop('checked', true);
+            }
+        });
+
+        $('.action-btn').off('click').on('click', function() {
+            var action = $(this).data('action');
+            var ids = [];
+            $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+            var finalIds = ids.length > 0 ? ids : null;
+
+            if (action === 'export') {
+                naja.makeRequest('GET', {link export!}, { ids: finalIds });
+            } else if (action === 'email') {
+                $('#modal-email').modal('show');
+            } else if (action === 'payment') {
+                $('#modal-payment').modal('show');
+            }
+        });
+
+        $('#submit-email').off('click').on('click', function() {
+            var ids = [];
+            $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+            var subject = $('#email-subject').val();
+            var content = (typeof tinymce !== 'undefined' && tinymce.get('email-content')) ? tinymce.get('email-content').getContent() : $('#email-content').val();
+
+            if (!subject) { alert('Zadejte předmět'); return; }
+
+            naja.makeRequest('POST', {link sendEmail!}, { ids: ids.length > 0 ? ids : null, subject: subject, content: content });
+            $('#modal-email').modal('hide');
+        });
+
+        $('#submit-payment').off('click').on('click', function() {
+            var ids = [];
+            $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+            var date = $('#payment-date').val();
+
+            naja.makeRequest('POST', {link setPaymentDate!}, { ids: ids.length > 0 ? ids : null, date: date });
+            $('#modal-payment').modal('hide');
+        });
+
+        $('#modal-email').off('shown.bs.modal').on('shown.bs.modal', function() {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.remove('.wysiwyg');
+                tinymce.init({
+                    selector: '.wysiwyg',
+                    height: 300,
+                    menubar: false,
+                    plugins: 'advlist autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+                    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+                });
+            }
+        });
+
+        var now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        $('#payment-date').val(now.toISOString().slice(0, 16));
+
+        updateMembersSelection();
+    };
+
+    $(function () {
+        initMembersList();
+    });
+
+    if (typeof naja !== 'undefined') {
+        naja.addEventListener('success', function () {
+            initMembersList();
+        });
+    }
+</script>
+{/block}

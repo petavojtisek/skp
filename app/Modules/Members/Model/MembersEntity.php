@@ -35,6 +35,7 @@ class MembersEntity extends BaseEntity
     public mixed $payment_confirm_email_dt = null;
     public mixed $payment_reminder_email_dt = null;
     public mixed $payment_renew_email_dt = null;
+    public mixed $created_dt = null;
 
     public function getId(): ?int
     {
@@ -198,7 +199,7 @@ class MembersEntity extends BaseEntity
 
     public function setRegistrationEmailDt(mixed $dt): void
     {
-        $this->setVariable('registration_email_dt', $dt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('registration_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 
     public function getRegistrationConfirmEmailDt($format = 'd.m.Y H:i:s')
@@ -208,7 +209,7 @@ class MembersEntity extends BaseEntity
 
     public function setRegistrationConfirmEmailDt(mixed $dt): void
     {
-        $this->setVariable('registration_confirm_email_dt', $dt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('registration_confirm_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 
     public function getPaymentConfirmEmailDt($format = 'd.m.Y H:i:s')
@@ -218,7 +219,7 @@ class MembersEntity extends BaseEntity
 
     public function setPaymentConfirmEmailDt(mixed $dt): void
     {
-        $this->setVariable('payment_confirm_email_dt', $dt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('payment_confirm_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 
     public function getPaymentReminderEmailDt($format = 'd.m.Y H:i:s')
@@ -228,7 +229,7 @@ class MembersEntity extends BaseEntity
 
     public function setPaymentReminderEmailDt(mixed $dt): void
     {
-        $this->setVariable('payment_reminder_email_dt', $dt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('payment_reminder_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 
     public function getPaymentRenewEmailDt($format = 'd.m.Y H:i:s')
@@ -238,6 +239,6 @@ class MembersEntity extends BaseEntity
 
     public function setPaymentRenewEmailDt(mixed $dt): void
     {
-        $this->setVariable('payment_renew_email_dt', $dt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('payment_renew_email_dt', $dt, self::VALUE_TYPE_DATE);
     }
 }

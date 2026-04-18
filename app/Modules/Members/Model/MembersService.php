@@ -13,14 +13,14 @@ class MembersService extends BaseService
         $this->dao = $dao;
     }
 
-    public function findMembers(int $limit, int $offset, ?string $search = null): array
+    public function findMembers(int $limit, int $offset, ?string $search = null, ?string $source = null): array
     {
-        return $this->dao->findMembers($limit, $offset, $search);
+        return $this->dao->findMembers($limit, $offset, $search, $source);
     }
 
-    public function countMembers(?string $search = null): int
+    public function countMembers(?string $search = null, ?string $source = null): int
     {
-        return $this->dao->countMembers($search);
+        return $this->dao->countMembers($search, $source);
     }
 
     public function find(int $id): ?MembersEntity

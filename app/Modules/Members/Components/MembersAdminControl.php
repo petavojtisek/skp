@@ -22,6 +22,9 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @var string|null @persistent */
     public $search = null;
 
+    /** @var string|null @persistent */
+    public $source = null;
+
     /** @var string @persistent */
     public $view = 'default';
 
@@ -62,13 +65,14 @@ class MembersAdminControl extends Control implements IToolsControl
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
 
-        $items = $this->facade->findMembers($limit, $offset,$this->search);
-        $totalCount = $this->facade->countMembers($this->search);
+        $items = $this->facade->findMembers($limit, $offset, $this->search, $this->source);
+        $totalCount = $this->facade->countMembers($this->search, $this->source);
 
         $this->template->items = $items;
         $this->template->page = $this->page;
         $this->template->lastPage = ceil($totalCount / $limit);
         $this->template->search = $this->search;
+        $this->template->source = $this->source;
 
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -89,6 +93,7 @@ class MembersAdminControl extends Control implements IToolsControl
                 if ($item->getPaymentConfirmEmailDt()) $values['payment_confirm_email_dt'] = $item->getPaymentConfirmEmailDt();
                 if ($item->getPaymentReminderEmailDt()) $values['payment_reminder_email_dt'] = $item->getPaymentReminderEmailDt();
                 if ($item->getPaymentRenewEmailDt()) $values['payment_renew_email_dt'] = $item->getPaymentRenewEmailDt();
+                if ($item->getCreatedDt()) $values['created_dt'] = $item->getCreatedDt('d.m.Y H:i:s');
 
                 $this['memberForm']->setDefaults($values);
             }
@@ -133,6 +138,29 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->handleList();
     }
 
+    public function handleExport(mixed $ids = null): void
+    {
+        // Podpora pro vše (null), pole (array) i jedno ID (int/string)
+        bdump($ids, 'Export - vstupní IDs');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSendEmail(mixed $ids = null, ?string $subject = null, ?string $content = null): void
+    {
+        bdump(['ids' => $ids, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
+        $this->getPresenter()->flashMessage('E-maily byly zařazeny k odeslání.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleSetPaymentDate(mixed $ids = null, ?string $date = null): void
+    {
+        bdump(['ids' => $ids, 'date' => $date], 'Nastavení data platby');
+        $this->getPresenter()->flashMessage('Datum platby bylo u vybraných členů aktualizováno.', 'success');
+        $this->getPresenter()->redrawControl('flashes');
+        $this->getPresenter()->terminate();
+    }
+
     /* --- COMPONENTS --- */
 
     protected function createComponentSearchForm(): Form
@@ -140,11 +168,18 @@ class MembersAdminControl extends Control implements IToolsControl
         $form = new Form;
         $form->addText('search', 'Hledat')
             ->setHtmlAttribute('placeholder', 'Jméno, příjmení, číslo, email...');
+        
+        $form->addSelect('source', 'Zdroj', MembersEntity::SOURCES)
+            ->setPrompt('Všechny zdroje');
+
         $form->addSubmit('send', 'Hledat');
-        $form->setDefaults(['search' => $this->search]);
+        $form->setDefaults([
+            'search' => $this->search,
+            'source' => $this->source
+        ]);
         $form->onSuccess[] = function (Form $form, $values) {
-            xdebug_break();
             $this->search = $values->search;
+            $this->source = $values->source;
             $this->page = 1;
 
             if ($this->getPresenter()->isAjax()) {
@@ -209,6 +244,9 @@ class MembersAdminControl extends Control implements IToolsControl
             ->setHtmlAttribute('readonly', true);
 
         $form->addText('payment_renew_email_dt', 'Obnovení členství')
+            ->setHtmlAttribute('readonly', true);
+
+        $form->addText('created_dt', 'Vytvořeno')
             ->setHtmlAttribute('readonly', true);
 
         $form->addSubmit('send', 'Uložit');
