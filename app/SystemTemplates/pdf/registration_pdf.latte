@@ -52,6 +52,12 @@
                 <strong>Číslo účtu:</strong> {$SKP_ACCOUNT_NUMBER}<br>
                 <strong>Variabilní symbol:</strong> {$member->getMemberNumber()}
             </p>
+            {if !empty($qrBase64)}
+                <div style="text-align: center; margin-top: 10px;">
+                    <img src="{$qrBase64|noescape}" alt="QR platba" style="height: 150px; width: auto;">
+                    <p style="font-size: 9px; color: #999;">QR platba</p>
+                </div>
+            {/if}
         </div>
     </div>
 

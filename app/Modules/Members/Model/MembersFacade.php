@@ -17,7 +17,7 @@ class MembersFacade
     private PdfService $pdfService;
 
     public function __construct(
-        MembersService $service, 
+        MembersService $service,
         EmailsFacade $emailsFacade,
         SystemConstantsFacade $constantsFacade,
         PaymentQrService $qrService,
@@ -100,6 +100,7 @@ class MembersFacade
 
     public function generateRegistrationConfirmation(int $memberId, bool $force = false): string
     {
+
         $member = $this->getMember($memberId);
         if (!$member) throw new \Exception("Člen s ID $memberId nenalezen.");
 
@@ -108,16 +109,21 @@ class MembersFacade
 
         if (!file_exists($pdfFile) || $force) {
             $config = $this->getSystemConfig();
-            
+
             // Logo pro PDF jako Base64
             $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek.jpeg';
             $logoBase64 = file_exists($logoPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+
+            // QR kód pro PDF jako Base64
+            $qrPath = $this->generateQr($memberId, $force);
+            $qrBase64 = file_exists($qrPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($qrPath)) : null;
 
             $pdfContent = $this->pdfService->generate(
                 APP_DIR . DS . 'SystemTemplates' . DS . 'pdf' . DS . 'registration_pdf.latte',
                 array_merge($config, [
                     'member' => $member,
-                    'logoBase64' => $logoBase64
+                    'logoBase64' => $logoBase64,
+                    'qrBase64' => $qrBase64
                 ])
             );
             file_put_contents($pdfFile, $pdfContent);
@@ -137,7 +143,7 @@ class MembersFacade
 
         // 3. Odeslání e-mailu
         $message = $this->emailsFacade->createMessage(
-            'registration', 
+            'registration',
             array_merge($config, [
                 'member' => $member,
                 'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
@@ -148,9 +154,9 @@ class MembersFacade
             $qrFile     // QR kód jako inline (cid)
         );
         $message->setSubject('Registrace do spolku ' . ($config['SKP_NAME'] ?? ''));
-        
+
         $this->emailsFacade->send($message);
-        
+
         $member->setRegistrationEmailDt(new \DateTime());
         $this->saveMember($member);
     }
@@ -161,7 +167,7 @@ class MembersFacade
         if (!$member || !$member->email) return;
 
         $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o přijetí do spolku', "Dobrý den,\n\nbyl jste přijat do spolku.");
-        
+
         $member->setRegistrationConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
     }
@@ -172,7 +178,7 @@ class MembersFacade
         if (!$member || !$member->email) return;
 
         $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o zaplacení příspěvků', "Dobrý den,\n\npotvrzujeme přijetí vaší platby.");
-        
+
         $member->setPaymentConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
     }
@@ -183,7 +189,7 @@ class MembersFacade
         if (!$member || !$member->email) return;
 
         $this->emailsFacade->sendGenericEmail($member->email, 'Upomínka platby příspěvků', "Dobrý den,\n\ndovolujeme si vás upozornit na neuhrazené příspěvky.");
-        
+
         $member->setPaymentReminderEmailDt(new \DateTime());
         $this->saveMember($member);
     }

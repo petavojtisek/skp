@@ -96,7 +96,7 @@
                                     </td>
                                     <td><small class="text-muted">{$file->size|bytes}</small></td>
                                     <td class="text-right">
-                                        <button class="btn btn-xs btn-success" onclick="selectFile({$file->file_id}, {link //:Front:File:get, id => $file->getEncodedId()}, {$file->original_name})">
+                                        <button class="btn btn-xs btn-success" onclick="selectFile({$file->file_id}, {link :Front:File:get, id => $file->getEncodedId()}, {$file->original_name})">
                                             <i class="fas fa-check"></i> Vybrat
                                         </button>
                                     </td>
