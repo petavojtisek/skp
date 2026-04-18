@@ -61,6 +61,19 @@ textarea.form-control {
   border: 1px solid rgba(74, 124, 44, 0.2);
 }
 
+/* Základní zvýraznění chyby */
+.is-invalid {
+  border-color: #dc3545 !important;
+  background-color: #fff8f8;
+}
+
+/* Pokud chceš i textovou hlášku (Nette ji vkládá jako span/ul s chybou) */
+.invalid-feedback, .error {
+  color: #dc3545;
+  font-size: 80%;
+  margin-top: 0.25rem;
+}
+
 .wysiwyg-content {
   color: #333;
   line-height: 1.7;
@@ -163,6 +176,34 @@ textarea.form-control {
   background: rgba(74, 124, 44, 0.05);
   color: #4a7c2c;
   font-family: "Montserrat", sans-serif;
+}
+
+/* Minimalistické alerty inspirované Bootstrapem */
+.alert {
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  font-family: sans-serif; /* Pevný font, ať ti to nelítá */
+}
+
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.alert-info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
 }
 
 *, *:before, *:after {

@@ -1,0 +1,80 @@
+{snippet systemConstants}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-outline card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">Seznam systémových konstant</h3>
+                <div class="card-tools">
+                    <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'insert')" n:href="edit!" class="ajax btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> Přidat konstantu
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form n:name="searchForm" class="row mb-3 ajax">
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <input n:name="search" class="form-control">
+                            <div class="input-group-append">
+                                <button n:name="send" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <a n:if="$search" n:href="list!, search => null" class="btn btn-warning ajax"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px">ID</th>
+                            <th>Kód</th>
+                            <th>Hodnota</th>
+                            <th style="width: 150px">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {if empty($items)}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Žádné konstanty nebyly nalezeny.</td>
+                            </tr>
+                        {else}
+                            <tr n:foreach="$items as $item">
+                                <td>{$item->getId()}</td>
+                                <td><strong>{$item->getCode()}</strong></td>
+                                <td>{$item->getValue()|truncate:100}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'edit')" n:href="edit!, id => $item->getId()" class="ajax btn btn-xs btn-info">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'delete')" n:href="delete!, id => $item->getId()" class="ajax btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
+                                            <i class="fas fa-trash"></i> Smazat
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer clearfix" n:if="$lastPage > 1">
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li n:class="page-item, $page == 1 ? disabled">
+                        <a class="page-link ajax" n:href="list!, page => $page - 1">&laquo;</a>
+                    </li>
+                    <li n:foreach="range(1, $lastPage) as $p" n:class="page-item, $page == $p ? active">
+                        <a class="page-link ajax" n:href="list!, page => $p">{$p}</a>
+                    </li>
+                    <li n:class="page-item, $page == $lastPage ? disabled">
+                        <a class="page-link ajax" n:href="list!, page => $page + 1">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{/snippet}

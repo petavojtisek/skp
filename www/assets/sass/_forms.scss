@@ -69,3 +69,16 @@ textarea.form-control {
   margin-bottom: 20px;
   border: 1px solid rgba($primary-green, 0.2);
 }
+
+/* Základní zvýraznění chyby */
+.is-invalid {
+  border-color: #dc3545 !important;
+  background-color: #fff8f8;
+}
+
+/* Pokud chceš i textovou hlášku (Nette ji vkládá jako span/ul s chybou) */
+.invalid-feedback, .error {
+  color: #dc3545;
+  font-size: 80%;
+  margin-top: 0.25rem;
+}

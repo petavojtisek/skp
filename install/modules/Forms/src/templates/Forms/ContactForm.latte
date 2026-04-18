@@ -1,29 +1,41 @@
 <section class="contact-section section-padding">
     <div class="container">
-        <div class="contact-grid">
+        <div class="contact-grid" n:snippet="contactForm">
             <div class="contact-info">
                 <h2 class="section-title" style="text-align: left;">Napište nám</h2>
                 <p class="section-subtitle" style="text-align: left;">Máte dotaz nebo zájem o spolupráci? Vyplňte formulář a my se vám ozveme.</p>
             </div>
+
+            {if $success}
+                <p class="alert-success">Vaše zpráva byla úspěšně odeslána. Děkujeme!</p>
+            {else}
             <div class="contact-form-card">
-                <div n:snippet="contactForm">
+                {if isset($error) && $error}
+                    <p class="alert-danger">Formulář obahuje chyby!</p>
+                {/if}
+
+                <div>
                     <form n:name="form" class="ajax">
                         <div class="form-group">
                             <label n:name="name">Jméno a příjmení</label>
-                            <input n:name="name" class="form-control">
+                            <input n:name="name" class="form-control {$form['name']->error ? is-invalid}">
+                            <div class="invalid-feedback" n:ifcontent>{$form['name']->error}</div>
                         </div>
                         <div class="form-group">
                             <label n:name="email">E-mail</label>
-                            <input n:name="email" class="form-control">
+                            <input n:name="email" class="form-control {$form['email']->error ? is-invalid}">
+                            <div class="invalid-feedback" n:ifcontent>{$form['email']->error}</div>
                         </div>
                         <div class="form-group">
                             <label n:name="message">Zpráva</label>
-                            <textarea n:name="message" class="form-control" rows="5"></textarea>
+                            <div class="invalid-feedback" n:ifcontent>{$form['message']->error}</div>
+                            <textarea n:name="message" class="form-control {$form['message']->error ? is-invalid}" rows="5"></textarea>
                         </div>
                         <button n:name="send" class="btn btn-primary">Odeslat zprávu</button>
                     </form>
                 </div>
             </div>
+            {/if}
         </div>
     </div>
 </section>

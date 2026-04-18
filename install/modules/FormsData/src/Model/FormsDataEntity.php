@@ -33,20 +33,15 @@ class FormsDataEntity extends BaseEntity
         $this->setVariable('form_name', $formName, self::VALUE_TYPE_STRING);
     }
 
-    public function getData(): mixed
+    public function getData(mixed $key = false): mixed
     {
-        if (is_string($this->data)) {
-            return json_decode($this->data, true);
-        }
-        return $this->data;
+
+        return  $this->getJSON('data',$key);
     }
 
     public function setData(mixed $data): void
     {
-        if (is_array($data) || is_object($data)) {
-            $data = json_encode($data);
-        }
-        $this->setVariable('data', $data, self::VALUE_TYPE_STRING);
+        $this->setVariable('data', $data, self::VALUE_TYPE_JSON);
     }
 
     public function getIpAddress(): ?string
@@ -64,9 +59,9 @@ class FormsDataEntity extends BaseEntity
         return $this->getDateTime($this->created_dt, $format);
     }
 
-    public function setCreatedDt(mixed $createdDt): void
+    public function setCreatedDt($createdDt = null): void
     {
-        $this->setVariable('created_dt', $createdDt, self::VALUE_TYPE_DATETIME);
+        $this->setVariable('created_dt', $createdDt, self::VALUE_TYPE_DATE);
     }
 
     public function getStatus(): ?int

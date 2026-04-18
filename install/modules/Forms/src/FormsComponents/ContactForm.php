@@ -8,6 +8,9 @@ use Nette\Application\UI\Form;
 class ContactForm extends BaseForm
 {
 
+    public ?bool $success;
+    public ?bool $error;
+
     public function __construct(FormsDataFacade $formsDataFacade)
     {
         parent::__construct($formsDataFacade);
@@ -15,7 +18,10 @@ class ContactForm extends BaseForm
 
     public function render(): void
     {
+
         $this->template->setFile(__DIR__ . '/../templates/Forms/ContactForm.latte');
+        $this->template->success = $this->success?? false;
+        $this->template->error = $this->error?? false;
         $this->template->render();
     }
 
@@ -31,7 +37,17 @@ class ContactForm extends BaseForm
         $form->addSubmit('send', 'Odeslat');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];
+        $form->onError[] = [$this, 'formError'];
         return $form;
+    }
+
+    public function formError(Form $form): void
+    {
+        $this->error = true;
+        //$values = $form->getValues(true);
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl('contactForm'); // Překreslí formulář i s chybami
+        }
     }
 
     public function formSucceeded(Form $form, $values): void
@@ -42,15 +58,17 @@ class ContactForm extends BaseForm
         $entity->setIpAddress($this->getPresenter()->getHttpRequest()->getRemoteAddress());
         $entity->setStatus(1); // New
 
+
         $this->formsDataFacade->saveFormData($entity);
 
-        $this->getPresenter()->flashMessage('Vaše zpráva byla úspěšně odeslána. Děkujeme!', 'success');
 
         if ($this->getPresenter()->isAjax()) {
+            $this->success = true;
             $this->redrawControl('contactForm');
-            $this->getPresenter()->redrawControl('flashes');
             $form->reset();
         } else {
+            $this->getPresenter()->flashMessage('Vaše zpráva byla úspěšně odeslána. Děkujeme!', 'success');
+
             $this->redirect('this');
         }
     }

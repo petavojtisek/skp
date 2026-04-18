@@ -22,7 +22,9 @@
 		"tracy/tracy": "^2.10",
 		"dibi/dibi": "^5.1",
 		"endroid/qr-code": "^6.0",
-		"mpdf/mpdf": "^8.3"
+		"mpdf/mpdf": "^8.3",
+		"league/csv": "^9.28",
+		"openspout/openspout": "^5.6"
 	},
 	"require-dev": {
 		"nette/tester": "^2.5",

@@ -1,0 +1,9 @@
+services:
+    # Model
+    - App\Modules\SystemConstants\Model\SystemConstantsMapper
+    - App\Modules\SystemConstants\Model\SystemConstantsDao
+    - App\Modules\SystemConstants\Model\SystemConstantsService
+    - App\Modules\SystemConstants\Model\SystemConstantsFacade
+
+    # Components
+    - App\Modules\SystemConstants\Components\ISystemConstantsAdminControlFactory

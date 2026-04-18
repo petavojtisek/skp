@@ -14,7 +14,12 @@ class FormsFrontControl extends Control implements IObjectControl
 
     private ElementFacade $elementFacade;
     private FormControlFactory $formControlFactory;
-    private int $elementId;
+
+    /** @persistent */
+    public int $formElementId;
+
+    /** @persistent */
+    public int $page_id;
 
     private int $componentId;
     private string $name;
@@ -31,6 +36,7 @@ class FormsFrontControl extends Control implements IObjectControl
         $this->formControlFactory = $formControlFactory;
         $this->facade = $facade;
         $this->elementFacade = $elementFacade;
+
 
     }
 
@@ -51,44 +57,43 @@ class FormsFrontControl extends Control implements IObjectControl
     private function getFormData(): ?FormsEntity
     {
         if ($this->formData === null) {
-            $this->formData = $this->facade->getForm($this->elementId);
+            $this->formData = $this->facade->getForm($this->formElementId);
         }
         return $this->formData;
     }
 
     public function render(): void
     {
-        $formData = false;
-        $this->elementId = $this->elementFacade->getActiveElementId($this->componentId);
-        if ($this->elementId) {
-            $element = $this->elementFacade->findFront($this->elementId);
-            if($element) {
-                $formData = $this->getFormData();
-            }
-        }
-        if (!$formData) {
-            return;
-        }
+        $this->template->setFile(__DIR__ . '/../templates/Forms/FormsControl.latte');
+        $this->template->render();
 
-        $componentName = $formData->getFormComponent();
-        if ($componentName && isset($this['form'])) {
-             $this['form']->render();
-        }
     }
+
+
 
     protected function createComponentForm(): ?Control
     {
 
-        $formData = $this->getFormData();
-        if (!$formData) {
-            return null;
+        if(empty($this->formElementId)) {
+            $this->formElementId = $this->elementFacade->getActiveElementId($this->componentId);
         }
 
-        $componentName = $formData->getFormComponent();
-        return   $this->formControlFactory->create($componentName,$this->componentId,$this->elementId,$componentName);
+        if ($this->formElementId) {
+            $formData = $this->getFormData();
+            if ($formData) {
+                $componentName = $formData->getFormComponent();
+                return $this->formControlFactory->create(
+                    $componentName,
+                    $this->componentId,
+                    $this->formElementId,
+                    $componentName
+                );
+            }
+        }
 
+        return null;
     }
-}
+ }
 
 interface IFormsFrontControlFactory
 {

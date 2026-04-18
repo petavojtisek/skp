@@ -35,4 +35,30 @@ class MembersFacade
     {
         $this->service->delete($id);
     }
+
+    public function generateQr(MembersEntity $membersEntity): void
+    {
+
+    }
+
+    public function generateRegistrationConfirmation(MembersEntity $membersEntity): void
+    {
+
+    }
+
+    public function sendRegistrationEmail(MembersEntity $membersEntity): void
+    {
+        //todo
+    }
+    public function sendPaymentConfirmationEmail(int $memberId): void
+    {
+        //todo
+    }
+
+    public function sendPaymentReminderEmail(int $memberId): void
+    {
+            //todo
+    }
+
+
 }

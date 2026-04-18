@@ -1,7 +1,8 @@
 @use "sass:color";
 @use 'myconst' as *;
 @use 'forms';
-@use '_wysiwyg';
+@use 'wysiwyg';
+@use 'flashmessage';
 
 // ==========================================================================
 // 1. NASTAVENÍ A PROMĚNNÉ

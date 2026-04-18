@@ -1,0 +1,30 @@
+{snippet systemConstantsEdit}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">{if isset($item) and $item->getId()}Editace konstanty{else}Nová konstanta{/if}</h3>
+            </div>
+
+            <form n:name="systemConstantForm" class="ajax">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label n:name="code">Kód konstanty</label>
+                        <input n:name="code" class="form-control" placeholder="Např. CONTACT_EMAIL">
+                    </div>
+
+                    <div class="form-group">
+                        <label n:name="value">Hodnota</label>
+                        <input n:name="value" class="form-control" placeholder="Zadejte hodnotu">
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button n:if="$loggedUserEntity->hasModuleRight('system_constants', 'edit')" n:name="send" class="btn btn-primary">Uložit</button>
+                    <a n:href="list!" class="btn btn-default ajax">Zrušit</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/snippet}

@@ -14,7 +14,6 @@ use Nette\Application\UI\Form;
 use Nette\Security\User;
 use Nette\Utils\Finder;
 
-
 class FormsAdminControl extends Control implements IObjectControl
 {
     /** @persistent */

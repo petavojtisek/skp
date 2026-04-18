@@ -7,7 +7,7 @@
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 	<link rel="stylesheet" href="{$basePath}/assets/css/style.css" />
-
+	<link rel="stylesheet" href="{$basePath}/assets/css/bootstrap-iso.min.css">
 </head>
 <body>
 {include 'header.latte'}
@@ -25,12 +25,38 @@
 {block scripts}
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+	{*
+	<script src="https://unpkg.com/nette-forms@3/src/assets/netteForms.js"></script>
+	*}
+
 	<script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>
 	<script src="{$basePath}/assets/js/main.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', () => {
 			naja.initialize();
+			/*
+			naja.addEventListener('complete', () => {
+				document.querySelectorAll('form:not(.no-validation)').forEach(form => {
+					Nette.initForm(form);
+				});
+			});
+
+			 */
 		});
+
+		naja.addEventListener('complete', (event) => {
+			// Najde první prvek s třídou is-invalid nebo jinou chybovou třídou
+			const firstError = document.querySelector('.is-invalid, .error, .invalid-feedback');
+
+			if (firstError) {
+				firstError.scrollIntoView({
+					behavior: 'smooth',
+					block: 'center' // Scrollne tak, aby chyba byla uprostřed obrazovky
+				});
+			}
+		});
+
+
 	</script>
 
 {*asset? 'front/main.js'*}

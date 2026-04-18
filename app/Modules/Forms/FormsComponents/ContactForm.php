@@ -9,6 +9,7 @@ class ContactForm extends BaseForm
 {
 
     public ?bool $success;
+    public ?bool $error;
 
     public function __construct(FormsDataFacade $formsDataFacade)
     {
@@ -20,6 +21,7 @@ class ContactForm extends BaseForm
 
         $this->template->setFile(__DIR__ . '/../templates/Forms/ContactForm.latte');
         $this->template->success = $this->success?? false;
+        $this->template->error = $this->error?? false;
         $this->template->render();
     }
 
@@ -35,7 +37,17 @@ class ContactForm extends BaseForm
         $form->addSubmit('send', 'Odeslat');
 
         $form->onSuccess[] = [$this, 'formSucceeded'];
+        $form->onError[] = [$this, 'formError'];
         return $form;
+    }
+
+    public function formError(Form $form): void
+    {
+        $this->error = true;
+        //$values = $form->getValues(true);
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl('contactForm'); // Překreslí formulář i s chybami
+        }
     }
 
     public function formSucceeded(Form $form, $values): void
@@ -51,7 +63,6 @@ class ContactForm extends BaseForm
 
 
         if ($this->getPresenter()->isAjax()) {
-
             $this->success = true;
             $this->redrawControl('contactForm');
             $form->reset();
