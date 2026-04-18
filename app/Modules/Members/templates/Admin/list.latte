@@ -79,6 +79,7 @@
                             <th>Email</th>
                             <th>Telefon</th>
                             <th style="width: 100px">Zdroj</th>
+                            <th style="width: 120px">Zaplaceno</th>
                             <th style="width: 100px">Stav</th>
                             <th style="width: 120px">Akce</th>
                         </tr>
@@ -86,7 +87,7 @@
                     <tbody>
                         {if empty($items)}
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Žádní členové nebyli nalezeni.</td>
+                                <td colspan="9" class="text-center text-muted">Žádní členové nebyli nalezeni.</td>
                             </tr>
                         {else}
                             <tr n:foreach="$items as $item">
@@ -101,6 +102,9 @@
                                     <span class="badge badge-info">{$item->source}</span>
                                 </td>
                                 <td>
+                                    {$item->getLastMemberPayment() ? $item->getLastMemberPayment('d.m.Y') : '-'}
+                                </td>
+                                <td>
                                     {if $item->isActive()}
                                         <span class="badge badge-success">Aktivní</span>
                                     {else}
@@ -111,6 +115,18 @@
                                     <div class="btn-group">
                                         <a n:if="$loggedUserEntity->hasModuleRight('members','edit')" n:href="edit!, id => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editovat"><i class="fas fa-edit"></i></a>
                                         <a n:if="$loggedUserEntity->hasModuleRight('members','delete')" n:href="delete!, id => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tohoto člena?')"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-xs btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown"></button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item action-btn" href="#" data-action="email" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-envelope text-info mr-2"></i> Odeslat e-mail</a>
+                                            <a class="dropdown-item action-btn" href="#" data-action="payment" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-hand-holding-usd text-primary mr-2"></i> Nastavit datum zaplacení</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item action-btn" href="#" data-action="reg-email" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-paper-plane text-secondary mr-2"></i> Registrační email</a>
+                                            <a class="dropdown-item action-btn" href="#" data-action="acceptance" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-user-check text-secondary mr-2"></i> Přijetí do spolku</a>
+                                            <a class="dropdown-item action-btn" href="#" data-action="pay-confirm" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-file-invoice-dollar text-secondary mr-2"></i> Potvrzení o zaplacení</a>
+                                            <a class="dropdown-item action-btn" href="#" data-action="pay-reminder" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-bell text-secondary mr-2"></i> Upomínka o zaplacení</a>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -155,6 +171,7 @@
     </div>
 
     <!-- Modal E-mail -->
+    <div class="modal fade" id="modal-email" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -200,14 +217,15 @@
         </div>
     </div>
 
-        <script>
-            var regink= {link sendRegistrationEmail!}
-            var acceptance= {link sendAcceptanceEmail!}
-            var payc= {link sendPaymentConfirmation!}
-            var payr= {link sendPaymentReminder!}
-            var setPaymentDate= {link setPaymentDate!}
-            var exportLink= {link export!}
-        </script>
+    <script>
+        var regink= {link sendRegistrationEmail!}
+        var acceptance= {link sendAcceptanceEmail!}
+        var payc= {link sendPaymentConfirmation!}
+        var payr= {link sendPaymentReminder!}
+        var setPaymentDate= {link setPaymentDate!}
+        var exportLink= {link export!}
+        var sendEmailLink = {link sendEmail!}
+    </script>
     <script n:syntax="off">
         (function() {
             var setup = function() {
@@ -272,19 +290,34 @@
                 var pendingAction = null;
                 var pendingIds = null;
 
-                $(document).off('click', '.action-btn').on('click', '.action-btn', function() {
+                $(document).off('click', '.action-btn').on('click', '.action-btn', function(e) {
                     var action = $(this).data('action');
+                    var rowId = $(this).data('id');
+                    var rowName = $(this).data('name');
+                    
                     var ids = [];
-                    $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+                    if (rowId) {
+                        ids = [rowId];
+                    } else {
+                        $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+                    }
+                    
                     var finalIds = ids.length > 0 ? ids : null;
-                    var countText = finalIds ? 'vybraným (' + ids.length + ')' : 'všem';
+                    var countText = '';
+                    if (rowId) {
+                        countText = 'členu ' + rowName;
+                    } else {
+                        countText = finalIds ? 'vybraným (' + (ids ? ids.length : 0) + ')' : 'všem';
+                    }
+
+                    $('.modal-target-label').text(countText);
 
                     if (action === 'export') {
                          naja.makeRequest('GET', exportLink, { ids: finalIds });
                     } else if (action === 'email') {
-                        $('#modal-email').modal('show');
+                        $('#modal-email').data('ids', finalIds).modal('show');
                     } else if (action === 'payment') {
-                        $('#modal-payment').modal('show');
+                        $('#modal-payment').data('ids', finalIds).modal('show');
                     } else {
                         // Rychlé akce s potvrzovacím modalem
                         pendingAction = action;
@@ -304,14 +337,12 @@
                 $(document).off('click', '#submit-confirm').on('click', '#submit-confirm', function() {
                     if (pendingAction) {
                         var link = '';
-
                         switch(pendingAction) {
                             case 'reg-email': link = regink; break;
                             case 'acceptance': link = acceptance; break;
                             case 'pay-confirm': link = payc; break;
                             case 'pay-reminder': link = payr; break;
                         }
-
                         naja.makeRequest('GET', link, { ids: pendingIds });
                         $('#modal-confirm').modal('hide');
                         pendingAction = null;
@@ -320,23 +351,18 @@
                 });
 
                 $(document).off('click', '#submit-email').on('click', '#submit-email', function() {
-                    var ids = [];
-                    $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+                    var ids = $('#modal-email').data('ids');
                     var subject = $('#email-subject').val();
                     var content = (typeof tinymce !== 'undefined' && tinymce.get('email-content')) ? tinymce.get('email-content').getContent() : $('#email-content').val();
                     if (!subject) { alert('Zadejte předmět'); return; }
-
-                    //naja.makeRequest('POST', {link sendEmail!}, { ids: ids.length > 0 ? ids : null, subject: subject, content: content });
-
-
+                    naja.makeRequest('POST', sendEmailLink, { ids: ids, subject: subject, content: content });
                     $('#modal-email').modal('hide');
                 });
 
                 $(document).off('click', '#submit-payment').on('click', '#submit-payment', function() {
-                    var ids = [];
-                    $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
+                    var ids = $('#modal-payment').data('ids');
                     var date = $('#payment-date').val();
-                    naja.makeRequest('POST', setPaymentDate, { ids: ids.length > 0 ? ids : null, date: date });
+                    naja.makeRequest('POST', setPaymentDate, { ids: ids, date: date });
                     $('#modal-payment').modal('hide');
                 });
 
@@ -367,4 +393,4 @@
             }
         })();
     </script>
-
+</div>
