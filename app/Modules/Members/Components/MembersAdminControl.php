@@ -25,6 +25,18 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @var string|null @persistent */
     public $source = null;
 
+    /** @var string|null @persistent */
+    public $registrationEmail = null;
+
+    /** @var string|null @persistent */
+    public $registrationConfirm = null;
+
+    /** @var string|null @persistent */
+    public $paymentConfirm = null;
+
+    /** @var string|null @persistent */
+    public $isPaid = null;
+
     /** @var string @persistent */
     public $view = 'default';
 
@@ -65,14 +77,34 @@ class MembersAdminControl extends Control implements IToolsControl
         $limit = 20;
         $offset = ($this->page - 1) * $limit;
 
-        $items = $this->facade->findMembers($limit, $offset, $this->search, $this->source);
-        $totalCount = $this->facade->countMembers($this->search, $this->source);
+        $items = $this->facade->findMembers(
+            $limit, 
+            $offset, 
+            $this->search, 
+            $this->source,
+            $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+            $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+            $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+            $this->isPaid === null ? null : (bool)$this->isPaid
+        );
+        $totalCount = $this->facade->countMembers(
+            $this->search, 
+            $this->source,
+            $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+            $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+            $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+            $this->isPaid === null ? null : (bool)$this->isPaid
+        );
 
         $this->template->items = $items;
         $this->template->page = $this->page;
         $this->template->lastPage = ceil($totalCount / $limit);
         $this->template->search = $this->search;
         $this->template->source = $this->source;
+        $this->template->registrationEmail = $this->registrationEmail;
+        $this->template->registrationConfirm = $this->registrationConfirm;
+        $this->template->paymentConfirm = $this->paymentConfirm;
+        $this->template->isPaid = $this->isPaid;
 
         $this->template->setFile(__DIR__ . '/../templates/Admin/list.latte');
         $this->template->render();
@@ -172,14 +204,36 @@ class MembersAdminControl extends Control implements IToolsControl
         $form->addSelect('source', 'Zdroj', MembersEntity::SOURCES)
             ->setPrompt('Všechny zdroje');
 
+        $options = [1 => 'Ano', 0 => 'Ne'];
+
+        $form->addSelect('registrationEmail', 'Reg. email', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('registrationConfirm', 'Poděkování', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('paymentConfirm', 'Potvrz. platby', $options)
+            ->setPrompt('?');
+
+        $form->addSelect('isPaid', 'Zaplaceno', $options)
+            ->setPrompt('?');
+
         $form->addSubmit('send', 'Hledat');
         $form->setDefaults([
             'search' => $this->search,
-            'source' => $this->source
+            'source' => $this->source,
+            'registrationEmail' => $this->registrationEmail,
+            'registrationConfirm' => $this->registrationConfirm,
+            'paymentConfirm' => $this->paymentConfirm,
+            'isPaid' => $this->isPaid
         ]);
         $form->onSuccess[] = function (Form $form, $values) {
             $this->search = $values->search;
             $this->source = $values->source;
+            $this->registrationEmail = $values->registrationEmail;
+            $this->registrationConfirm = $values->registrationConfirm;
+            $this->paymentConfirm = $values->paymentConfirm;
+            $this->isPaid = $values->isPaid;
             $this->page = 1;
 
             if ($this->getPresenter()->isAjax()) {

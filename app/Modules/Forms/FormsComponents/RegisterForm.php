@@ -122,7 +122,7 @@ class RegisterForm extends BaseForm
         $member->setStreet($values->street);
         $member->setCity($values->city);
         $member->setZip($values->zip);
-        $member->setActive(1);
+        $member->setActive(0);
         $member->setSource(MembersEntity::SOURCE_WEB);
 
 

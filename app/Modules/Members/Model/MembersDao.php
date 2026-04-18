@@ -17,15 +17,15 @@ class MembersDao extends BaseDao
         $this->mapper = $mapper;
     }
 
-    public function findMembers(int $limit , int $offset , ?string $search = null, ?string $source = null): array
+    public function findMembers(int $limit , int $offset , ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null): array
     {
-        $data = $this->mapper->findMembers($limit, $offset, $search, $source);
+        $data = $this->mapper->findMembers($limit, $offset, $search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid);
         return $this->getEntities($this->entityName, $data);
     }
 
-    public function countMembers(?string $search = null, ?string $source = null): int
+    public function countMembers(?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null): int
     {
-        return $this->mapper->countMembers($search, $source);
+        return $this->mapper->countMembers($search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid);
     }
 
     public function getNextMemberNumber(): int

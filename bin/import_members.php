@@ -54,7 +54,7 @@ while (($data = fgetcsv($file)) !== false) {
     $entity->setPhone($data[8] ?: null);
     $entity->setNote($data[9] ?: null);
     $entity->setLastMemberPayment($parseDate($data[11]));
-    $entity->setActive(1);
+    $entity->setActive(0);
     $entity->setRegistrationEmailDt(new \Dibi\DateTime());
     $entity->setSource(MembersEntity::SOURCE_IMPORT);
 
