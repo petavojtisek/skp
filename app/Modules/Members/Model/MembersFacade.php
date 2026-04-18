@@ -2,13 +2,32 @@
 
 namespace App\Modules\Members\Model;
 
+use App\Model\Emails\EmailsFacade;
+use App\Model\System\PaymentQrService;
+use App\Model\System\PdfService;
+use App\Modules\SystemConstants\Model\SystemConstantsFacade;
+use Nette\Utils\FileSystem;
+
 class MembersFacade
 {
     private MembersService $service;
+    private EmailsFacade $emailsFacade;
+    private SystemConstantsFacade $constantsFacade;
+    private PaymentQrService $qrService;
+    private PdfService $pdfService;
 
-    public function __construct(MembersService $service)
-    {
+    public function __construct(
+        MembersService $service, 
+        EmailsFacade $emailsFacade,
+        SystemConstantsFacade $constantsFacade,
+        PaymentQrService $qrService,
+        PdfService $pdfService
+    ) {
         $this->service = $service;
+        $this->emailsFacade = $emailsFacade;
+        $this->constantsFacade = $constantsFacade;
+        $this->qrService = $qrService;
+        $this->pdfService = $pdfService;
     }
 
     public function findMembers( int $limit , int $offset, ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): array
@@ -36,29 +55,144 @@ class MembersFacade
         $this->service->delete($id);
     }
 
-    public function generateQr(MembersEntity $membersEntity): void
+    private function getMemberStoragePath(MembersEntity $member): string
     {
-
+        $path = STORAGE_DIR . DS . 'data' . DS . 'members' . DS . $member->getMemberNumber();
+        if (!is_dir($path)) {
+            FileSystem::createDir($path);
+        }
+        return $path;
     }
 
-    public function generateRegistrationConfirmation(MembersEntity $membersEntity): void
+    private function getSystemConfig(): array
     {
-
+        $constants = $this->constantsFacade->getAllSystemConstants();
+        $map = [];
+        foreach ($constants as $c) {
+            $map[$c->getCode()] = $c->getValue();
+        }
+        return $map;
     }
 
-    public function sendRegistrationEmail(MembersEntity $membersEntity): void
+    public function generateQr(int $memberId, bool $force = false): string
     {
-        //todo
+        $member = $this->getMember($memberId);
+        if (!$member) throw new \Exception("Člen s ID $memberId nenalezen.");
+
+        $storagePath = $this->getMemberStoragePath($member);
+        $qrFile = $storagePath . DS . 'qr.png';
+
+        if (!file_exists($qrFile) || $force) {
+            $config = $this->getSystemConfig();
+            $qrDataUri = $this->qrService->generateQr(
+                $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                (float)($config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0),
+                $member->getMemberNumber(),
+                'CZK',
+                $config['SKP_NAME'] ?? ''
+            );
+            $base64 = substr($qrDataUri, strpos($qrDataUri, ',') + 1);
+            file_put_contents($qrFile, base64_decode($base64));
+        }
+
+        return $qrFile;
     }
+
+    public function generateRegistrationConfirmation(int $memberId, bool $force = false): string
+    {
+        $member = $this->getMember($memberId);
+        if (!$member) throw new \Exception("Člen s ID $memberId nenalezen.");
+
+        $storagePath = $this->getMemberStoragePath($member);
+        $pdfFile = $storagePath . DS . 'registration.pdf';
+
+        if (!file_exists($pdfFile) || $force) {
+            $config = $this->getSystemConfig();
+            
+            // Logo pro PDF jako Base64
+            $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek.jpeg';
+            $logoBase64 = file_exists($logoPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+
+            $pdfContent = $this->pdfService->generate(
+                APP_DIR . DS . 'SystemTemplates' . DS . 'pdf' . DS . 'registration_pdf.latte',
+                array_merge($config, [
+                    'member' => $member,
+                    'logoBase64' => $logoBase64
+                ])
+            );
+            file_put_contents($pdfFile, $pdfContent);
+        }
+
+        return $pdfFile;
+    }
+
+    public function sendRegistrationEmail(int $memberId): void
+    {
+        $member = $this->getMember($memberId);
+        if (!$member || !$member->email) return;
+
+        $config = $this->getSystemConfig();
+        $qrFile = $this->generateQr($memberId);
+        $pdfFile = $this->generateRegistrationConfirmation($memberId);
+
+        // 3. Odeslání e-mailu
+        $message = $this->emailsFacade->createMessage(
+            'registration', 
+            array_merge($config, [
+                'member' => $member,
+                'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
+            ]),
+            $member->email,
+            [$pdfFile], // Přílohy
+            $qrFile     // QR kód jako inline (cid)
+        );
+        $message->setSubject('Registrace do spolku ' . ($config['SKP_NAME'] ?? ''));
+        
+        $this->emailsFacade->send($message);
+        
+        $member->setRegistrationEmailDt(new \DateTime());
+        $this->saveMember($member);
+    }
+
+    public function sendAcceptanceEmail(int $memberId): void
+    {
+        $member = $this->getMember($memberId);
+        if (!$member || !$member->email) return;
+
+        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o přijetí do spolku', "Dobrý den,\n\nbyl jste přijat do spolku.");
+        
+        $member->setRegistrationConfirmEmailDt(new \DateTime());
+        $this->saveMember($member);
+    }
+
     public function sendPaymentConfirmationEmail(int $memberId): void
     {
-        //todo
+        $member = $this->getMember($memberId);
+        if (!$member || !$member->email) return;
+
+        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o zaplacení příspěvků', "Dobrý den,\n\npotvrzujeme přijetí vaší platby.");
+        
+        $member->setPaymentConfirmEmailDt(new \DateTime());
+        $this->saveMember($member);
     }
 
     public function sendPaymentReminderEmail(int $memberId): void
     {
-            //todo
+        $member = $this->getMember($memberId);
+        if (!$member || !$member->email) return;
+
+        $this->emailsFacade->sendGenericEmail($member->email, 'Upomínka platby příspěvků', "Dobrý den,\n\ndovolujeme si vás upozornit na neuhrazené příspěvky.");
+        
+        $member->setPaymentReminderEmailDt(new \DateTime());
+        $this->saveMember($member);
     }
 
+    public function sendEmail(int $memberId, string $subject = 'Zpráva ze spolku', ?string $text = null): void
+    {
+        $member = $this->getMember($memberId);
+        if (!$member || !$member->email || !$text) return;
 
+        $this->emailsFacade->sendGenericEmail($member->email, $subject, $text);
+    }
 }

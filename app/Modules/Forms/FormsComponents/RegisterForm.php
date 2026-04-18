@@ -129,9 +129,9 @@ class RegisterForm extends BaseForm
 
         $this->memberId = $this->membersFacade->saveMember($member);
         if($this->memberId){
-            $this->membersFacade->generateQr($member);
-            $this->membersFacade->generateRegistrationConfirmation($member);
-            $this->membersFacade->sendRegistrationEmail($member);
+            $this->membersFacade->generateQr($this->memberId);
+            $this->membersFacade->generateRegistrationConfirmation($this->memberId);
+            $this->membersFacade->sendRegistrationEmail($this->memberId);
         }
 
 

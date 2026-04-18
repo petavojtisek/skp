@@ -12,7 +12,7 @@ class MembersMapper extends BaseMapper
     public function getNextMemberNumber(): int
     {
         $year = (int)date('Y');
-        $min = $year * 1000000;
+        $min = $year * 1000000 + 100000;
         $max = ($year + 1) * 1000000 - 1;
 
         $lastNumber = $this->db->select('MAX(member_number)')

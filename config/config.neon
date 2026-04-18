@@ -178,5 +178,6 @@ services:
 	- App\Model\ModuleGroupRight\ModuleGroupRightFacade
 	- App\Model\ModuleRight\ModuleRightFacade
 	- App\Model\FileManager\FileManagerFacade
+	- App\Model\Emails\EmailsFacade(debugMode: %debugMode%)
 
 	# Register other ebcar-like services here

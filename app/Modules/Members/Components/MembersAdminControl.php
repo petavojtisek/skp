@@ -201,34 +201,84 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendRegistrationEmail(mixed $ids = null): void
     {
-        bdump($ids, 'Odesílání registračního e-mailu');
-        $this->getPresenter()->flashMessage('Registrační e-maily byly zařazeny k odeslání.', 'success');
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendRegistrationEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Registrační e-maily byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
         $this->getPresenter()->terminate();
     }
 
     public function handleSendAcceptanceEmail(mixed $ids = null): void
     {
-        bdump($ids, 'Odesílání potvrzení o přijetí');
-        $this->getPresenter()->flashMessage('E-maily o přijetí do spolku byly zařazeny k odeslání.', 'success');
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendAcceptanceEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('E-maily o přijetí byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
         $this->getPresenter()->terminate();
     }
 
     public function handleSendPaymentConfirmation(mixed $ids = null): void
     {
-        bdump($ids, 'Odesílání potvrzení platby');
-        $this->getPresenter()->flashMessage('Potvrzení o platbě byla zařazena k odeslání.', 'success');
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendPaymentConfirmationEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Potvrzení o platbě byla odeslána.', 'success');
+        $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
         $this->getPresenter()->terminate();
     }
 
     public function handleSendPaymentReminder(mixed $ids = null): void
     {
-        bdump($ids, 'Odesílání upomínky platby');
-        $this->getPresenter()->flashMessage('Upomínky na platbu byly zařazeny k odeslání.', 'success');
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendPaymentReminderEmail((int)$id);
+        }
+
+        $this->getPresenter()->flashMessage('Upomínky byly odeslány.', 'success');
+        $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
         $this->getPresenter()->terminate();
+    }
+
+    private function resolveIds(mixed $ids): array
+    {
+        if ($ids === null) {
+            // Získání všech ID členů podle aktuálního filtru
+            $total = $this->facade->countMembers(
+                $this->search, 
+                $this->source,
+                $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+                $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+                $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+                $this->isPaid === null ? null : (bool)$this->isPaid,
+                $this->activeStatus === null ? null : (bool)$this->activeStatus
+            );
+            $members = $this->facade->findMembers(
+                $total, 
+                0, 
+                $this->search, 
+                $this->source,
+                $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
+                $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
+                $this->paymentConfirm === null ? null : (bool)$this->paymentConfirm,
+                $this->isPaid === null ? null : (bool)$this->isPaid,
+                $this->activeStatus === null ? null : (bool)$this->activeStatus
+            );
+            return array_map(fn($m) => $m->getId(), $members);
+        }
+        
+        return is_array($ids) ? $ids : [$ids];
     }
 
     /* --- COMPONENTS --- */

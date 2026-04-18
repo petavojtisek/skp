@@ -1,0 +1,53 @@
+{layout '@layout.latte'}
+
+{block content}
+    <h2>Potvrzení registrace</h2>
+    <p>Dobrý den,</p>
+    <p>děkujeme za Vaši registraci do spolku <strong>{$SKP_NAME}</strong>. Níže naleznete přehled zadaných údajů:</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee; width: 150px;"><strong>Číslo člena:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->getMemberNumber()}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Jméno a příjmení:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->getFullName()}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Datum narození:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->getBirthDate() ? $member->getBirthDate('d.m.Y') : '-'}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->email}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Telefon:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->phone}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>Adresa:</strong></td>
+            <td style="padding: 5px 0; border-bottom: 1px solid #eee;">{$member->street}, {$member->zip} {$member->city}</td>
+        </tr>
+    </table>
+
+    <div style="background-color: #f9f9f9; padding: 20px; border-left: 4px solid #4a7c2c; margin: 20px 0;">
+        <h3>Informace k platbě</h3>
+        <p>Pro dokončení registrace je nutné uhradit členský příspěvek do 14 dnů.</p>
+        <p>
+            <strong>Číslo účtu:</strong> {$SKP_ACCOUNT_NUMBER}<br>
+            <strong>Variabilní symbol:</strong> {$member->getMemberNumber()}<br>
+            <strong>Částka:</strong> {$SKP_MEMBERSHIP_FEE} Kč
+        </p>
+        
+        {if !empty($qrCodePath)}
+            <p>Platbu můžete provést také naskenováním tohoto QR kódu:</p>
+            <img src="{$qrCodePath|noescape}" alt="QR platba" style="max-width: 200px;">
+        {/if}
+    </div>
+
+    <p>V příloze tohoto e-mailu naleznete potvrzení o registraci ve formátu PDF.</p>
+    
+    <p>Těšíme se na spolupráci!</p>
+{/block}
