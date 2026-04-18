@@ -1,3 +1,4 @@
+{layout none}
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -30,6 +31,9 @@
                 <a n:href="switchBase!, type => 'documents'" class="btn {if $baseType == 'documents'}btn-primary{else}btn-outline-primary{/if}">
                     <i class="fas fa-file-alt"></i> Dokumenty
                 </a>
+                <a n:href="switchBase!, type => 'pages'" class="btn {if $baseType == 'pages'}btn-primary{else}btn-outline-primary{/if}">
+                    <i class="fas fa-link"></i> Stránky
+                </a>
             </div>
         </div>
     </div>
@@ -39,75 +43,116 @@
             <div class="card card-outline card-primary">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-folder-open text-warning mr-2"></i>
-                        <strong>{$baseType}</strong>
-                        {if $subDir} / <small>{$subDir}</small>{/if}
+                        {if $baseType === 'pages'}
+                            <i class="fas fa-sitemap text-warning mr-2"></i>
+                            <strong>Mapa stránek</strong>
+                        {else}
+                            <i class="fas fa-folder-open text-warning mr-2"></i>
+                            <strong>{$baseType}</strong>
+                            {if $subDir} / <small>{$subDir}</small>{/if}
+                        {/if}
                     </h3>
-                    <div class="card-tools">
+                    <div class="card-tools" n:if="$baseType !== 'pages'">
                         <button type="button" class="btn btn-tool" onclick="var name = prompt('Název nové složky:'); if(name) window.location.href = {link createFolder!, name => 'REPLACE'}.replace('REPLACE', encodeURIComponent(name));">
                             <i class="fas fa-folder-plus"></i> Nová složka
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <div id="file-dropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 5px; min-height: 120px; background: #fff; cursor: pointer;">
-                                <div class="dz-message">
-                                    <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i><br>
-                                    <strong>Nahrajte soubory sem.</strong>
+                    {if $baseType === 'pages'}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Název stránky</th>
+                                        <th style="width: 150px;">Rewrite / Slug</th>
+                                        <th class="text-right" style="width: 100px;">Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {define pageTree, $items, $level}
+                                        {foreach $items as $page}
+                                            <tr>
+                                                <td style="padding-left: {$level * 20 + 10}px">
+                                                    <i class="fas fa-file-alt text-muted mr-1"></i> {$page->name}
+                                                </td>
+                                                <td><small class="text-muted">{$page->page_rewrite}.html</small></td>
+                                                <td class="text-right">
+                                                    {var $pagesLink = '$pages[' . $page->page_id . '][\'page_rewrite\']'}
+                                                    <button class="btn btn-xs btn-success" onclick="selectFile(null, {$pagesLink}, {$page->name})">
+                                                        <i class="fas fa-check"></i> Vybrat
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {if !empty($page->children)}
+                                                {include pageTree, items => $page->children, level => $level + 1}
+                                            {/if}
+                                        {/foreach}
+                                    {/define}
+                                    {include pageTree, items => $pagesTree, level => 0}
+                                </tbody>
+                            </table>
+                        </div>
+                    {else}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div id="file-dropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 5px; min-height: 120px; background: #fff; cursor: pointer;">
+                                    <div class="dz-message">
+                                        <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i><br>
+                                        <strong>Nahrajte soubory sem.</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Název</th>
-                                    <th>Velikost</th>
-                                    <th class="text-right">Akce</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr n:if="$subDir">
-                                    <td colspan="3">
-                                        <a n:href="goUp!" class="text-warning">
-                                            <i class="fas fa-level-up-alt fa-rotate-90 mr-2"></i> ..
-                                        </a>
-                                    </td>
-                                </tr>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Název</th>
+                                        <th>Velikost</th>
+                                        <th class="text-right">Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr n:if="$subDir">
+                                        <td colspan="3">
+                                            <a n:href="goUp!" class="text-warning">
+                                                <i class="fas fa-level-up-alt fa-rotate-90 mr-2"></i> ..
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                <tr n:foreach="$directories as $dir">
-                                    <td>
-                                        <a n:href="openFolder!, name => $dir" class="text-warning">
-                                            <i class="fas fa-folder mr-2"></i> <strong>{$dir}</strong>
-                                        </a>
-                                    </td>
-                                    <td>-</td>
-                                    <td class="text-right"></td>
-                                </tr>
+                                    <tr n:foreach="$directories as $dir">
+                                        <td>
+                                            <a n:href="openFolder!, name => $dir" class="text-warning">
+                                                <i class="fas fa-folder mr-2"></i> <strong>{$dir}</strong>
+                                            </a>
+                                        </td>
+                                        <td>-</td>
+                                        <td class="text-right"></td>
+                                    </tr>
 
-                                <tr n:foreach="$files as $file">
-                                    <td>
-                                        <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if} mr-2"></i>
-                                        {$file->original_name}
-                                    </td>
-                                    <td><small class="text-muted">{$file->size|bytes}</small></td>
-                                    <td class="text-right">
-                                        <button class="btn btn-xs btn-success" onclick="selectFile({$file->file_id}, {link :Front:File:get, id => $file->getEncodedId()}, {$file->original_name})">
-                                            <i class="fas fa-check"></i> Vybrat
-                                        </button>
-                                    </td>
-                                </tr>
+                                    <tr n:foreach="$files as $file">
+                                        <td>
+                                            <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if} mr-2"></i>
+                                            {$file->original_name}
+                                        </td>
+                                        <td><small class="text-muted">{$file->size|bytes}</small></td>
+                                        <td class="text-right">
+                                            <button class="btn btn-xs btn-success" onclick="selectFile({$file->file_id}, {link :Front:File:get, id => $file->getEncodedId()}, {$file->original_name})">
+                                                <i class="fas fa-check"></i> Vybrat
+                                            </button>
+                                        </td>
+                                    </tr>
 
-                                <tr n:if="!$directories && !$files">
-                                    <td colspan="3" class="text-center p-4 text-muted">Složka je prázdná.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    <tr n:if="!$directories && !$files">
+                                        <td colspan="3" class="text-center p-4 text-muted">Složka je prázdná.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>

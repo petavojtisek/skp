@@ -13,8 +13,11 @@ final class FilesPresenter extends AdminPresenter
     /** @inject */
     public FileManagerFacade $fileManagerFacade;
 
+    /** @inject */
+    public \App\Model\Page\PageFacade $pageFacade;
+
     /** @persistent */
-    public string $baseType = 'images'; // images | documents
+    public string $baseType = 'images'; // images | documents | pages
 
     /** @persistent */
     public string $subDir = '';
@@ -77,20 +80,20 @@ final class FilesPresenter extends AdminPresenter
     {
         $this->template->title = 'Správce souborů';
 
-        // Ensure base directories exist
-        $this->fileManagerFacade->createDirectory('images', '');
-        $this->fileManagerFacade->createDirectory('documents', '');
+        if ($this->baseType === 'pages') {
+            $presentationId = $this->loggedUserEntity->active_presentation_id;
+            $this->template->pagesTree = $this->pageFacade->getPages($presentationId);
+        } else {
+            // Ensure base directories exist
+            $this->fileManagerFacade->createDirectory('images', '');
+            $this->fileManagerFacade->createDirectory('documents', '');
+
+            $this->template->directories = $this->fileManagerFacade->getDirectories($this->baseType, $this->subDir);
+            $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
+        }
 
         $this->template->baseType = $this->baseType;
         $this->template->subDir = $this->subDir;
-
-        // List directories in current path
-        $this->template->directories = $this->fileManagerFacade->getDirectories($this->baseType, $this->subDir);
-
-        // List files in current path from DB
-        // We need a way to filter by path in DB
-        $this->template->files =  $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
-
     }
 
 
