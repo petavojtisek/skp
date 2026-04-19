@@ -27,7 +27,7 @@
                     <tr>
                         {if !empty($logoPath)}
                             <td style="vertical-align: middle;">
-                                <img src="{$logoPath|noescape}" height="50"  alt="Logo" style="height: 50px; width: auto;">
+                                <img src="{$logoPath|noescape}" height="80"  alt="Logo" style="height: 80px; width: auto;">
                             </td>
                         {/if}
                         <td style="vertical-align: middle;">
@@ -42,7 +42,9 @@
             <div class="footer">
                 <p><strong>{$SKP_NAME}</strong></p>
                 <p>{$SKP_ADDRESS}</p>
+                <p>Datová schránka: <b>{$SKP_DATOVA_SCHRANKA}</b></p>
                 <p>IČO: {$SKP_ICO} | E-mail: <a href="mailto:{$SKP_EMAIL}">{$SKP_EMAIL}</a></p>
+                <p><a href="{$SKP_FB}">FB</a></p>
                 <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
                     Toto je automaticky generovaný e-mail, neodpovídejte na něj.
                 </p>

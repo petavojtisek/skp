@@ -177,6 +177,9 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->handleList();
     }
 
+
+
+    /**          BUTTONS  */
     /** @deprecated use downloadCSv */
     public function handleExport(mixed $ids = null): void
     {
@@ -253,13 +256,13 @@ class MembersAdminControl extends Control implements IToolsControl
     {
         $memberIds = $this->resolveIds($ids);
         foreach ($memberIds as $id) {
-            $this->facade->sendRegistrationEmail((int)$id);
+           $this->facade->sendRegistrationEmail((int)$id);
         }
 
         $this->getPresenter()->flashMessage('Registrační e-maily byly odeslány.', 'success');
         $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
+
     }
 
     public function handleSendAcceptanceEmail(mixed $ids = null): void
@@ -272,7 +275,7 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->getPresenter()->flashMessage('E-maily o přijetí byly odeslány.', 'success');
         $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
+
     }
 
     public function handleSendPaymentConfirmation(mixed $ids = null): void

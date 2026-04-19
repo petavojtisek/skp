@@ -1,24 +1,24 @@
 {block content}
      {* 1. HERO SEKCE *}
-    <section class="hero">
-        {if isset($components['ContentVersion']['hero'])}
+    {if isset($components['ContentVersion']['hero'])}
+        <section class="hero">
             {control content_version_hero}
-        {/if}
-    </section>
+        </section>
+    {/if}
 
     {* 2. NÁŠ ÚČEL (S Ikonami) *}
-    <section class="purpose container section-padding">
-        {if isset($components['ContentVersion']['welcome'])}
+    {if isset($components['ContentVersion']['welcome'])}
+        <section class="purpose container section-padding">
             {control content_version_welcome}
-        {/if}
-    </section>
+        </section>
+    {/if}
 
     {* 3. CTA BOXY (Modrý a Zelený) *}
-    <section class="cta-boxes container">
-        {if isset($components['ContentVersion']['cta'])}
+    {if isset($components['ContentVersion']['cta'])}
+        <section class="cta-boxes container">
             {control content_version_cta}
-        {/if}
-    </section>
+        </section>
+    {/if}
 
 
     {if isset($components['Forms']['forms'])}
@@ -27,29 +27,13 @@
 
 
     {* 4. AKTUALITY (Swiper Slider) *}
-    <section class="news section-padding">
-        <div class="container">
-            <h2 class="section-title">Aktuality</h2>
-            <div class="swiper news-slider">
-                <div class="swiper-wrapper">
-                    {for $i = 1; $i<= 5; $i++}
-                    <div class="swiper-slide news-item">
-                        <div class="card">
-                            <div class="card-img-placeholder" style="background: #eee; height: 200px;"></div>
-                            <div class="news-content">
-                                <span class="date">21. 03. 2026</span>
-                                <h4>Novinka ze světa Polabí {$i}</h4>
-                                <p>Zde bude krátký úvodní text ke konkrétní aktualitě.</p>
-                            </div>
-                        </div>
-                    </div>
-                    {/for}
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
-        </div>
-    </section>
-        {* 5. VLNA PŘED FOOTEREM *}
+    {if isset($components['news']['news'])}
+        <section class="news section-padding">
+            {control news_news}
+        </section>
+    {/if}
+
+   {* 5. VLNA PŘED FOOTEREM *}
         <div class="wave-container">
         <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 120L1440 120L1440 0C1170 80 270 -80 0 40V120Z" fill="#4a7c2c"/>

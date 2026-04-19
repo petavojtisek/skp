@@ -355,6 +355,8 @@ body {
   position: relative;
   z-index: 1;
 
+  a {color: inherit;}
+
   .footer-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
 

@@ -200,8 +200,9 @@ class FrontendRunner
     public function getPages()
     {
         $cacheKey = 'presentation_pages_' . $this->active_presentation_id;
-
+        $this->cache->remove($cacheKey);
         $this->pages = $this->cache->load($cacheKey, function() {
+
             $pages = $this->pageFacade->getPages($this->active_presentation_id);
             return $this->filterActivePages($pages);
         }, ['menu_tree', 'page']);
@@ -231,7 +232,7 @@ class FrontendRunner
                 if (!empty($p->children)) {
                     $p->children = $this->filterActivePages($p->children);
                 }
-                $filtered[] = $p;
+                $filtered[$p->page_id] = $p;
             }
         }
         return $filtered;
@@ -299,7 +300,7 @@ class FrontendRunner
     public function loadSystemConstants()
     {
         $cacheKey = 'all_system_constants';
-
+        //$this->cache->remove($cacheKey);;
 
         $this->systemConstnants = $this->cache->load($cacheKey, function() {
             $texts = $this->systemConstantsFacade->getAllSystemConstants();
@@ -311,14 +312,11 @@ class FrontendRunner
             return $result;
         }, ['web_text']);
 
-
-
         if(!empty($this->systemConstnants)) {
             foreach ($this->systemConstnants as $code => $text) {
                 $this->systemConstnants[$code] = $text;
                 $this->presenter->template->$code = $text;
             }
-
             $this->presenter->template->SYS_CONST = $this->systemConstnants;
         }
     }
@@ -326,6 +324,7 @@ class FrontendRunner
     public function loadWebTexts(): void
     {
         $cacheKey = 'all_web_texts';
+        $this->cache->remove($cacheKey);;
         $this->webTexts = $this->cache->load($cacheKey, function() {
             $texts = $this->webTextFacade->getAllWebTexts();
             $result = [];

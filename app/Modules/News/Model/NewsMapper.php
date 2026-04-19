@@ -19,17 +19,21 @@ class NewsMapper extends BaseMapper
             ->fetchAll();
     }
 
-    public function getFrontByComponentId(int $componentId): array
+    public function getFrontByComponentId(int $componentId, ?int $limit = null, ?int $offset=null ): array
     {
-        return $this->db->select('n.*, e.name, e.status_id, e.inserted as created_dt')
+        $rs = $this->db->select('n.*, e.name, e.status_id, e.inserted as created_dt')
             ->from($this->tableName, 'n')
             ->join('element', 'e')->on('e.element_id = n.element_id')
             ->where('e.component_id = %i', $componentId)
             ->and('e.status_id = %i', C_ELEMENT_STATUS_READY)
             ->and('(e.valid_from IS NULL OR e.valid_from <= %d)', new \DateTime())
             ->and('(e.valid_to IS NULL OR e.valid_to >= %d)', new \DateTime())
-            ->orderBy('e.inserted DESC')
-            ->fetchAll();
+            ->orderBy('e.inserted DESC');
+
+        if($limit) $rs->limit($limit);
+        if($offset) $rs->offset($offset);
+
+        return $rs ->fetchAll();
     }
 
     public function save(IEntity $entity): IEntity

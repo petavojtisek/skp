@@ -16,9 +16,9 @@ class NewsFacade
         return $this->service->getByComponentId($componentId);
     }
 
-    public function getFrontByComponentId(int $componentId): array
+    public function getFrontByComponentId(int $componentId, ?int $limit = null, ?int $offset=null): array
     {
-        return $this->service->getFrontByComponentId($componentId);
+        return $this->service->getFrontByComponentId($componentId, $limit,$offset);
     }
 
     public function find(?int $id): ?NewsEntity

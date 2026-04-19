@@ -32,15 +32,8 @@ class EmailsFacade
         foreach ($constants as $c) {
             $map[$c->getCode()] = $c->getValue();
         }
+        $this->config = $map;
 
-        $this->config = [
-            'SKP_NAME' => $map['SKP_NAME'] ?? 'Spolek',
-            'SKP_EMAIL' => $map['SKP_EMAIL'] ?? '',
-            'SKP_ICO' => $map['SKP_ICO'] ?? '',
-            'SKP_ADDRESS' => $map['SKP_ADDRESS'] ?? '',
-            'SKP_ACCOUNT_NUMBER' => $map['SKP_ACCOUNT_NUMBER'] ?? '',
-            'SKP_REGISTRATION_AMOUNT' => $map['SKP_REGISTRATION_AMOUNT'] ?? $map['SKP_MEMBERSHIP_FEE'] ?? '',
-        ];
     }
 
     public function createMessage(string $templateName, array $params = [], ?string $to = null, array $attachments = [], ?string $qrPath = null): Message
@@ -76,6 +69,7 @@ class EmailsFacade
                 $message->addAttachment($filePath);
             }
         }
+
 
         // Parametry pro šablonu
         $tplParams = array_merge($this->config, $params, [

@@ -613,6 +613,9 @@ body .menu-open {
   position: relative;
   z-index: 1;
 }
+.main-footer a {
+  color: inherit;
+}
 .main-footer .footer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
