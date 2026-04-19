@@ -28,7 +28,7 @@ class Bootstrap
 		$appDir = dirname(__DIR__);
 
 		// --- Maintenance Toggle ---
-		$showMaintenance = false; // Set to true to activate maintenance mode
+		$showMaintenance = true; // Set to true to activate maintenance mode
 		// --------------------------
 
 		if ($showMaintenance && !in_array($_SERVER['REMOTE_ADDR'] ?? null, MAINTENANCE_WHITELIST, true)) {

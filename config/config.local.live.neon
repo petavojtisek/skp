@@ -1,0 +1,33 @@
+# SKP Local Configuration
+
+parameters:
+	domain: krajinapolabi.cz
+	database:
+		host: localhost
+		username: krajinapolabi_cz
+		password: "Jk3CC.aicx"
+		database: krajinapolabi
+		driver: mysqli
+mail:
+    # zapne/vypne SMTP (pokud je false, používá se mail() funkce v PHP)
+    smtp: true
+
+    # adresa SMTP serveru
+    host: smtp.krajinapolabi.cz
+
+    # port (nejčastěji 465 pro SSL nebo 587 pro TLS)
+    port: 465
+
+    # zabezpečení (ssl, tls nebo null)
+    secure: ssl
+
+    # přihlašovací údaje
+    username: 'skp@krajinapolabi.cz'
+    password: 't0f:{Si)pP?Vhs}G4I|Y'
+services:
+	connection:
+		class: Dibi\Connection
+		arguments: [%database%]
+		autowired: yes
+
+
