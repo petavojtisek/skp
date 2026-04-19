@@ -28,6 +28,11 @@ class MembersService extends BaseService
         return $this->dao->find($id);
     }
 
+    public function findByIds(array $ids) : array
+    {
+        return $this->dao->findAllBy(['member_id IN ('.implode(",",array_values($ids)).")"]);
+    }
+
     public function save(MembersEntity $entity): int
     {
         if (!$entity->getId() && !$entity->getMemberNumber()) {
@@ -39,5 +44,11 @@ class MembersService extends BaseService
     public function delete(int $id): void
     {
         $this->dao->delete($id);
+    }
+
+
+    public function setMemberLastPaymentData(int $memberId, $date):?int
+    {
+        return $this->dao->setMemberLastPaymentData($memberId,$date);
     }
 }

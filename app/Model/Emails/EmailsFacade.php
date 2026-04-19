@@ -46,7 +46,7 @@ class EmailsFacade
     public function createMessage(string $templateName, array $params = [], ?string $to = null, array $attachments = [], ?string $qrPath = null): Message
     {
         $latte = new Engine();
-        $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek.jpeg';
+        $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek-mail.jpeg';
 
         $message = new Message();
         $message->setFrom($this->config['SKP_EMAIL'], $this->config['SKP_NAME']);

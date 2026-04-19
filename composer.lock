@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5de4156c4f1036ebb021d78a4f9f2825",
+    "content-hash": "979f85ce05ef63f001f4b9f5e0a28a4b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -60,6 +60,176 @@
                 "source": "https://github.com/Bacon/BaconQrCode/tree/v3.1.1"
             },
             "time": "2026-04-05T21:06:35+00:00"
+        },
+        {
+            "name": "bulkgate/message",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BulkGate/message.git",
+                "reference": "f1b69295450ee9c6516ec874424139253743c032"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BulkGate/message/zipball/f1b69295450ee9c6516ec874424139253743c032",
+                "reference": "f1b69295450ee9c6516ec874424139253743c032",
+                "shasum": ""
+            },
+            "require": {
+                "bulkgate/utils": "^2.0",
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "nette/tester": "~2.0",
+                "tracy/tracy": "~2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "TOPefekt s.r.o.",
+                    "homepage": "http://www.topefekt.com"
+                },
+                {
+                    "name": "Lukáš Piják",
+                    "homepage": "http://www.lukaspijak.com"
+                }
+            ],
+            "description": "PHP SDK for access to BulkGate portal API",
+            "homepage": "https://www.bulkgate.com",
+            "keywords": [
+                "bulkgate",
+                "io",
+                "nette",
+                "sms"
+            ],
+            "support": {
+                "issues": "https://github.com/BulkGate/message/issues",
+                "source": "https://github.com/BulkGate/message/tree/master"
+            },
+            "abandoned": "bulkgate/php-sdk",
+            "time": "2018-09-10T11:25:38+00:00"
+        },
+        {
+            "name": "bulkgate/sms",
+            "version": "2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BulkGate/sms.git",
+                "reference": "abe9df0493de9f72e86579d4c1083cf888c9ce42"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BulkGate/sms/zipball/abe9df0493de9f72e86579d4c1083cf888c9ce42",
+                "reference": "abe9df0493de9f72e86579d4c1083cf888c9ce42",
+                "shasum": ""
+            },
+            "require": {
+                "bulkgate/message": ">=2.0.2 <3.0.0",
+                "bulkgate/utils": "^2.0",
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "nette/tester": "~2.0",
+                "tracy/tracy": "^2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "TOPefekt s.r.o.",
+                    "homepage": "http://www.topefekt.com"
+                },
+                {
+                    "name": "Lukáš Piják",
+                    "homepage": "http://www.lukaspijak.com"
+                }
+            ],
+            "description": "Simple PHP SDK for sending SMS via BulkGate portal. For credentials contact us.",
+            "homepage": "https://www.bulkgate.com",
+            "keywords": [
+                "bulkgate",
+                "nette",
+                "sms"
+            ],
+            "support": {
+                "issues": "https://github.com/BulkGate/sms/issues",
+                "source": "https://github.com/BulkGate/sms/tree/2.1.1"
+            },
+            "abandoned": "bulkgate/php-sdk",
+            "time": "2022-04-29T07:10:53+00:00"
+        },
+        {
+            "name": "bulkgate/utils",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BulkGate/utils.git",
+                "reference": "6d39b25c24e8f1001bd420fc2239b9afabb9c5d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BulkGate/utils/zipball/6d39b25c24e8f1001bd420fc2239b9afabb9c5d9",
+                "reference": "6d39b25c24e8f1001bd420fc2239b9afabb9c5d9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "nette/tester": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "TOPefekt s.r.o.",
+                    "homepage": "http://www.topefekt.com"
+                },
+                {
+                    "name": "Lukáš Piják",
+                    "homepage": "http://www.lukaspijak.com"
+                }
+            ],
+            "description": "Generic utilites for BulkGate portal PHP SDK",
+            "homepage": "https://www.bulkgate.com",
+            "keywords": [
+                "bulkgate",
+                "compress",
+                "iterator",
+                "json",
+                "sms",
+                "strict"
+            ],
+            "support": {
+                "issues": "https://github.com/BulkGate/utils/issues",
+                "source": "https://github.com/BulkGate/utils/tree/master"
+            },
+            "time": "2018-03-23T11:53:39+00:00"
         },
         {
             "name": "dasprid/enum",

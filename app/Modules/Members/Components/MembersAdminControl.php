@@ -6,6 +6,7 @@ use App\Model\Admin\LoggedUserEntity;
 use App\Model\Helper\IToolsControl;
 use App\Modules\Members\Model\MembersFacade;
 use App\Modules\Members\Model\MembersEntity;
+use Dibi\DateTime;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 
@@ -81,9 +82,9 @@ class MembersAdminControl extends Control implements IToolsControl
         $offset = ($this->page - 1) * $limit;
 
         $items = $this->facade->findMembers(
-            $limit, 
-            $offset, 
-            $this->search, 
+            $limit,
+            $offset,
+            $this->search,
             $this->source,
             $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
             $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
@@ -92,7 +93,7 @@ class MembersAdminControl extends Control implements IToolsControl
             $this->activeStatus === null ? null : (bool)$this->activeStatus
         );
         $totalCount = $this->facade->countMembers(
-            $this->search, 
+            $this->search,
             $this->source,
             $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
             $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
@@ -124,7 +125,7 @@ class MembersAdminControl extends Control implements IToolsControl
                 $values = $item->getEntityData();
                 if ($item->getBirthDate()) $values['birth_date'] = $item->getBirthDate('Y-m-d');
                 if ($item->getLastMemberPayment()) $values['last_member_payment'] = $item->getLastMemberPayment('Y-m-d');
-                
+
                 // Formátování nových polí pro readonly zobrazení
                 if ($item->getRegistrationEmailDt()) $values['registration_email_dt'] = $item->getRegistrationEmailDt();
                 if ($item->getRegistrationConfirmEmailDt()) $values['registration_confirm_email_dt'] = $item->getRegistrationConfirmEmailDt();
@@ -176,27 +177,76 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->handleList();
     }
 
+    /** @deprecated use downloadCSv */
     public function handleExport(mixed $ids = null): void
     {
-        // Podpora pro vše (null), pole (array) i jedno ID (int/string)
+        $ids = $this->getPresenter()->getHttpRequest()->getQuery('ids');
         bdump($ids, 'Export - vstupní IDs');
+
+        if($this->getPresenter()->isAjax()){
+            $url = $this->link('downloadCsv!',['ids' => $ids]);
+            //$this->getPresenter()->payload->redirect =$url
+            //$this->getPresenter()->sendPayload();
+
+            $this->getPresenter()->sendJson(['redirect' => $url, 'forceRedirect' => true]);
+        }else {
+            $this->redirect('this', ['do' => 'downloadCsv', 'ids' => $ids]);
+        }
+    }
+
+    public function handleDownloadCsv(?array $ids = null)
+    {
+        $ids = $finalIds = $ids ?? $this->getParameter('Members-ids') ?? $this->getParameter('ids');
+        $csv = $this->facade->export($finalIds);
+
+        $callback = function ($httpRequest,$httpResponse) use ($csv) {
+            $httpResponse->setHeader('Content-Disposition', 'attachment; filename="data.csv"');
+            $httpResponse->setContentType('text/csv; charset=utf-8');xdebug_break();
+            echo $csv;
+        };
+        $this->getPresenter()->sendResponse(new \Nette\Application\Responses\CallbackResponse($callback));
         $this->getPresenter()->terminate();
     }
 
-    public function handleSendEmail(mixed $ids = null, ?string $subject = null, ?string $content = null): void
+    public function handleSendEmail(?array $ids = null, ?string $subject = null, ?string $content = null): void
     {
+        $ids = $this->getPresenter()->getHttpRequest()->getPost('ids');
+        $subject = $this->getPresenter()->getHttpRequest()->getPost('subject');
+        $content = $this->getPresenter()->getHttpRequest()->getPost('content');
+
         bdump(['ids' => $ids, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
+
+        if(!$subject or !$content){
+            $this->getPresenter()->flashMessage('Vyplťe předmět a text.', 'danger');
+            $this->getPresenter()->redrawControl('flashes');
+            return;
+        }
+
+        $memberIds = $this->resolveIds($ids);
+        foreach ($memberIds as $id) {
+            $this->facade->sendEmail($id,$subject,$content);
+        }
         $this->getPresenter()->flashMessage('E-maily byly zařazeny k odeslání.', 'success');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
     }
 
     public function handleSetPaymentDate(mixed $ids = null, ?string $date = null): void
     {
+
+        $ids = $this->getPresenter()->getHttpRequest()->getPost('ids');
+        $date = $this->getPresenter()->getHttpRequest()->getPost('date');
         bdump(['ids' => $ids, 'date' => $date], 'Nastavení data platby');
+
+        $date = new DateTime($date);
+        $memberIds = $this->resolveIds($ids);
+
+        foreach ($memberIds as $id) {
+            $this->facade->setMemberLastPaymentData($id,$date);
+        }
+
         $this->getPresenter()->flashMessage('Datum platby bylo u vybraných členů aktualizováno.', 'success');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
+
     }
 
     public function handleSendRegistrationEmail(mixed $ids = null): void
@@ -256,7 +306,7 @@ class MembersAdminControl extends Control implements IToolsControl
         if ($ids === null) {
             // Získání všech ID členů podle aktuálního filtru
             $total = $this->facade->countMembers(
-                $this->search, 
+                $this->search,
                 $this->source,
                 $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
                 $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
@@ -265,9 +315,9 @@ class MembersAdminControl extends Control implements IToolsControl
                 $this->activeStatus === null ? null : (bool)$this->activeStatus
             );
             $members = $this->facade->findMembers(
-                $total, 
-                0, 
-                $this->search, 
+                $total,
+                0,
+                $this->search,
                 $this->source,
                 $this->registrationEmail === null ? null : (bool)$this->registrationEmail,
                 $this->registrationConfirm === null ? null : (bool)$this->registrationConfirm,
@@ -277,7 +327,7 @@ class MembersAdminControl extends Control implements IToolsControl
             );
             return array_map(fn($m) => $m->getId(), $members);
         }
-        
+
         return is_array($ids) ? $ids : [$ids];
     }
 
@@ -288,7 +338,7 @@ class MembersAdminControl extends Control implements IToolsControl
         $form = new Form;
         $form->addText('search', 'Hledat')
             ->setHtmlAttribute('placeholder', 'Jméno, příjmení, číslo, email...');
-        
+
         $form->addSelect('source', 'Zdroj', MembersEntity::SOURCES)
             ->setPrompt('Všechny zdroje');
 

@@ -40,11 +40,15 @@ try {
         $map[$c->getCode()] = $c->getValue();
     }
 
+    $text= "<h1>toto je nadpis</h1><br>
+            <p>Toto je text</br>
+            ";
 
     $qrCodePath = $membersFacade->generateQr($memberId);
     $params = array_merge($map, [
         'member' => $member,
         'logoPath' => $base64,
+        'text'=>$text,
         'SKP_NAME' => $map['SKP_NAME'] ?? 'Spolek',
         'SKP_EMAIL' => $map['SKP_EMAIL'] ?? '',
         'SKP_ICO' => $map['SKP_ICO'] ?? '',

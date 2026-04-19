@@ -7,6 +7,7 @@ use App\Model\System\PaymentQrService;
 use App\Model\System\PdfService;
 use App\Modules\SystemConstants\Model\SystemConstantsFacade;
 use Nette\Utils\FileSystem;
+use League\Csv;
 
 class MembersFacade
 {
@@ -33,6 +34,43 @@ class MembersFacade
     public function findMembers( int $limit , int $offset, ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): array
     {
         return $this->service->findMembers($limit, $offset, $search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid, $active);
+    }
+
+    public function export(?array $ids) : string
+    {
+
+        if(is_array($ids)) {
+            $members = $this->findByIds($ids);
+        }else{
+            $members = $this->service->findMembers(100000,0);
+        }
+        $csv = Csv\Writer::from(new \SplTempFileObject());
+        $csv->setDelimiter(';'); // Excel má v CZ raději středník
+
+        $csv->setOutputBOM( Csv\Bom::Utf8);
+        $csv->insertOne(['Číslo člena', 'Jméno','Přijmeni', 'E-mail', 'Telefon', 'Adresa', 'Datum narození']);
+
+
+        foreach ($members as $member) {
+            $csv->insertOne([
+                $member->getMemberNmber(),
+                $member->getName(),
+                $member->getSurname(),
+                $member->getEmail(),
+                $member->getPhone(),
+                $member->getStreet()." ".$member->getCity().' '.$member->getZip(),
+                $member->getBirthDate('d.m.Y'),
+            ]);
+        }
+
+        return $csv->toString();
+
+    }
+
+
+    public function findByIds(array $ids) : array
+    {
+        return $this->service->findByIds($ids);
     }
 
     public function countMembers(?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): int
@@ -110,7 +148,7 @@ class MembersFacade
             $config = $this->getSystemConfig();
 
             // Logo pro PDF jako Base64
-            $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek.jpeg';
+            $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek-mail.jpeg';
             $logoBase64 = file_exists($logoPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath)) : null;
 
             // QR kód pro PDF jako Base64
@@ -231,5 +269,10 @@ class MembersFacade
         if (!$member || !$member->email || !$text) return;
 
         $this->emailsFacade->sendGenericEmail($member->email, $subject, $text);
+    }
+
+    public function setMemberLastPaymentData(int $memberId, $date):?int
+    {
+        return $this->service->setMemberLastPaymentData($memberId,$date);
     }
 }
