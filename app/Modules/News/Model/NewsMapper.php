@@ -28,7 +28,7 @@ class NewsMapper extends BaseMapper
             ->and('e.status_id = %i', C_ELEMENT_STATUS_READY)
             ->and('(e.valid_from IS NULL OR e.valid_from <= %d)', new \DateTime())
             ->and('(e.valid_to IS NULL OR e.valid_to >= %d)', new \DateTime())
-            ->orderBy('e.inserted DESC');
+            ->orderBy('e.valid_from DESC, e.inserted DESC');
 
         if($limit) $rs->limit($limit);
         if($offset) $rs->offset($offset);

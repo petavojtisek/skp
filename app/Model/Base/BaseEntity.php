@@ -98,7 +98,7 @@ class BaseEntity extends AEntity implements IEntity
         return $this->created_ip;
     }
 
-	public function setCreatedDt($createdDt = null)
+	public function setCreatedDt($createdDt = null) : void
 	{
 		if (!empty($createdDt) and $createdDt instanceof DateTime) {
 			$this->setVariable('created_dt', $createdDt,self::VALUE_TYPE_DATE);
@@ -107,7 +107,25 @@ class BaseEntity extends AEntity implements IEntity
 		}
 	}
 
+
     public function getCreatedDt($fomat = null)
+    {
+        return $this->getDateTime($this->created_dt  , $fomat);
+    }
+
+
+
+    public function setInserted(mixed $insertedDt = null) : void
+    {
+        if (!empty($insertedDt) and $insertedDt instanceof DateTime) {
+            $this->setVariable('inserted', $insertedDt,self::VALUE_TYPE_DATE);
+        } else {
+            $this->setVariable('inserted', new DateTime(), self::VALUE_TYPE_DATE);
+        }
+    }
+
+
+    public function getInserted($fomat = null)
     {
         return $this->getDateTime($this->created_dt  , $fomat);
     }

@@ -78,7 +78,7 @@
                                                 </td>
                                                 <td><small class="text-muted">{$page->page_rewrite}.html</small></td>
                                                 <td class="text-right">
-                                                    {var $pagesLink = '$pages[' . $page->page_id . '][\'page_rewrite\']'}
+                                                    {var $pagesLink = '{$pages[' . $page->page_id . ']->page_rewrite}.html'}
                                                     <button class="btn btn-xs btn-success" onclick="selectFile(null, {$pagesLink}, {$page->page_name})">
                                                         <i class="fas fa-check"></i> Vybrat
                                                     </button>

@@ -27,6 +27,7 @@ class NewsDao extends BaseDao
     public function getFrontByComponentId(int $componentId, ?int $limit = null, ?int $offset=null): array
     {
         $data = $this->mapper->getFrontByComponentId($componentId, $limit, $offset);
+
         return $this->getEntities($this->entityName, $data);
     }
 

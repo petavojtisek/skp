@@ -2,18 +2,20 @@
     <h2 class="section-title">Aktuality</h2>
     <div class="swiper news-slider">
         <div class="swiper-wrapper">
-            {for $i = 1; $i<= 5; $i++}
+            {foreach $items as $item}
                 <div class="swiper-slide news-item">
                     <div class="card">
-                        <div class="card-img-placeholder" style="background: #eee; height: 200px;"></div>
+                        <div class="card-img-placeholder" style="background: #eee; height: 200px;">
+                            <img src="{$item->getImagePath("800x600")}"/>
+                        </div>
                         <div class="news-content">
-                            <span class="date">21. 03. 2026</span>
-                            <h4>Novinka ze světa Polabí {$i}</h4>
-                            <p>Zde bude krátký úvodní text ke konkrétní aktualitě.</p>
+                            <span class="date">{$item->getCreatedDt('j. n. Y')}</span>
+                            <h4>{$item->getName()}</h4>
+                            <p>{$item->getShortText()|noescape}</p>
                         </div>
                     </div>
                 </div>
-            {/for}
+            {/foreach}
         </div>
         <div class="swiper-pagination"></div>
     </div>

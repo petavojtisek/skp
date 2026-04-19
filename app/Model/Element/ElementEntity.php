@@ -90,8 +90,5 @@ class ElementEntity extends BaseEntity
         return $this->getDateTime($this->inserted, $format);
     }
 
-    public function setInserted(mixed $date): void
-    {
-        $this->setVariable('inserted', $date, self::VALUE_TYPE_DATE);
-    }
+
 }

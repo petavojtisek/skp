@@ -249,6 +249,7 @@ abstract class ADao
 		if ($data) {
 			$entities = [];
 			foreach ($data as $key => $item) {
+
 				$entities[$key] = $this->getEntity($entityName, (array) $item , $lang);
 			}
 			return $entities;
