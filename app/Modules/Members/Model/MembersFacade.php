@@ -123,8 +123,8 @@ class MembersFacade
         if (!file_exists($qrFile) || $force) {
             $config = $this->getSystemConfig();
             $qrDataUri = $this->qrService->generateQr(
-                $config['SKP_ACCOUNT_NUMBER'] ?? '',
-                (float)($config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0),
+                $config['SKP_ACCOUNT'] ?? '',
+                (float)($config['SKP_REGISTRATION_AMOUNT'] ?? 0),
                 $member->getMemberNumber(),
                 'CZK',
                 $config['SKP_NAME'] ?? ''

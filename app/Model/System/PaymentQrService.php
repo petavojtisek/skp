@@ -39,7 +39,7 @@ class PaymentQrService
     public function generateSpdQr(string $account, float $amount, string $vs, string $currency = 'CZK', ?string $message = null): string
     {
         $iban = $this->ensureIban($account);
-        $spd = "SPD*1.0*ACC:{$iban}*AM:" . number_format($amount, 2, '.', '') . "*CC:{$currency}*VS:{$vs}";
+        $spd = "SPD*1.0*ACC:{$iban}*AM:" . number_format($amount, 2, '.', '') . "*CC:{$currency}*RF:{$vs}*X-VS:{$vs}";
         
         if ($message) {
             $spd .= "*MSG:" . mb_substr($this->sanitize($message), 0, 60);
@@ -54,7 +54,7 @@ class PaymentQrService
     public function generateSepaQr(string $iban, float $amount, string $recipientName, ?string $reference = null, ?string $message = null, ?string $bic = null): string
     {
         $iban = str_replace(' ', '', strtoupper($iban));
-        
+
         // EPC-QR Format (Line by line)
         $lines = [
             'BCD',              // Service Tag
@@ -106,19 +106,19 @@ class PaymentQrService
             $prefix = $matches[1] ? str_pad($matches[1], 6, '0', STR_PAD_LEFT) : '000000';
             $number = str_pad($matches[2], 10, '0', STR_PAD_LEFT);
             $bank = $matches[3];
-            
+
             $bban = $bank . $prefix . $number;
-            
+
             // Calculate check digits
             $alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             $numericCountry = "123500"; // CZ is 12 and 35, + 00
             $checksumStr = $bban . $numericCountry;
-            
+
             $remainder = 0;
             foreach (str_split($checksumStr, 7) as $chunk) {
                 $remainder = ($remainder . $chunk) % 97;
             }
-            
+
             $checkDigits = str_pad(98 - $remainder, 2, '0', STR_PAD_LEFT);
             return 'CZ' . $checkDigits . $bban;
         }
