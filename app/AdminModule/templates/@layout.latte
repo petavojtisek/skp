@@ -243,6 +243,13 @@
 <!-- Naja AJAX -->
 <script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>
 <script>
+  var s_page_name = {@$page_name};
+  var s_page_title = {@$page_title};
+  var s_baseUrl = {@$baseUrl};
+</script>
+
+
+<script n:syntax="off">
   naja.initialize();
 
   const initWysiwyg = () => {
@@ -251,6 +258,13 @@
       selector: '.wysiwyg',
       height: 400,
       convert_urls: false,
+      entity_encoding:'raw',
+      verify_html:false,
+      valid_elements: '*[*]',
+      cleanup:false,
+      apply_source_formatting:false,
+      forced_root_block:false,
+      allow_html_in_named_anchor: true,
       extended_valid_elements: 'svg[*],defs[*],pattern[*],desc[*],metadata[*],g[*],mask[*],path[*],line[*],polyline[*],rect[*],circle[*],ellipse[*],polygon[*],use[*],stop[*],linearGradient[*],radialGradient[*],text[*],tspan[*]',
       custom_elements: 'svg,defs,pattern,desc,metadata,g,mask,path,line,polyline,rect,circle,ellipse,polygon,use,stop,linearGradient,radialGradient,text,tspan',
       plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
@@ -285,9 +299,9 @@
         editor.ui.registry.addMenuButton('macros', {
           text: 'Makra',
           fetch: (callback) => {
-            let page_name = {@$page_name};
-            let page_title = {@$page_title};
-            let baseUrl = {@$baseUrl};
+            let page_name = s_page_name;
+            let page_title = s_page_title;
+            let baseUrl = s_baseUrl;
             const items = [
               {
                 type: 'menuitem',
@@ -311,6 +325,8 @@
     });
   };
 
+  </script>
+  <script>
   const initCustomFileInputs = () => {
     $(document).on('change', '.custom-file-input', function() {
       let fileName = $(this).val().split('\\').pop();

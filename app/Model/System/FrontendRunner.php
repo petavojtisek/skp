@@ -338,7 +338,7 @@ class FrontendRunner
         $latte->setLoader(new \Latte\Loaders\StringLoader);
         if(!empty($this->webTexts)) {
             foreach ($this->webTexts as $code => $text) {
-                $parsed = $latte->renderToString($text, ['SYS_CONST'=>$this->systemConstnants]);
+                $parsed = $latte->renderToString($text, ['SYS_CONST'=>$this->systemConstnants, 'pages'=>$this->pages]);
                 $this->webTexts[$code] = $parsed;
             }
         }

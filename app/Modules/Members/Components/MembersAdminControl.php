@@ -204,7 +204,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
         $callback = function ($httpRequest,$httpResponse) use ($csv) {
             $httpResponse->setHeader('Content-Disposition', 'attachment; filename="data.csv"');
-            $httpResponse->setContentType('text/csv; charset=utf-8');xdebug_break();
+            $httpResponse->setContentType('text/csv; charset=utf-8');
             echo $csv;
         };
         $this->getPresenter()->sendResponse(new \Nette\Application\Responses\CallbackResponse($callback));
@@ -213,6 +213,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendEmail(?array $ids = null, ?string $subject = null, ?string $content = null): void
     {
+
         $ids = $this->getPresenter()->getHttpRequest()->getPost('ids');
         $subject = $this->getPresenter()->getHttpRequest()->getPost('subject');
         $content = $this->getPresenter()->getHttpRequest()->getPost('content');

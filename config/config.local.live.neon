@@ -13,7 +13,7 @@ mail:
     smtp: true
 
     # adresa SMTP serveru
-    host: smtp.krajinapolabi.cz
+    host: smtp.websupport.cz
 
     # port (nejčastěji 465 pro SSL nebo 587 pro TLS)
     port: 465
@@ -24,6 +24,7 @@ mail:
     # přihlašovací údaje
     username: 'skp@krajinapolabi.cz'
     password: 't0f:{Si)pP?Vhs}G4I|Y'
+	
 services:
 	connection:
 		class: Dibi\Connection

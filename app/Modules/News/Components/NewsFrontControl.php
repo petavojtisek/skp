@@ -54,7 +54,7 @@ class NewsFrontControl extends Control implements IObjectControl
 
     public function renderDetail()
     {
-        xdebug_break();
+
     }
 
     public function actionDefault(...$params): void

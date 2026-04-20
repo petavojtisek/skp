@@ -2,6 +2,7 @@
 
 namespace App\Modules\Forms\FormsComponents;
 
+use App\Model\System\EncodeDecode;
 use App\Modules\FormsData\Model\FormsDataEntity;
 use App\Modules\FormsData\Model\FormsDataFacade;
 use App\Modules\Members\Model\MembersEntity;
@@ -15,7 +16,8 @@ class RegisterForm extends BaseForm
     private bool $error;
     private array $formData = [];
 
-    public int $memberId ;
+    /** @persistent */
+    public string $memberId = '';
 
 
     /** @persistent */
@@ -32,7 +34,17 @@ class RegisterForm extends BaseForm
 
     public function render(): void
     {
+
+        $mId = $this->memberId??0;
+        $qrFile = false;
+        if($this->memberId){
+            $qrFile = file_get_contents($this->membersFacade->generateQr(EncodeDecode::decodeSmallHash($this->memberId)));
+            $qrFile = base64_encode($qrFile);
+        }
+
+        $this->template->memberId = $this->memberId??'';
         $this->template->submitted = $this->submitted;
+        $this->template->qrFile = $qrFile;
         $this->template->formData = $this->formData;
         $this->template->error = $this->error?? false;
         $this->template->setFile(__DIR__ . '/../templates/Forms/RegisterForm.latte');
@@ -50,6 +62,35 @@ class RegisterForm extends BaseForm
         }
     }
 
+
+    public function handleDownloadPdf(?string $memberId)
+    {
+
+        if($memberId) {
+            $pdf = file_get_contents($this->membersFacade->generateRegistrationConfirmation(EncodeDecode::decodeSmallHash($memberId)));
+            $callback = function ($httpRequest, $httpResponse) use ($pdf) {
+                $httpResponse->setHeader('Content-Disposition', 'attachment; filename="potvrzeni_registrace.pdf"');
+                $httpResponse->setContentType('application/pdf; charset=utf-8');
+                echo $pdf;
+            };
+            $this->getPresenter()->sendResponse(new \Nette\Application\Responses\CallbackResponse($callback));
+        }
+        $this->getPresenter()->terminate();
+    }
+
+    public function handleDownloadQr(?string $memberId)
+    {
+        if($memberId) {
+            $qrFile = $this->membersFacade->generateQr(EncodeDecode::decodeSmallHash($memberId));
+            $callback = function ($httpRequest, $httpResponse) use ($qrFile) {
+                $httpResponse->setHeader('Content-Disposition', 'attachment; filename="qr.png"');
+                $httpResponse->setContentType('image/png; charset=utf-8');
+                echo file_get_contents($qrFile);
+            };
+            $this->getPresenter()->sendResponse(new \Nette\Application\Responses\CallbackResponse($callback));
+        }
+        $this->getPresenter()->terminate();
+    }
 
 
     protected function createComponentForm(): Form
@@ -100,16 +141,6 @@ class RegisterForm extends BaseForm
 
     public function formSucceeded(Form $form, $values): void
     {
-        //todo remove
-        $this->memberId = 33;
-        $this->submitted = true;
-        $this->formData = (array)$values;
-        if ($this->getPresenter()->isAjax()) {
-            $this->redrawControl('registerForm');
-            //$this->getPresenter()->sendPayload();
-            }
-        return;
-
 
         // 1. Save to Members
         $member = new MembersEntity();
@@ -127,13 +158,14 @@ class RegisterForm extends BaseForm
 
 
 
-        $this->memberId = $this->membersFacade->saveMember($member);
-        if($this->memberId){
-            $this->membersFacade->generateQr($this->memberId);
-            $this->membersFacade->generateRegistrationConfirmation($this->memberId);
-            $this->membersFacade->sendRegistrationEmail($this->memberId);
+        $memberId = $this->membersFacade->saveMember($member);
+        if($memberId){
+            $this->membersFacade->generateQr($memberId);
+            $this->membersFacade->generateRegistrationConfirmation($memberId);
+            $this->membersFacade->sendRegistrationEmail($memberId);
         }
 
+        $this->memberId = EncodeDecode::encodeSmallHash($memberId);
 
         // 2. Save to FormsData (Log)
         $entity = new FormsDataEntity();

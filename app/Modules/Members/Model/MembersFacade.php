@@ -136,6 +136,9 @@ class MembersFacade
         return $qrFile;
     }
 
+
+
+
     public function generateRegistrationConfirmation(int $memberId, bool $force = false): string
     {
         $member = $this->getMember($memberId);
@@ -183,7 +186,7 @@ class MembersFacade
             'registration',
             array_merge($config, [
                 'member' => $member,
-                'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                'SKP_ACCOUNT' => $config['SKP_ACCOUNT'] ?? '',
                 'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
             ]),
             $member->email,
@@ -248,7 +251,7 @@ class MembersFacade
             'payment_reminder',
             array_merge($config, [
                 'member' => $member,
-                'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                'SKP_ACCOUNT' => $config['SKP_ACCOUNT'] ?? '',
                 'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
             ]),
             $member->email,

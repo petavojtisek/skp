@@ -36,11 +36,11 @@
         <h3>Informace k platbě</h3>
         <p>Pro dokončení registrace je nutné uhradit členský příspěvek do 14 dnů.</p>
         <p>
-            <strong>Číslo účtu:</strong> {$SKP_ACCOUNT_NUMBER}<br>
+            <strong>Číslo účtu:</strong> {$SKP_ACCOUNT}<br>
             <strong>Variabilní symbol:</strong> {$member->getMemberNumber()}<br>
             <strong>Částka:</strong> {$SKP_REGISTRATION_AMOUNT} Kč
         </p>
-        
+
         {if !empty($qrCodePath)}
             <p>Platbu můžete provést také naskenováním tohoto QR kódu:</p>
             <img src="{$qrCodePath|noescape}" alt="QR platba" style="max-width: 200px;">
@@ -48,6 +48,6 @@
     </div>
 
     <p>V příloze tohoto e-mailu naleznete potvrzení o registraci ve formátu PDF.</p>
-    
+
     <p>Těšíme se na spolupráci!</p>
 {/block}

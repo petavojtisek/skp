@@ -11,8 +11,9 @@
                     <h2 class="section-title">Děkujeme za registraci!</h2>
                     <p class="section-subtitle mb-5">Vaše údaje byly úspěšně uloženy. Níže naleznete shrnutí a instrukce k platbě.</p>
 
-                    <div class="row text-left mb-5">
-                        <div class="col-md-6 offset-md-3">
+
+                    <div class="row text-left mb-5 col-md-12" >
+                        <div class="col-md-6 offset-md-3"  style="float:left; width: 50%">
                             <div class="card p-4 shadow-sm border-0 bg-light">
                                 <h4 class="mb-3 border-bottom pb-2">Shrnutí údajů</h4>
                                 <table class="table table-sm table-borderless mb-0">
@@ -23,14 +24,20 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            {if $qrFile}
+                                <img src="data:image/png;base64,{$qrFile}" class="qr-code">
+                            {/if}
+                        </div>
                     </div>
 
+
                     <div class="payment-actions d-flex justify-content-center gap-3 mt-4">
-                        <a href="#" class="btn btn-primary" onclick="alert('Bude brzy funkční'); return false;">
+                        <a href="{link downloadPdf!}" class="btn btn-primary" target="_blank">
                             <i class="fas fa-file-pdf mr-2"></i> Stáhnout potvrzení v PDF
                         </a>
-                        <a href="#" class="btn btn-gold ml-2" onclick="alert('Bude brzy funkční'); return false;">
-                            <i class="fas fa-qrcode mr-2"></i> Zobrazit QR kód k platbě
+                        <a href="{link downloadQr!}" class="btn btn-gold ml-2" target="_blank">
+                            <i class="fas fa-qrcode mr-2"></i> Stáhnout QR kód k platbě
                         </a>
                     </div>
                 </div>

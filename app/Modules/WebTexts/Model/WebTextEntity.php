@@ -39,7 +39,17 @@ class WebTextEntity extends BaseEntity
 
     public function getText(): ?string
     {
-        return $this->text;
+        $clean = $this->text;
+        if(!empty($this->text)){
+            $clean = html_entity_decode($this->text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            // Odstraň i ty zbloudilé &nbsp; které tam TinyMCE sype (pokud chceš)
+            $clean = str_replace("\xc2\xa0", ' ', $clean);
+        }
+
+        return $clean;
+
+
     }
 
     public function setText(?string $text): void

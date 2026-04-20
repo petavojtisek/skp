@@ -16,8 +16,9 @@ define('ASSETS_DIR', PROJECT_ROOT_DIR . DS . 'www/assets');
 
 // List of IPs allowed to bypass maintenance mode
 define('MAINTENANCE_WHITELIST', [
-	'127.0.0.1',
-	'::1',
+	//'185.178.174.155',
+	//'127.0.1.6',
+	//'::1',
 	// 'YOUR_IP_HERE',
 ]);
 
@@ -27,11 +28,31 @@ class Bootstrap
 	{
 		$appDir = dirname(__DIR__);
 
+
+        if (isset($_GET['tm']) && $_GET['tm'] === '1') {
+            // Nastavíme cookie na 2 hodiny (7200 sekund)
+            setcookie('tb_access', '1', [
+                'expires' => time() + 7200,
+                'path' => '/',
+                'httponly' => true, // Bezpečnostní doporučení
+                'samesite' => 'Lax',
+            ]);
+            $_COOKIE['tb_access'] = '1'; // Aby kód fungoval hned v rámci stejného požadavku
+        }
+
+        $hasCookieAccess = isset($_COOKIE['tb_access']) && $_COOKIE['tb_access'] === '1';
 		// --- Maintenance Toggle ---
 		$showMaintenance = true; // Set to true to activate maintenance mode
 		// --------------------------
 
-		if ($showMaintenance && !in_array($_SERVER['REMOTE_ADDR'] ?? null, MAINTENANCE_WHITELIST, true)) {
+        if ($showMaintenance and PHP_SAPI === 'cli') {
+            $showMaintenance = false;
+        }
+
+		if ($showMaintenance
+            && !in_array($_SERVER['REMOTE_ADDR'] ?? null, MAINTENANCE_WHITELIST, true)
+            && !$hasCookieAccess
+        ){
 			if (file_exists($appDir . '/www/maintenance.html')) {
 				require $appDir . '/www/maintenance.html';
 			} else {

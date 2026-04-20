@@ -2,8 +2,10 @@
 
 namespace App\Modules\Forms\FormsComponents;
 
+use App\Model\Emails\EmailsFacade;
 use App\Modules\FormsData\Model\FormsDataEntity;
 use App\Modules\FormsData\Model\FormsDataFacade;
+use App\Modules\Members\Model\MembersFacade;
 use Nette\Application\UI\Form;
 class ContactForm extends BaseForm
 {
@@ -11,9 +13,12 @@ class ContactForm extends BaseForm
     public ?bool $success;
     public ?bool $error;
 
-    public function __construct(FormsDataFacade $formsDataFacade)
+    private EmailsFacade $emailFacade;
+
+    public function __construct(FormsDataFacade $formsDataFacade, EmailsFacade $emailFacade)
     {
         parent::__construct($formsDataFacade);
+        $this->emailFacade = $emailFacade;
     }
 
     public function render(): void
@@ -61,6 +66,12 @@ class ContactForm extends BaseForm
 
         $this->formsDataFacade->saveFormData($entity);
 
+        $this->emailFacade->sendGenericEmail($values['email'],'Potvrzení přijetí dotazu', '<p>Děkujeme za dotaz.</p><p>Váš dotaz se budeme snažit vyřídit co nejrychleji.</p>');
+        $this->emailFacade->sendGenericEmail('skp@krajinapolabi.cz','Přijetí dotazu',"
+            <p>Od: {$values['name']},  Email: {$values['email']}</p> 
+            <p>{$values['message']}</p>
+
+");
 
         if ($this->getPresenter()->isAjax()) {
             $this->success = true;

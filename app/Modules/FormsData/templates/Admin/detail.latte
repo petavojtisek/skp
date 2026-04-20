@@ -54,7 +54,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {var $data = $item->getData()}
+
+                                    {var $data = $item->getData('array')}
                                     {if is_array($data) || is_object($data)}
                                         <tr n:foreach="$data as $key => $value">
                                             <th style="width: 200px">{$key}</th>
@@ -71,7 +72,7 @@
                                             <td colspan="2" class="text-muted">Žádná strukturovaná data nebyla nalezena.</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2"><pre>{$item->data}</pre></td>
+                                            <td colspan="2"><pre>{$item->getData()}</pre></td>
                                         </tr>
                                     {/if}
                                 </tbody>
