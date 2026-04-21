@@ -1,0 +1,35 @@
+<div class="container">
+    <h2 class="section-title">Aktuality</h2>
+    <div class="swiper news-slider">
+        <div class="swiper-wrapper">
+
+            {foreach $items as $item}
+                <div class="swiper-slide news-item">
+                    <div class="card">
+                        <div class="card-img-placeholder" style="background: #eee; height: 200px;">
+                            <img src="{$item->getImagePath("800x600")}" class="img-fluid" alt="{$item->getName()}"/>
+                        </div>
+                        <div class="news-content">
+                            <span class="date">{$item->getCreatedDt('j. n. Y')}</span>
+                            <h4>{$item->getName()}</h4>
+                            <p>{$item->getShortText()|noescape}</p>
+
+                            <button class="btn btn-sm btn-outline-primary mt-3 open-news-modal"
+                                    data-id="{$item->getId()}"
+                                    data-title="{$item->getName()}"
+                                    data-date="{$item->getCreatedDt('j. n. Y')}"
+                                    data-image="{$item->getImagePath('800x600')}">
+                                Více informací
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {/foreach}
+
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
+
+{include _modal.latte}
