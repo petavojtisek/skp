@@ -12,6 +12,8 @@
 ## Workflow
 1.  **Aktualizace instalátoru (Aktualizuj install):** Tento proces znamená synchronizaci aktuálního kódu modulů z vývoje do instalačních balíčků. Pro každý modul v `app/Modules/<ModuleName>/` zkopírujte jeho obsah do `install/modules/<ModuleName>/src/`. Tím se zajistí, že instalátor obsahuje vždy nejnovější verzi kódu.
 
+2.  **Hledání zapomenutého ladění (Najdi xdebug):** Před dokončením úkolu nebo na vyžádání prohledejte adresář `app/` na výskyt funkce `xdebug_break()`. Tento příkaz nesmí zůstat v produkčním kódu.
+
 ## Naming Conventions
 - **Methods:** Always use `camelCase` for methods in entities and presenters (e.g., `getSessionId()`).
 - **Properties & DB Columns:** Always use `snake_case` for entity properties and database columns (e.g., `session_id`).

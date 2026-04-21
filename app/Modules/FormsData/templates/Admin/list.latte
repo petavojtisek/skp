@@ -29,6 +29,7 @@
                                 <th>Název formuláře</th>
                                 <th>IP adresa</th>
                                 <th>Datum odeslání</th>
+                                <th style="width: 100px">Odpovězeno</th>
                                 <th style="width: 100px">Stav</th>
                                 <th style="width: 120px">Akce</th>
                             </tr>
@@ -44,6 +45,13 @@
                                     <td>{$item->getFormName()}</td>
                                     <td>{$item->getIpAddress()}</td>
                                     <td>{$item->getCreatedDt('d.m.Y H:i:s')}</td>
+                                    <td class="text-center">
+                                        {if $item->getResponseDt()}
+                                            <span class="badge badge-success">Ano</span>
+                                        {else}
+                                            <span class="badge badge-secondary">Ne</span>
+                                        {/if}
+                                    </td>
                                     <td>
                                         {if $item->getStatus() == 1}
                                             <span class="badge badge-info">Nové</span>

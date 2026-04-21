@@ -6,9 +6,13 @@
                 <h3 class="card-title">Detail odeslaného formuláře #{$item->getId()} ({$item->getFormName()})</h3>
                 <div class="card-tools">
                     {var $email = $item->getData('email')}
-                    <button n:if="$email" type="button" class="btn btn-sm btn-info mr-2" id="btn-open-send-mail" data-toggle="modal" data-target="#modal-send-mail" data-email="{$email}" data-id="{$item->getId()}">
-                        <i class="fas fa-envelope"></i> Poslat mail ({$email})
-                    </button>
+                    {if $item->getResponseDt()}
+                        <span class="badge badge-success mr-2"><i class="fas fa-check"></i> Již odpovězeno ({$item->getResponseDt('d.m.Y H:i')})</span>
+                    {elseif $email}
+                        <button type="button" class="btn btn-sm btn-info mr-2" id="btn-open-send-mail" data-toggle="modal" data-target="#modal-send-mail" data-email="{$email}" data-id="{$item->getId()}">
+                            <i class="fas fa-envelope"></i> Poslat mail ({$email})
+                        </button>
+                    {/if}
                     <a n:href="list!" class="btn btn-sm btn-secondary ajax"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
                 </div>
             </div>
@@ -84,13 +88,28 @@
                         </div>
                     </div>
                 </div>
+
+                {if $item->getResponseDt()}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h5><i class="fas fa-reply mr-1"></i> Odpověď ({$item->getResponseDt('d.m.Y H:i:s')})</h5>
+                            <div class="p-3 bg-light border rounded">
+                                {var $resp = $item->getResponse('array')}
+                                <div class="mb-2"><strong>Předmět:</strong> {$resp['subject'] ?? '-'}</div>
+                                <div>{$resp['content']|noescape}</div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
             </div>
-            <div class="card-footer text-right">
-                 <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat tento záznam?')"><i class="fas fa-trash"></i> Smazat záznam</a>
+                <div class="card-footer text-right">
+                    <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat tento záznam?')"><i class="fas fa-trash"></i> Smazat záznam</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{/snippet}
 
 <!-- Modal E-mail -->
 <div class="modal fade" id="modal-send-mail" tabindex="-1" role="dialog" aria-hidden="true">
@@ -148,15 +167,14 @@
                     return; 
                 }
 
-                console.log('Sending to:', sendMailLink, { id: currentId, email: currentEmail, subject: subject });
+                // Zavřeme modal OKAMŽITĚ, aby Bootstrap stihl odstranit overlay před AJAX překreslením
+                $('#modal-send-mail').modal('hide');
 
                 naja.makeRequest('POST', sendMailLink, { 
                     id: currentId,
                     email: currentEmail,
                     subject: subject, 
                     content: content 
-                }).then(function() {
-                    $('#modal-send-mail').modal('hide');
                 });
             });
 
@@ -193,4 +211,3 @@
         }
     })();
 </script>
-{/snippet}

@@ -87,8 +87,7 @@ class WebTextsAdminControl extends Control implements IToolsControl
         if ($this->id && !$this->getComponent('webTextForm')->isSubmitted()) {
             $webText = $this->webTextFacade->getWebText($this->id);
 
-            if ($webText) {
-                $this['webTextForm']->setDefaults($webText->getEntityData());
+            if ($webText) {                $this['webTextForm']->setDefaults($webText->getEntityData());
             }
         }
 
