@@ -3,6 +3,7 @@
 namespace App\Modules\FormsData\Components;
 
 use App\Model\Admin\LoggedUserEntity;
+use App\Model\Emails\EmailsFacade;
 use App\Model\Helper\IToolsControl;
 use App\Modules\FormsData\Model\FormsDataFacade;
 use App\Modules\FormsData\Model\FormsDataEntity;
@@ -12,6 +13,8 @@ use Nette\Application\UI\Form;
 class FormsDataAdminControl extends Control implements IToolsControl
 {
     private FormsDataFacade $facade;
+
+    private EmailsFacade $emailsFacade;
 
     /** @var int|null @persistent */
     public $id = null;
@@ -30,10 +33,11 @@ class FormsDataAdminControl extends Control implements IToolsControl
 
     public LoggedUserEntity $loggedUser;
 
-    public function __construct(FormsDataFacade $facade, LoggedUserEntity $loggedUser)
+    public function __construct(FormsDataFacade $facade, LoggedUserEntity $loggedUser, EmailsFacade $emailsFacade)
     {
         $this->facade = $facade;
         $this->loggedUser = $loggedUser;
+        $this->emailsFacade = $emailsFacade;
     }
 
     public function setCode(string $code): void
@@ -89,13 +93,39 @@ class FormsDataAdminControl extends Control implements IToolsControl
 
     /* --- SIGNALS --- */
 
-    public function handleSendMail(string $subject, string $content): void
+    public function handleSendMail(?int $id = null, ?string $email = null, ?string $subject = null, ?string $content = null): void
     {
-        // Slepej handler
-        $this->getPresenter()->flashMessage("Email s předmětem '$subject' byl (simulovaně) odeslán ze sekce FormsData.", 'success');
+        // Fallback pro případ, že Nette ne namapovalo parametry automaticky z AJAX požadavku
+        $id = $id ?? (int)$this->getPresenter()->getParameter('id');
+        $email = $email ?? $this->getPresenter()->getParameter('email');
+        $subject = $subject ?? $this->getPresenter()->getParameter('subject');
+        $content = $content ?? $this->getPresenter()->getParameter('content');
+
+        if (!$email || !$subject || !$content) {
+             $this->getPresenter()->flashMessage("Chybí povinné údaje pro odeslání e-mailu.", 'danger');
+        } else {
+             $this->emailsFacade->sendGenericEmail($email, $subject, $content);
+             
+             // Uložení odpovědi do databáze
+             if ($id) {
+                 $formData = $this->facade->getFormData($id);
+                 if ($formData) {
+                     $formData->setResponse([
+                         'email' => $email,
+                         'subject' => $subject,
+                         'content' => $content
+                     ]);
+                     $formData->setResponseDt(new \DateTime());
+                     $this->facade->saveFormData($formData);
+                 }
+             }
+
+             $this->getPresenter()->flashMessage("Email pro '$email' s předmětem '$subject' byl odeslán a uložen.", 'success');
+        }
 
         if ($this->getPresenter()->isAjax()) {
             $this->getPresenter()->redrawControl('flashes');
+            $this->redrawControl('forms_dataDetail');
         } else {
             $this->redirect('this');
         }
@@ -133,7 +163,7 @@ class FormsDataAdminControl extends Control implements IToolsControl
     {
         $this->facade->deleteFormData($id);
         $this->getPresenter()->flashMessage('Záznam byl smazán.', 'success');
-        
+
         $presenter = $this->getPresenter();
         $presenter->activeControl = $this->code;
         if ($presenter->isAjax()) {

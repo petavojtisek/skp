@@ -5,8 +5,9 @@
             <div class="card-header">
                 <h3 class="card-title">Detail odeslaného formuláře #{$item->getId()} ({$item->getFormName()})</h3>
                 <div class="card-tools">
-                    <button type="button" class="btn btn-sm btn-info mr-2" data-toggle="modal" data-target="#modal-send-mail">
-                        <i class="fas fa-envelope"></i> Poslat mail
+                    {var $email = $item->getData('email')}
+                    <button n:if="$email" type="button" class="btn btn-sm btn-info mr-2" id="btn-open-send-mail" data-toggle="modal" data-target="#modal-send-mail" data-email="{$email}" data-id="{$item->getId()}">
+                        <i class="fas fa-envelope"></i> Poslat mail ({$email})
                     </button>
                     <a n:href="list!" class="btn btn-sm btn-secondary ajax"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
                 </div>
@@ -96,7 +97,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Odeslat e-mail</h4>
+                <h4 class="modal-title">Odeslat e-mail (<span id="modal-email-label"></span>)</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
@@ -129,6 +130,15 @@
                 return;
             }
 
+            var currentEmail = '';
+            var currentId = null;
+
+            $(document).off('click', '#btn-open-send-mail').on('click', '#btn-open-send-mail', function() {
+                currentEmail = $(this).data('email');
+                currentId = $(this).data('id');
+                $('#modal-email-label').text(currentEmail);
+            });
+
             $(document).off('click', '#submit-send-mail').on('click', '#submit-send-mail', function() {
                 var subject = $('#email-subject').val();
                 var content = (typeof tinymce !== 'undefined' && tinymce.get('email-content')) ? tinymce.get('email-content').getContent() : $('#email-content').val();
@@ -138,7 +148,11 @@
                     return; 
                 }
 
+                console.log('Sending to:', sendMailLink, { id: currentId, email: currentEmail, subject: subject });
+
                 naja.makeRequest('POST', sendMailLink, { 
+                    id: currentId,
+                    email: currentEmail,
                     subject: subject, 
                     content: content 
                 }).then(function() {
@@ -168,6 +182,7 @@
                 }
                 $('#email-subject').val('');
                 $('#email-content').val('');
+                $('#modal-email-label').text('');
             });
         };
 

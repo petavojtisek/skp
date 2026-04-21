@@ -162,8 +162,10 @@
 | id | int | NO | PRI | NULL | auto_increment |
 | form_name | varchar(255) | NO |  | NULL |  |
 | data | json | NO |  | NULL |  |
+| response | json | YES |  | NULL |  |
 | ip_address | varchar(45) | YES |  | NULL |  |
 | created_dt | timestamp | NO |  | 'CURRENT_TIMESTAMP' | DEFAULT_GENERATED |
+| response_dt | timestamp | YES |  | NULL |  |
 | status | int | YES |  | '1' |  |
 
 ## Table: `forms`
