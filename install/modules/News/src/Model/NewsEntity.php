@@ -6,6 +6,14 @@ use App\Model\Base\BaseEntity;
 
 class NewsEntity extends BaseEntity
 {
+
+    const string WEB_STORAGE = "/web_storage/news/",
+                 IMG_THUMB = "thumb",
+                 IMG_ORIG = "orig",
+                 IMG_SIZE = "800x600";
+
+
+
     public mixed $element_id = null;
     public ?string $title = null;
     public ?string $short_text = null;
@@ -49,7 +57,16 @@ class NewsEntity extends BaseEntity
 
     public function getContent(): ?string
     {
-        return $this->content;
+
+        $clean = $this->content;
+        if(!empty($this->content)){
+            $clean = html_entity_decode($this->content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            // Odstraň i ty zbloudilé &nbsp; které tam TinyMCE sype (pokud chceš)
+            $clean = str_replace("\xc2\xa0", ' ', $clean);
+        }
+
+        return $clean;
     }
 
     public function setContent(?string $content): void
@@ -80,5 +97,13 @@ class NewsEntity extends BaseEntity
     public function getCreatedDt($format = null)
     {
         return $this->getDateTime($this->created_dt, $format);
+    }
+
+    public function getImagePath($dir = 'thumb')
+    {
+        if($image = $this->getImage()) {
+            return self::WEB_STORAGE .  $dir .DS. $image;
+        }
+        return null;
     }
 }

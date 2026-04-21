@@ -89,6 +89,18 @@ class FormsDataAdminControl extends Control implements IToolsControl
 
     /* --- SIGNALS --- */
 
+    public function handleSendMail(string $subject, string $content): void
+    {
+        // Slepej handler
+        $this->getPresenter()->flashMessage("Email s předmětem '$subject' byl (simulovaně) odeslán ze sekce FormsData.", 'success');
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->getPresenter()->redrawControl('flashes');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleList(): void
     {
         $this->view = 'list';

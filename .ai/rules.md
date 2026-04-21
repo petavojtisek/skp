@@ -9,6 +9,9 @@
 6.  **Mandatory Documentation Update:** After EVERY change to the database structure, model layer (Mappers, DAOs, Facades, Services), or entities, you MUST update the corresponding documentation in the `skp/.ai/` directory (e.g., `database.md`, files in `modules/`, and `README.md`).
 7.  **No Mapper Exposure:** DAO classes MUST NOT contain a `getMapper()` method. The Mapper is internal to the DAO and must not be leaked or used in higher layers (Service, Facade, Presenter).
 
+## Workflow
+1.  **Aktualizace instalátoru (Aktualizuj install):** Tento proces znamená synchronizaci aktuálního kódu modulů z vývoje do instalačních balíčků. Pro každý modul v `app/Modules/<ModuleName>/` zkopírujte jeho obsah do `install/modules/<ModuleName>/src/`. Tím se zajistí, že instalátor obsahuje vždy nejnovější verzi kódu.
+
 ## Naming Conventions
 - **Methods:** Always use `camelCase` for methods in entities and presenters (e.g., `getSessionId()`).
 - **Properties & DB Columns:** Always use `snake_case` for entity properties and database columns (e.g., `session_id`).

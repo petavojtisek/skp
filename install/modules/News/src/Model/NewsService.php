@@ -18,9 +18,9 @@ class NewsService extends BaseService
         return $this->dao->getByComponentId($componentId);
     }
 
-    public function getFrontByComponentId(int $componentId): array
+    public function getFrontByComponentId(int $componentId,?int $limit = null, ?int $offset=null): array
     {
-        return $this->dao->getFrontByComponentId($componentId);
+        return $this->dao->getFrontByComponentId($componentId, $limit, $offset);
     }
 
     public function find(int $id): ?NewsEntity

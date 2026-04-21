@@ -32,4 +32,9 @@ class MembersDao extends BaseDao
     {
         return $this->mapper->getNextMemberNumber();
     }
+
+    public function setMemberLastPaymentData(int $memberId, $date): ?int
+    {
+        return $this->mapper->update([$this->mapper->getPrimaryKey()=>$memberId,'last_member_payment'=>$date]);
+    }
 }

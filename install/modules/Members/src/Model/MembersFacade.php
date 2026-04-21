@@ -7,6 +7,7 @@ use App\Model\System\PaymentQrService;
 use App\Model\System\PdfService;
 use App\Modules\SystemConstants\Model\SystemConstantsFacade;
 use Nette\Utils\FileSystem;
+use League\Csv;
 
 class MembersFacade
 {
@@ -33,6 +34,43 @@ class MembersFacade
     public function findMembers( int $limit , int $offset, ?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): array
     {
         return $this->service->findMembers($limit, $offset, $search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid, $active);
+    }
+
+    public function export(?array $ids) : string
+    {
+
+        if(is_array($ids)) {
+            $members = $this->findByIds($ids);
+        }else{
+            $members = $this->service->findMembers(100000,0);
+        }
+        $csv = Csv\Writer::from(new \SplTempFileObject());
+        $csv->setDelimiter(';'); // Excel má v CZ raději středník
+
+        $csv->setOutputBOM( Csv\Bom::Utf8);
+        $csv->insertOne(['Číslo člena', 'Jméno','Přijmeni', 'E-mail', 'Telefon', 'Adresa', 'Datum narození']);
+
+
+        foreach ($members as $member) {
+            $csv->insertOne([
+                $member->getMemberNmber(),
+                $member->getName(),
+                $member->getSurname(),
+                $member->getEmail(),
+                $member->getPhone(),
+                $member->getStreet()." ".$member->getCity().' '.$member->getZip(),
+                $member->getBirthDate('d.m.Y'),
+            ]);
+        }
+
+        return $csv->toString();
+
+    }
+
+
+    public function findByIds(array $ids) : array
+    {
+        return $this->service->findByIds($ids);
     }
 
     public function countMembers(?string $search = null, ?string $source = null, ?bool $registrationEmail = null, ?bool $registrationConfirm = null, ?bool $paymentConfirm = null, ?bool $isPaid = null, ?bool $active = null): int
@@ -85,8 +123,8 @@ class MembersFacade
         if (!file_exists($qrFile) || $force) {
             $config = $this->getSystemConfig();
             $qrDataUri = $this->qrService->generateQr(
-                $config['SKP_ACCOUNT_NUMBER'] ?? '',
-                (float)($config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0),
+                $config['SKP_ACCOUNT'] ?? '',
+                (float)($config['SKP_REGISTRATION_AMOUNT'] ?? 0),
                 $member->getMemberNumber(),
                 'CZK',
                 $config['SKP_NAME'] ?? ''
@@ -98,9 +136,11 @@ class MembersFacade
         return $qrFile;
     }
 
+
+
+
     public function generateRegistrationConfirmation(int $memberId, bool $force = false): string
     {
-
         $member = $this->getMember($memberId);
         if (!$member) throw new \Exception("Člen s ID $memberId nenalezen.");
 
@@ -111,7 +151,7 @@ class MembersFacade
             $config = $this->getSystemConfig();
 
             // Logo pro PDF jako Base64
-            $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek.jpeg';
+            $logoPath = ASSETS_DIR . DS . 'images' . DS . 'logo-v1-spolek-mail.jpeg';
             $logoBase64 = file_exists($logoPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath)) : null;
 
             // QR kód pro PDF jako Base64
@@ -139,19 +179,19 @@ class MembersFacade
 
         $config = $this->getSystemConfig();
         $qrFile = $this->generateQr($memberId);
+
         $pdfFile = $this->generateRegistrationConfirmation($memberId);
 
-        // 3. Odeslání e-mailu
         $message = $this->emailsFacade->createMessage(
             'registration',
             array_merge($config, [
                 'member' => $member,
-                'SKP_ACCOUNT_NUMBER' => $config['SKP_ACCOUNT_NUMBER'] ?? '',
+                'SKP_ACCOUNT' => $config['SKP_ACCOUNT'] ?? '',
                 'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
             ]),
             $member->email,
-            [$pdfFile], // Přílohy
-            $qrFile     // QR kód jako inline (cid)
+            [$pdfFile],
+            $qrFile
         );
         $message->setSubject('Registrace do spolku ' . ($config['SKP_NAME'] ?? ''));
 
@@ -166,7 +206,15 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o přijetí do spolku', "Dobrý den,\n\nbyl jste přijat do spolku.");
+        $config = $this->getSystemConfig();
+        $message = $this->emailsFacade->createMessage(
+            'acceptance',
+            array_merge($config, ['member' => $member]),
+            $member->email
+        );
+        $message->setSubject('Potvrzení o přijetí do spolku ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setRegistrationConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
@@ -177,7 +225,15 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Potvrzení o zaplacení příspěvků', "Dobrý den,\n\npotvrzujeme přijetí vaší platby.");
+        $config = $this->getSystemConfig();
+        $message = $this->emailsFacade->createMessage(
+            'payment_confirmation',
+            array_merge($config, ['member' => $member]),
+            $member->email
+        );
+        $message->setSubject('Potvrzení o zaplacení příspěvků - ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setPaymentConfirmEmailDt(new \DateTime());
         $this->saveMember($member);
@@ -188,7 +244,23 @@ class MembersFacade
         $member = $this->getMember($memberId);
         if (!$member || !$member->email) return;
 
-        $this->emailsFacade->sendGenericEmail($member->email, 'Upomínka platby příspěvků', "Dobrý den,\n\ndovolujeme si vás upozornit na neuhrazené příspěvky.");
+        $config = $this->getSystemConfig();
+        $qrFile = $this->generateQr($memberId);
+
+        $message = $this->emailsFacade->createMessage(
+            'payment_reminder',
+            array_merge($config, [
+                'member' => $member,
+                'SKP_ACCOUNT' => $config['SKP_ACCOUNT'] ?? '',
+                'SKP_REGISTRATION_AMOUNT' => $config['SKP_REGISTRATION_AMOUNT'] ?? $config['SKP_MEMBERSHIP_FEE'] ?? 0,
+            ]),
+            $member->email,
+            [],
+            $qrFile
+        );
+        $message->setSubject('Upomínka platby členských příspěvků - ' . ($config['SKP_NAME'] ?? ''));
+
+        $this->emailsFacade->send($message);
 
         $member->setPaymentReminderEmailDt(new \DateTime());
         $this->saveMember($member);
@@ -200,5 +272,10 @@ class MembersFacade
         if (!$member || !$member->email || !$text) return;
 
         $this->emailsFacade->sendGenericEmail($member->email, $subject, $text);
+    }
+
+    public function setMemberLastPaymentData(int $memberId, $date):?int
+    {
+        return $this->service->setMemberLastPaymentData($memberId,$date);
     }
 }

@@ -103,6 +103,18 @@ class FormsAdminControl extends Control implements IObjectControl
         }
     }
 
+    public function handleSendMail(string $subject, string $content): void
+    {
+        // Slepej handler
+        $this->getPresenter()->flashMessage("Email s předmětem '$subject' byl (simulovaně) odeslán.", 'success');
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->getPresenter()->redrawControl('flashes');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     public function handleBack(): void
     {
         $this->view = 'list';

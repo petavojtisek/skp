@@ -223,7 +223,8 @@
         var payc= {link sendPaymentConfirmation!}
         var payr= {link sendPaymentReminder!}
         var setPaymentDate= {link setPaymentDate!}
-        var exportLink= {link export!}
+
+        var exportLink= {link downloadCsv!}
         var sendEmailLink = {link sendEmail!}
     </script>
     <script n:syntax="off">
@@ -294,14 +295,14 @@
                     var action = $(this).data('action');
                     var rowId = $(this).data('id');
                     var rowName = $(this).data('name');
-                    
+
                     var ids = [];
                     if (rowId) {
                         ids = [rowId];
                     } else {
                         $('.member-checkbox:checked').each(function() { ids.push($(this).val()); });
                     }
-                    
+
                     var finalIds = ids.length > 0 ? ids : null;
                     var countText = '';
                     if (rowId) {
@@ -313,7 +314,19 @@
                     $('.modal-target-label').text(countText);
 
                     if (action === 'export') {
-                         naja.makeRequest('GET', exportLink, { ids: finalIds });
+                        // 1. Vytvoříme objekt URL z linku, který už máš
+                        const url = new URL(exportLink, window.location.origin);
+
+                        if(finalIds) {
+                            finalIds.forEach(id => {
+                                url.searchParams.append('ids[]', id);
+                            });
+                        }
+
+                        console.log(url.toString());
+                        window.location.href = url.toString();
+
+                         //naja.makeRequest('GET', exportLink, { ids: finalIds });
                     } else if (action === 'email') {
                         $('#modal-email').data('ids', finalIds).modal('show');
                     } else if (action === 'payment') {
@@ -373,6 +386,9 @@
                             selector: '.wysiwyg',
                             height: 300,
                             menubar: false,
+                            entity_encoding:'raw',
+                            verify_html:false,
+                            cleanup:false,
                             plugins: 'advlist autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
                             toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
                         });

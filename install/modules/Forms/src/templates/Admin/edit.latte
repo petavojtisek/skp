@@ -2,6 +2,9 @@
     <div class="card-header">
         <h3 class="card-title">{$item->getId() ? 'Editace nastavení formuláře' : 'Nové nastavení formuláře'}</h3>
         <div class="card-tools">
+            <button n:if="$item->getId()" type="button" class="btn btn-sm btn-info mr-2" data-toggle="modal" data-target="#modal-send-mail">
+                <i class="fas fa-envelope"></i> Poslat mail
+            </button>
             <a n:href="back!" class="btn btn-sm btn-secondary ajax"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
         </div>
     </div>
@@ -53,3 +56,91 @@
         </div>
     </form>
 </div>
+
+<!-- Modal E-mail -->
+<div class="modal fade" id="modal-send-mail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Odeslat e-mail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Předmět</label>
+                    <input type="text" id="email-subject" class="form-control" placeholder="Zadejte předmět e-mailu">
+                </div>
+                <div class="form-group">
+                    <label>Zpráva</label>
+                    <textarea id="email-content" class="form-control wysiwyg-mail" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zrušit</button>
+                <button type="button" class="btn btn-primary" id="submit-send-mail">Odeslat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var sendMailLink = {link sendMail!};
+</script>
+
+<script n:syntax="off">
+    (function() {
+        var setupMailModal = function() {
+            if (typeof $ === 'undefined') {
+                setTimeout(setupMailModal, 50);
+                return;
+            }
+
+            $(document).off('click', '#submit-send-mail').on('click', '#submit-send-mail', function() {
+                var subject = $('#email-subject').val();
+                var content = (typeof tinymce !== 'undefined' && tinymce.get('email-content')) ? tinymce.get('email-content').getContent() : $('#email-content').val();
+                
+                if (!subject) { 
+                    alert('Zadejte předmět'); 
+                    return; 
+                }
+
+                naja.makeRequest('POST', sendMailLink, { 
+                    subject: subject, 
+                    content: content 
+                }).then(function() {
+                    $('#modal-send-mail').modal('hide');
+                });
+            });
+
+            $(document).off('shown.bs.modal', '#modal-send-mail').on('shown.bs.modal', '#modal-send-mail', function() {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.remove('.wysiwyg-mail');
+                    tinymce.init({
+                        selector: '.wysiwyg-mail',
+                        height: 300,
+                        menubar: false,
+                        entity_encoding:'raw',
+                        verify_html:false,
+                        cleanup:false,
+                        plugins: 'advlist autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+                        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+                    });
+                }
+            });
+
+            $(document).off('hidden.bs.modal', '#modal-send-mail').on('hidden.bs.modal', '#modal-send-mail', function() {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.remove('.wysiwyg-mail');
+                }
+                $('#email-subject').val('');
+                $('#email-content').val('');
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupMailModal);
+        } else {
+            setupMailModal();
+        }
+    })();
+</script>
