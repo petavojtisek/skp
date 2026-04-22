@@ -64,7 +64,7 @@
                                     <td>
                                         <div class="btn-group">
                                             <a n:if="$loggedUserEntity->hasModuleRight('forms_data','list')" n:href="detail!, id => $item->getId()" class="btn btn-xs btn-info ajax" title="Detail"><i class="fas fa-eye"></i></a>
-                                            <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tento záznam?')"><i class="fas fa-trash"></i></a>
+                                            <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" data-confirm="Opravdu smazat tento záznam?"><i class="fas fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>

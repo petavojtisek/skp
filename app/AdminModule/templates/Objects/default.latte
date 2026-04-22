@@ -25,7 +25,7 @@
                     <td>{$object->object_type}</td>
                     <td>
                         <a n:href="edit, $object->object_id" class="btn btn-info btn-sm">Editovat</a>
-                        <a n:href="delete, $object->object_id" class="btn btn-danger btn-sm" onclick="return confirm('Smazat?')">Smazat</a>
+                        <a n:href="delete, $object->object_id" class="btn btn-danger btn-sm" data-confirm="Smazat?">Smazat</a>
                     </td>
                 </tr>
             </tbody>

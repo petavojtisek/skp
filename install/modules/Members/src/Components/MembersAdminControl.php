@@ -78,7 +78,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function renderList(): void
     {
-        $limit = 20;
+        $limit = 100;
         $offset = ($this->page - 1) * $limit;
 
         $items = $this->facade->findMembers(
@@ -169,10 +169,15 @@ class MembersAdminControl extends Control implements IToolsControl
         }
     }
 
-    public function handleDelete(int $id): void
+    public function handleDelete(?int $id): void
     {
-        $this->facade->deleteMember($id);
-        $this->getPresenter()->flashMessage('Člen byl smazán.', 'success');
+
+        if($id) {
+            $this->facade->deleteMember($id);
+            $this->getPresenter()->flashMessage('Člen byl smazán.', 'success');
+        }else{
+            $this->getPresenter()->flashMessage('Člen nebyl smazán.', 'danger');
+        }
         $this->getPresenter()->redrawControl('flashes');
         $this->handleList();
     }
@@ -183,7 +188,7 @@ class MembersAdminControl extends Control implements IToolsControl
     /** @deprecated use downloadCSv */
     public function handleExport(mixed $ids = null): void
     {
-        $ids = $this->getPresenter()->getHttpRequest()->getQuery('ids');
+        $ids = $this->resolveIds($ids);
         bdump($ids, 'Export - vstupní IDs');
 
         if($this->getPresenter()->isAjax()){
@@ -199,8 +204,8 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleDownloadCsv(?array $ids = null)
     {
-        $ids = $finalIds = $ids ?? $this->getParameter('Members-ids') ?? $this->getParameter('ids');
-        $csv = $this->facade->export($finalIds);
+        $ids = $this->resolveIds($ids);
+        $csv = $this->facade->export($ids);
 
         $callback = function ($httpRequest,$httpResponse) use ($csv) {
             $httpResponse->setHeader('Content-Disposition', 'attachment; filename="data.csv"');
@@ -214,11 +219,11 @@ class MembersAdminControl extends Control implements IToolsControl
     public function handleSendEmail(?array $ids = null, ?string $subject = null, ?string $content = null): void
     {
 
-        $ids = $this->getPresenter()->getHttpRequest()->getPost('ids');
         $subject = $this->getPresenter()->getHttpRequest()->getPost('subject');
         $content = $this->getPresenter()->getHttpRequest()->getPost('content');
+        $memberIds = $this->resolveIds($ids);
 
-        bdump(['ids' => $ids, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
+        bdump(['ids' => $memberIds, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
 
         if(!$subject or !$content){
             $this->getPresenter()->flashMessage('Vyplťe předmět a text.', 'danger');
@@ -226,7 +231,7 @@ class MembersAdminControl extends Control implements IToolsControl
             return;
         }
 
-        $memberIds = $this->resolveIds($ids);
+
         foreach ($memberIds as $id) {
             $this->facade->sendEmail($id,$subject,$content);
         }
@@ -237,12 +242,13 @@ class MembersAdminControl extends Control implements IToolsControl
     public function handleSetPaymentDate(mixed $ids = null, ?string $date = null): void
     {
 
-        $ids = $this->getPresenter()->getHttpRequest()->getPost('ids');
+
+        $memberIds = $this->resolveIds($ids);
         $date = $this->getPresenter()->getHttpRequest()->getPost('date');
-        bdump(['ids' => $ids, 'date' => $date], 'Nastavení data platby');
+        bdump(['ids' => $memberIds, 'date' => $date], 'Nastavení data platby');
 
         $date = new DateTime($date);
-        $memberIds = $this->resolveIds($ids);
+
 
         foreach ($memberIds as $id) {
             $this->facade->setMemberLastPaymentData($id,$date);
@@ -255,6 +261,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendRegistrationEmail(mixed $ids = null): void
     {
+
         $memberIds = $this->resolveIds($ids);
         foreach ($memberIds as $id) {
            $this->facade->sendRegistrationEmail((int)$id);
@@ -268,7 +275,9 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendAcceptanceEmail(mixed $ids = null): void
     {
+
         $memberIds = $this->resolveIds($ids);
+
         foreach ($memberIds as $id) {
             $this->facade->sendAcceptanceEmail((int)$id);
         }
@@ -281,7 +290,9 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendPaymentConfirmation(mixed $ids = null): void
     {
+
         $memberIds = $this->resolveIds($ids);
+
         foreach ($memberIds as $id) {
             $this->facade->sendPaymentConfirmationEmail((int)$id);
         }
@@ -294,6 +305,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleSendPaymentReminder(mixed $ids = null): void
     {
+
         $memberIds = $this->resolveIds($ids);
         foreach ($memberIds as $id) {
             $this->facade->sendPaymentReminderEmail((int)$id);
@@ -307,6 +319,8 @@ class MembersAdminControl extends Control implements IToolsControl
 
     private function resolveIds(mixed $ids): array
     {
+        $ids = $ids ?? $this->getPresenter()->getHttpRequest()->getPost('ids') ?? $this->getPresenter()->getHttpRequest()->getQuery('ids');
+
         if ($ids === null) {
             // Získání všech ID členů podle aktuálního filtru
             $total = $this->facade->countMembers(

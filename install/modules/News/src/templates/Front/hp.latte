@@ -1,3 +1,4 @@
+{if count( $items) > 0}
 <div class="container">
     <h2 class="section-title">Aktuality</h2>
     <div class="swiper news-slider">
@@ -11,7 +12,7 @@
                         </div>
                         <div class="news-content">
                             <span class="date">{$item->getCreatedDt('j. n. Y')}</span>
-                            <h4>{$item->getName()}</h4>
+                            <h4>{$item->getTitle()}</h4>
                             <p>{$item->getShortText()|noescape}</p>
 
                             <button class="btn btn-sm btn-outline-primary mt-3 open-news-modal"
@@ -29,7 +30,9 @@
         </div>
         <div class="swiper-pagination"></div>
     </div>
+
 </div>
+{/if}
 
 
 {include _modal.latte}

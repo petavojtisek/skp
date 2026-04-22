@@ -42,7 +42,7 @@
                     <td><code n:if="$item->constant">{$item->constant}</code></td>
                     <td>
                         <a n:href="edit, id => $item->lookup_id" class="btn btn-xs btn-info"><i class="fas fa-edit"></i></a>
-                        <a n:href="delete, id => $item->lookup_id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i></a>
+                        <a n:href="delete, id => $item->lookup_id" class="btn btn-xs btn-danger" data-confirm="Opravdu smazat?"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <tr n:if="!$node[items]">

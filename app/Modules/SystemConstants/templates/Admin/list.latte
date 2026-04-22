@@ -50,7 +50,7 @@
                                         <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'edit')" n:href="edit!, id => $item->getId()" class="ajax btn btn-xs btn-info">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'delete')" n:href="delete!, id => $item->getId()" class="ajax btn btn-xs btn-danger" onclick="return confirm('Opravdu smazat?')">
+                                        <a n:if="$loggedUserEntity->hasModuleRight('system_constants', 'delete')" n:href="delete!, id => $item->getId()" class="ajax btn btn-xs btn-danger" data-confirm="Opravdu smazat?">
                                             <i class="fas fa-trash"></i> Smazat
                                         </a>
                                     </div>

@@ -33,7 +33,7 @@
                             <td>
                                 <div class="btn-group">
                                     <a n:if="$loggedUserEntity->hasModuleRight('news','edit')" n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-primary ajax" title="Editace"><i class="fas fa-edit"></i></a>
-                                    <a n:if="$loggedUserEntity->hasModuleRight('news','delete')" n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" onclick="return confirm('Opravdu smazat tuto aktualitu?')"><i class="fas fa-trash"></i></a>
+                                    <a n:if="$loggedUserEntity->hasModuleRight('news','delete')" n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" data-confirm="Opravdu smazat tuto aktualitu?"><i class="fas fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -52,7 +52,7 @@
                 <i class="fas fa-edit"></i> Editace objektu
             </button>
             <a n:if="$loggedUserEntity->hasGroupRight('REMOVE_OBJECT')" n:href="removeFromPage!" class="btn btn-sm btn-danger ajax"><i class="fas fa-unlink"></i> Odebrat ze stránky</a>
-            <a n:if="$loggedUserEntity->hasGroupRight('DELETE_OBJECT')" n:href="deleteFromPresentation!" class="btn btn-sm btn-secondary ajax" onclick="return confirm('Opravdu smazat objekt z celé prezentace včetně všech jeho dat?')"><i class="fas fa-trash"></i> Smazat z prezentace</a>
+            <a n:if="$loggedUserEntity->hasGroupRight('DELETE_OBJECT')" n:href="deleteFromPresentation!" class="btn btn-sm btn-secondary ajax" data-confirm="Opravdu smazat objekt z celé prezentace včetně všech jeho dat?"><i class="fas fa-trash"></i> Smazat z prezentace</a>
         </div>
     </div>
 </div>

@@ -190,7 +190,7 @@ class FrontendRunner
     public function getMenuTree() : void
     {
         $cacheKey = 'menu_tree_' . $this->active_presentation_id;
-
+        $this->cache->remove($cacheKey);
         $this->menuTree = $this->cache->load($cacheKey, function() {
             $pages = $this->pageFacade->getPages($this->active_presentation_id);
             return $this->filterActivePagesFromTree($pages);

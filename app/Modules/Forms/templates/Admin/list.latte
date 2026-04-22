@@ -34,7 +34,7 @@
                         </td>
                         <td>
                             <a n:if="$loggedUserEntity->hasModuleRight('forms','edit')" n:href="edit!, elementId => $item->getId()" class="btn btn-xs btn-info ajax"><i class="fas fa-edit"></i> Edit</a>
-                            <a n:if="$loggedUserEntity->hasModuleRight('forms','delete')" n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" onclick="return confirm('Opravdu odstranit tento formulář?')"><i class="fas fa-trash"></i> Smazat</a>
+                            <a n:if="$loggedUserEntity->hasModuleRight('forms','delete')" n:href="delete!, elementId => $item->getId()" class="btn btn-xs btn-danger ajax" data-confirm="Opravdu odstranit tento formulář?"><i class="fas fa-trash"></i> Smazat</a>
                         </td>
                     </tr>
                 {/if}
@@ -42,7 +42,7 @@
         </table>
     </div>
     <div class="card-footer">
-        <button n:href="removeFromPage!" class="btn btn-sm btn-warning ajax" onclick="return confirm('Opravdu odebrat tento modul ze stránky? Data zůstanou v databázi.')">Odebrat modul ze stránky</button>
-        <button n:href="deleteFromPresentation!" class="btn btn-sm btn-danger ajax" onclick="return confirm('POZOR: Opravdu smazat celý tento modul i se všemi daty?')">Smazat modul i s daty</button>
+        <button n:href="removeFromPage!" class="btn btn-sm btn-warning ajax" data-confirm="Opravdu odebrat tento modul ze stránky? Data zůstanou v databázi.">Odebrat modul ze stránky</button>
+        <button n:href="deleteFromPresentation!" class="btn btn-sm btn-danger ajax" data-confirm="POZOR: Opravdu smazat celý tento modul i se všemi daty?">Smazat modul i s daty</button>
     </div>
 </div>

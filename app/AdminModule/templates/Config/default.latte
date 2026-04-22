@@ -23,7 +23,7 @@
                     <td>{$config->value|truncate:100}</td>
                     <td>
                         <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONFIG_EDIT')" n:href="edit, id => $config->config_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONGIG_DELETE')" n:href="delete, id => $config->config_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('SYSTEM_CONGIG_DELETE')" n:href="delete, id => $config->config_id" class="btn btn-sm btn-danger" data-confirm="Opravdu smazat?"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$configs">

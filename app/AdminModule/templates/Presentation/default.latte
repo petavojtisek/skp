@@ -30,15 +30,15 @@
                     <td>{$presentation->presentation_name}</td>
                     <td>{$presentation->domain}</td>
                     <td>{$presentation->directory}</td>
-                    <td class="text-center">
+                    <td>
                         <i n:if="$presentation->is_default" class="fas fa-star text-warning" title="Výchozí prezentace"></i>
                         <i n:if="!$presentation->is_default" class="far fa-star text-muted"></i>
                     </td>
                     <td>
                         <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_EDIT')" n:href="edit, id => $presentation->presentation_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_DELETE')"  n:href="delete, id => $presentation->presentation_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('PRESENTATION_DELETE')"  n:href="delete, id => $presentation->presentation_id" class="btn btn-sm btn-danger" data-confirm="Opravdu smazat?"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
-                </tr>
+                    </tr>
                 <tr n:if="!$presentations">
                     <td colspan="7" class="text-center text-muted">Žádné prezentace nebyly nalezeny.</td>
                 </tr>

@@ -25,7 +25,7 @@
                     <td>{$tpl->template_path}</td>
                     <td>
                         <a  n:if="$loggedUserEntity->hasGroupRight('EDIT_TEMPLATE')"  n:href="edit, id => $tpl->template_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a  n:if="$loggedUserEntity->hasGroupRight('DELETE_TEMPLATE')"  n:href="delete, id => $tpl->template_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu smazat?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a  n:if="$loggedUserEntity->hasGroupRight('DELETE_TEMPLATE')"  n:href="delete, id => $tpl->template_id" class="btn btn-sm btn-danger" data-confirm="Opravdu smazat?"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$templates">

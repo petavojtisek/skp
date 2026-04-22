@@ -90,7 +90,7 @@
                                                <i class="fas fa-check"></i> Vybrat
                                            </button>
                                         {/if}
-                                        <a n:href=":Front:File:detail, id => $file->getEncodedId()" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>                                        <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger" onclick="return confirm('Smazat soubor?')"><i class="fas fa-trash"></i></a>
+                                        <a n:href=":Front:File:detail, id => $file->getEncodedId()" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>                                        <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger" data-confirm="Smazat soubor?"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>

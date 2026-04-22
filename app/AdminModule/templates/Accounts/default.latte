@@ -27,7 +27,7 @@
                     <td><span class="badge badge-secondary">{$acc->admin_group_name ?: 'Bez skupiny'}</span></td>
                     <td>
                         <a n:if="$loggedUserEntity->hasGroupRight('EDIT_ADMIN')"  n:href="edit, id => $acc->admin_id" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Editovat</a>
-                        <a n:if="$loggedUserEntity->hasGroupRight('DELETE_ADMIN')"  n:href="delete, id => $acc->admin_id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu odstranit tento účet?')"><i class="fas fa-trash"></i> Smazat</a>
+                        <a n:if="$loggedUserEntity->hasGroupRight('DELETE_ADMIN')"  n:href="delete, id => $acc->admin_id" class="btn btn-sm btn-danger" data-confirm="Opravdu odstranit tento účet?"><i class="fas fa-trash"></i> Smazat</a>
                     </td>
                 </tr>
                 <tr n:if="!$accounts">

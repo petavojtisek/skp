@@ -29,7 +29,7 @@
                         </div>
                     </td>
                     <td>
-                        <a n:if="$loggedUserEntity->hasGroupRight('INSTALL_REMOVE_MODULE')" n:href="uninstall!, id => $module->install_id" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu odinstalovat?')">
+                        <a n:if="$loggedUserEntity->hasGroupRight('INSTALL_REMOVE_MODULE')" n:href="uninstall!, id => $module->install_id" class="btn btn-sm btn-danger ajax" data-confirm="Opravdu odinstalovat?">
                             <i class="fas fa-trash"></i> Odinstalovat
                         </a>
                     </td>

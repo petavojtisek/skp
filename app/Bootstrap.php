@@ -42,7 +42,7 @@ class Bootstrap
 
         $hasCookieAccess = isset($_COOKIE['tb_access']) && $_COOKIE['tb_access'] === '1';
 		// --- Maintenance Toggle ---
-		$showMaintenance = true; // Set to true to activate maintenance mode
+		$showMaintenance = false; // Set to true to activate maintenance mode
 		// --------------------------
 
         if ($showMaintenance and PHP_SAPI === 'cli') {

@@ -104,7 +104,7 @@
                 {/if}
             </div>
                 <div class="card-footer text-right">
-                    <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-sm btn-danger ajax" onclick="return confirm('Opravdu smazat tento záznam?')"><i class="fas fa-trash"></i> Smazat záznam</a>
+                    <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-sm btn-danger ajax" data-confirm="Opravdu smazat tento záznam?"><i class="fas fa-trash"></i> Smazat záznam</a>
                 </div>
             </div>
         </div>
