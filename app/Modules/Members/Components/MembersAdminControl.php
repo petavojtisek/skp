@@ -300,7 +300,7 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->getPresenter()->flashMessage('Potvrzení o platbě byla odeslána.', 'success');
         $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
+
     }
 
     public function handleSendPaymentReminder(mixed $ids = null): void
@@ -314,7 +314,7 @@ class MembersAdminControl extends Control implements IToolsControl
         $this->getPresenter()->flashMessage('Upomínky byly odeslány.', 'success');
         $this->getPresenter()->redrawControl('members');
         $this->getPresenter()->redrawControl('flashes');
-        $this->getPresenter()->terminate();
+
     }
 
     private function resolveIds(mixed $ids): array

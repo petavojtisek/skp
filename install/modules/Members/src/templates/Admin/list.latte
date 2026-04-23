@@ -291,6 +291,22 @@
 
                     $('.modal-target-label').text(countText);
 
+                    if (action === 'export') {
+                        // 1. Vytvoříme objekt URL z linku, který už máš
+                        const url = new URL(exportLink, window.location.origin);
+
+                        if(finalIds) {
+                            finalIds.forEach(id => {
+                                url.searchParams.append('ids[]', id);
+                            });
+                        }
+
+                        console.log(url.toString());
+                        window.location.href = url.toString();
+
+                         //naja.makeRequest('GET', exportLink, { ids: finalIds });
+                    } else if (action === 'email') {
+                        $('#modal-email').data('ids', finalIds).modal('show');
                     } else if (action === 'payment') {
                         $('#modal-payment').data('ids', finalIds).modal('show');
                     } else {
