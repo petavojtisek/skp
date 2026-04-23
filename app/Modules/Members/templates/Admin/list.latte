@@ -310,7 +310,6 @@
                     } else if (action === 'payment') {
                         $('#modal-payment').data('ids', finalIds).modal('show');
                     } else {
-                        // Rychlé akce přes globální potvrzení (přidáme data-confirm dynamicky nebo vyvoláme modal)
                         var msg = '';
                         var link = '';
                         switch(action) {
@@ -320,16 +319,19 @@
                             case 'pay-reminder': msg = 'Opravdu odeslat upomínku o zaplacení ' + countText + '?'; link = payr; break;
                         }
 
-                        // Vytvoříme dočasný element pro globální handler
-                        const tempLink = $('<a>').attr('href', link).attr('data-confirm', msg).addClass('ajax');
-                        // Přidáme parametry ids
-                        if (finalIds) {
-                            let url = new URL(link, window.location.origin);
-                            finalIds.forEach(id => url.searchParams.append('ids[]', id));
-                            tempLink.attr('href', url.toString());
-                        }
+                        if (!link) return;
 
-                        tempLink.trigger('click');
+                        const modal = $('#modal-global-confirm');
+                        modal.find('#global-confirm-message').text(msg);
+                        modal.find('#global-submit-confirm').off('click').on('click', function () {
+                            let url = new URL(link, window.location.origin);
+                            if (finalIds) {
+                                finalIds.forEach(id => url.searchParams.append('ids[]', id));
+                            }
+                            naja.makeRequest('GET', url.toString());
+                            modal.modal('hide');
+                        });
+                        modal.modal('show');
                     }
                 });
 
