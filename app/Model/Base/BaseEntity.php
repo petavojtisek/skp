@@ -127,7 +127,7 @@ class BaseEntity extends AEntity implements IEntity
 
     public function getInserted($fomat = null)
     {
-        return $this->getDateTime($this->created_dt  , $fomat);
+        return $this->getDateTime($this->inserted  , $fomat);
     }
 
 

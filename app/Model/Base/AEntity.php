@@ -15,7 +15,7 @@ abstract class AEntity implements IEntity
 	const string VALUE_TYPE_DATE = 'date';
 	const string VALUE_TYPE_BOOLEAN = 'bool';
 
-	protected array $defaultProperties = ['session_id','created_ip','created_dt'];
+	protected array $defaultProperties = ['session_id','created_ip','created_dt', 'inserted'];
 
 	public ?string $session_id = null;
 	public ?string $created_ip = null;

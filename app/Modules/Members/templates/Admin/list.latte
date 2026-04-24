@@ -80,6 +80,8 @@
                             <th>Telefon</th>
                             <th style="width: 100px">Zdroj</th>
                             <th style="width: 120px">Zaplaceno</th>
+                            <th style="width: 120px">Přijetí mail</th>
+                            <th style="width: 120px">Platební mail</th>
                             <th style="width: 100px">Stav</th>
                             <th style="width: 120px">Akce</th>
                         </tr>
@@ -104,6 +106,14 @@
                                 <td>
                                     {$item->getLastMemberPayment() ? $item->getLastMemberPayment('d.m.Y') : '-'}
                                 </td>
+
+                                <td>
+                                    {$item->getRegistrationConfirmEmailDt() ? $item->getRegistrationConfirmEmailDt('d.m.Y') : '-'}
+                                </td>
+                                <td>
+                                    {$item->getPaymentConfirmEmailDt() ? $item->getPaymentConfirmEmailDt('d.m.Y') : '-'}
+                                </td>
+
                                 <td>
                                     {if $item->isActive()}
                                         <span class="badge badge-success">Aktivní</span>
