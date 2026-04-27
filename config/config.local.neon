@@ -24,11 +24,14 @@ mail:
     # přihlašovací údaje
     username: 'skp@krajinapolabi.cz'
     password: 't0f:{Si)pP?Vhs}G4I|Y'
-	
+
 services:
+	dibiPanel: Dibi\Bridges\Tracy\Panel
 	connection:
 		class: Dibi\Connection
 		arguments: [%database%]
 		autowired: yes
+		setup:
+			- @dibiPanel::register(@self)
 
 

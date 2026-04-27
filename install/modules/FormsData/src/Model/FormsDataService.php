@@ -24,6 +24,11 @@ class FormsDataService extends BaseService
         return $this->dao->countFormsData($search);
     }
 
+    public function findLastByFormName(string $formName, int $limit): array
+    {
+        return $this->dao->findLastByFormName($formName, $limit);
+    }
+
     public function getFormData(int $id): ?FormsDataEntity
     {
         return $this->dao->find($id);

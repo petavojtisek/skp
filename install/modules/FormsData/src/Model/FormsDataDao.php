@@ -27,4 +27,10 @@ class FormsDataDao extends BaseDao
     {
         return $this->mapper->countFormsData($search);
     }
+
+    public function findLastByFormName(string $formName, int $limit): array
+    {
+        $data = $this->mapper->findLastByFormName($formName, $limit);
+        return $this->getEntities($this->entityName, $data);
+    }
 }

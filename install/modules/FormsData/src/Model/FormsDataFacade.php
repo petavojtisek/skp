@@ -23,6 +23,11 @@ class FormsDataFacade
         return $this->service->countFormsData($search);
     }
 
+    public function findLastByFormName(string $formName, int $limit = 5): array
+    {
+        return $this->service->findLastByFormName($formName, $limit);
+    }
+
     public function getFormData(int $id): ?FormsDataEntity
     {
         return $this->service->getFormData($id);

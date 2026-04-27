@@ -4,3 +4,4 @@ services:
     - App\Modules\FormsData\Model\FormsDataService
     - App\Modules\FormsData\Model\FormsDataFacade
     - App\Modules\FormsData\Components\IFormsDataAdminControlFactory
+    - App\Modules\FormsData\Components\IFormsDataDashboardControlFactory

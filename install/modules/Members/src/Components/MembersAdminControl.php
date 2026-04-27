@@ -185,10 +185,10 @@ class MembersAdminControl extends Control implements IToolsControl
 
 
     /**          BUTTONS  */
-    /** @deprecated use downloadCSv */
+    /**     downloadCSv */
     public function handleExport(mixed $ids = null): void
     {
-        $ids = $this->resolveIds($ids);
+        $ids = $this->resolveIds($ids, true);
         bdump($ids, 'Export - vstupní IDs');
 
         if($this->getPresenter()->isAjax()){
@@ -204,7 +204,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
     public function handleDownloadCsv(?array $ids = null)
     {
-        $ids = $this->resolveIds($ids);
+        $ids = $this->resolveIds($ids, true);
         $csv = $this->facade->export($ids);
 
         $callback = function ($httpRequest,$httpResponse) use ($csv) {
@@ -221,7 +221,7 @@ class MembersAdminControl extends Control implements IToolsControl
 
         $subject = $this->getPresenter()->getHttpRequest()->getPost('subject');
         $content = $this->getPresenter()->getHttpRequest()->getPost('content');
-        $memberIds = $this->resolveIds($ids);
+        $memberIds = $this->resolveIds($ids, true);
 
         bdump(['ids' => $memberIds, 'subject' => $subject, 'content' => $content], 'Odesílání e-mailu');
 
@@ -317,11 +317,11 @@ class MembersAdminControl extends Control implements IToolsControl
 
     }
 
-    private function resolveIds(mixed $ids): array
+    private function resolveIds(mixed $ids, ?bool $candAll = false): array
     {
         $ids = $ids ?? $this->getPresenter()->getHttpRequest()->getPost('ids') ?? $this->getPresenter()->getHttpRequest()->getQuery('ids');
 
-        if ($ids === null) {
+        if ($ids === null and $candAll) {
             // Získání všech ID členů podle aktuálního filtru
             $total = $this->facade->countMembers(
                 $this->search,
@@ -344,6 +344,10 @@ class MembersAdminControl extends Control implements IToolsControl
                 $this->activeStatus === null ? null : (bool)$this->activeStatus
             );
             return array_map(fn($m) => $m->getId(), $members);
+        }
+
+        if($ids == null){
+            return [];
         }
 
         return is_array($ids) ? $ids : [$ids];

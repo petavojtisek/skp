@@ -38,4 +38,14 @@ class FormsDataMapper extends BaseMapper
 
         return (int)$selection->fetchSingle();
     }
+
+    public function findLastByFormName(string $formName, int $limit): array
+    {
+        return $this->db->select('*')
+            ->from($this->tableName)
+            ->where('form_name = %s', $formName)
+            ->orderBy('created_dt DESC')
+            ->limit($limit)
+            ->fetchAll();
+    }
 }

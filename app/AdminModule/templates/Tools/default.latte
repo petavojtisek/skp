@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-3" n:if="$loggedUserEntity->hasGroupRight('FILEMANAGER')">
                         <div class="small-box bg-info">
                             <div class="inner">
                                 <h3>Files</h3>
@@ -25,7 +25,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" n:if="$loggedUserEntity->hasGroupRight('OBJECTS')">
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3>Objects</h3>

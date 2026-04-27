@@ -413,9 +413,13 @@ body .menu-open {
   text-decoration: none;
   color: #333;
   font-weight: 600;
+  transition: color 0.3s;
 }
 .main-header .main-nav ul a:hover {
   color: #4a7c2c;
+}
+.main-header .main-nav ul a.btn:hover {
+  color: #fff !important;
 }
 @media (max-width: 768px) {
   .main-header .main-nav .btn {

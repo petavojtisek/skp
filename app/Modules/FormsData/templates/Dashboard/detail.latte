@@ -1,0 +1,213 @@
+{snippet inquiryDetail}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-outline card-info">
+            <div class="card-header">
+                <h3 class="card-title">Detail odeslaného formuláře #{$item->getId()} ({$item->getFormName()})</h3>
+                <div class="card-tools">
+                    {var $email = $item->getData('email')}
+                    {if $item->getResponseDt()}
+                        <span class="badge badge-success mr-2"><i class="fas fa-check"></i> Již odpovězeno ({$item->getResponseDt('d.m.Y H:i')})</span>
+                    {elseif $email}
+                        <button type="button" class="btn btn-sm btn-info mr-2" id="btn-open-send-mail" data-toggle="modal" data-target="#modal-send-mail" data-email="{$email}" data-id="{$item->getId()}">
+                            <i class="fas fa-envelope"></i> Poslat mail ({$email})
+                        </button>
+                    {/if}
+                    <a n:href="list!" class="btn btn-sm btn-secondary ajax"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Základní informace</h5>
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <th style="width: 150px">ID</th>
+                                <td>{$item->getId()}</td>
+                            </tr>
+                            <tr>
+                                <th>Název formuláře</th>
+                                <td>{$item->getFormName()}</td>
+                            </tr>
+                            <tr>
+                                <th>Datum odeslání</th>
+                                <td>{$item->getCreatedDt('d.m.Y H:i:s')}</td>
+                            </tr>
+                            <tr>
+                                <th>IP adresa</th>
+                                <td>{$item->getIpAddress()}</td>
+                            </tr>
+                            <tr>
+                                <th>Stav</th>
+                                <td>
+                                    {if $item->getStatus() == 1}
+                                        <span class="badge badge-info">Nové</span>
+                                    {elseif $item->getStatus() == 2}
+                                        <span class="badge badge-success">Vyřízeno</span>
+                                    {else}
+                                        <span class="badge badge-secondary">Archivováno</span>
+                                    {/if}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-8">
+                        <h5>Odeslaná data</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Pole</th>
+                                        <th>Hodnota</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {var $data = $item->getData('array')}
+                                    {if is_array($data) || is_object($data)}
+                                        <tr n:foreach="$data as $key => $value">
+                                            <th style="width: 200px">{$key}</th>
+                                            <td>
+                                                {if is_array($value) || is_object($value)}
+                                                    <pre style="font-size: 0.8rem">{$value|json}</pre>
+                                                {else}
+                                                    {$value}
+                                                {/if}
+                                            </td>
+                                        </tr>
+                                    {else}
+                                        <tr>
+                                            <td colspan="2" class="text-muted">Žádná strukturovaná data nebyla nalezena.</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><pre>{$item->getData()}</pre></td>
+                                        </tr>
+                                    {/if}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {if $item->getResponseDt()}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h5><i class="fas fa-reply mr-1"></i> Odpověď ({$item->getResponseDt('d.m.Y H:i:s')})</h5>
+                            <div class="p-3 bg-light border rounded">
+                                {var $resp = $item->getResponse('array')}
+                                <div class="mb-2"><strong>Předmět:</strong> {$resp['subject'] ?? '-'}</div>
+                                <div>{$resp['content']|noescape}</div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+                <div class="card-footer text-right">
+                    <a n:if="$loggedUserEntity->hasModuleRight('forms_data','delete')" n:href="delete!, id => $item->getId()" class="btn btn-sm btn-danger ajax" data-confirm="Opravdu smazat tento záznam?"><i class="fas fa-trash"></i> Smazat záznam</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{/snippet}
+
+<!-- Modal E-mail -->
+<div class="modal fade" id="modal-send-mail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Odeslat e-mail (<span id="modal-email-label"></span>)</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Předmět</label>
+                    <input type="text" id="email-subject" class="form-control" placeholder="Zadejte předmět e-mailu">
+                </div>
+                <div class="form-group">
+                    <label>Zpráva</label>
+                    <textarea id="email-content" class="form-control wysiwyg-mail" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zrušit</button>
+                <button type="button" class="btn btn-primary" id="submit-send-mail">Odeslat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var sendMailLink = {link sendMail!};
+</script>
+
+<script n:syntax="off">
+    (function() {
+        var setupMailModal = function() {
+            if (typeof $ === 'undefined') {
+                setTimeout(setupMailModal, 50);
+                return;
+            }
+
+            var currentEmail = '';
+            var currentId = null;
+
+            $(document).off('click', '#btn-open-send-mail').on('click', '#btn-open-send-mail', function() {
+                currentEmail = $(this).data('email');
+                currentId = $(this).data('id');
+                $('#modal-email-label').text(currentEmail);
+            });
+
+            $(document).off('click', '#submit-send-mail').on('click', '#submit-send-mail', function() {
+                var subject = $('#email-subject').val();
+                var content = (typeof tinymce !== 'undefined' && tinymce.get('email-content')) ? tinymce.get('email-content').getContent() : $('#email-content').val();
+
+                if (!subject) {
+                    alert('Zadejte předmět');
+                    return;
+                }
+
+                // Zavřeme modal OKAMŽITĚ, aby Bootstrap stihl odstranit overlay před AJAX překreslením
+                $('#modal-send-mail').modal('hide');
+
+                naja.makeRequest('POST', sendMailLink, {
+                    id: currentId,
+                    email: currentEmail,
+                    subject: subject,
+                    content: content
+                });
+            });
+
+            $(document).off('shown.bs.modal', '#modal-send-mail').on('shown.bs.modal', '#modal-send-mail', function() {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.remove('.wysiwyg-mail');
+                    tinymce.init({
+                        selector: '.wysiwyg-mail',
+                        height: 300,
+                        menubar: false,
+                        entity_encoding:'raw',
+                        verify_html:false,
+                        cleanup:false,
+                        plugins: 'advlist autolink lists link charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+                        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+                    });
+                }
+            });
+
+            $(document).off('hidden.bs.modal', '#modal-send-mail').on('hidden.bs.modal', '#modal-send-mail', function() {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.remove('.wysiwyg-mail');
+                }
+                $('#email-subject').val('');
+                $('#email-content').val('');
+                $('#modal-email-label').text('');
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupMailModal);
+        } else {
+            setupMailModal();
+        }
+    })();
+</script>

@@ -1,3 +1,4 @@
+
 @use "sass:color";
 @use 'myconst' as *;
 @use 'forms';
@@ -173,6 +174,8 @@ body {
     }
   }
 
+
+
   .main-nav {
     display: flex;
     align-items: center;
@@ -194,7 +197,23 @@ body {
         justify-content: center;
       }
 
-      a { text-decoration: none; color: $text-dark; font-weight: 600; &:hover { color: $primary-green; } }
+      a {
+        text-decoration: none;
+        color: $text-dark;
+        font-weight: 600;
+        transition: color 0.3s;
+
+        &:hover {
+          color: $primary-green;
+        }
+
+        // OPRAVA: Zde musíme zvýšit specifitu, aby bílá vyhrála nad zelenou
+        &.btn {
+          &:hover {
+            color: $white !important;
+          }
+        }
+      }
     }
 
     .btn {

@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive" style="min-height: 200px;">
                 <table class="table table-bordered table-striped table-sm" id="members-table">
                     <thead>
                         <tr>
@@ -80,6 +80,8 @@
                             <th>Telefon</th>
                             <th style="width: 100px">Zdroj</th>
                             <th style="width: 120px">Zaplaceno</th>
+                            <th style="width: 120px">Přijetí mail</th>
+                            <th style="width: 120px">Platební mail</th>
                             <th style="width: 100px">Stav</th>
                             <th style="width: 120px">Akce</th>
                         </tr>
@@ -104,6 +106,14 @@
                                 <td>
                                     {$item->getLastMemberPayment() ? $item->getLastMemberPayment('d.m.Y') : '-'}
                                 </td>
+
+                                <td>
+                                    {$item->getRegistrationConfirmEmailDt() ? $item->getRegistrationConfirmEmailDt('d.m.Y') : '-'}
+                                </td>
+                                <td>
+                                    {$item->getPaymentConfirmEmailDt() ? $item->getPaymentConfirmEmailDt('d.m.Y') : '-'}
+                                </td>
+
                                 <td>
                                     {if $item->isActive()}
                                         <span class="badge badge-success">Aktivní</span>
@@ -117,7 +127,7 @@
                                         <a n:if="$loggedUserEntity->hasModuleRight('members','delete')" n:href="delete!, id => $item->getId()" class="btn btn-xs btn-danger ajax" title="Smazat" data-confirm="Opravdu smazat tohoto člena?"><i class="fas fa-trash"></i></a>
                                     </div>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-xs btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown"></button>
+                                        <button type="button" class="btn btn-xs btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown" data-boundary="window"></button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <a class="dropdown-item action-btn" href="#" data-action="email" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-envelope text-info mr-2"></i> Odeslat e-mail</a>
                                             <a class="dropdown-item action-btn" href="#" data-action="payment" data-id="{$item->getId()}" data-name="{$item->getFullName()}"><i class="fas fa-hand-holding-usd text-primary mr-2"></i> Nastavit datum zaplacení</a>

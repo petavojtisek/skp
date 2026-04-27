@@ -1,0 +1,40 @@
+<div class="card" n:snippet="inquiryList">
+    <div class="card-header border-0">
+        <h3 class="card-title">Poslední dotazy (z kontaktního formuláře)</h3>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-valign-middle">
+            <thead>
+                <tr>
+                    <th>Jméno</th>
+                    <th>Email</th>
+                    <th>Datum</th>
+                    <th style="width: 50px">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if empty($items)}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Žádné nové dotazy.</td>
+                    </tr>
+                {else}
+                    <tr n:foreach="$items as $item">
+                        <td>{$item->getData('name')}</td>
+                        <td>{$item->getData('email')}</td>
+                        <td>{$item->getCreatedDt('d.m.Y H:i')}</td>
+                        <td>
+                            <a n:href="detail! 'id'=>$item->getId()" class="ajax text-muted" title="Detail a odpovědět">
+                                <i class="fas fa-search"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {/if}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-center">
+        {*, module => 'FormsData', do => 'FormsData-list'  *}
+        <a href="{$toolUri}" class="btn btn-sm btn-link">Zobrazit všechny dotazy</a>
+
+    </div>
+</div>
