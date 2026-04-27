@@ -78,6 +78,11 @@ class MembersFacade
         return $this->service->countMembers($search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid, $active);
     }
 
+    public function findLatestRegistrations(int $limit = 5): array
+    {
+        return $this->service->findLatestRegistrations($limit);
+    }
+
     public function getMember(int $id): ?MembersEntity
     {
         return $this->service->find($id);

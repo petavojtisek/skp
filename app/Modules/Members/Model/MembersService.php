@@ -23,7 +23,12 @@ class MembersService extends BaseService
         return $this->dao->countMembers($search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid, $active);
     }
 
-    public function find(int $id): ?MembersEntity
+    public function findLatestRegistrations(int $limit): array
+    {
+        return $this->dao->findLatestRegistrations($limit);
+    }
+
+    public function find(?int $id): ?MembersEntity
     {
         return $this->dao->find($id);
     }

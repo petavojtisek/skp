@@ -105,4 +105,13 @@ class MembersMapper extends BaseMapper
 
         return (int)$selection->fetchSingle();
     }
+
+    public function findLatestRegistrations(int $limit): array
+    {
+        return $this->db->select('*')
+            ->from($this->tableName)
+            ->orderBy('created_dt DESC, member_id DESC')
+            ->limit($limit)
+            ->fetchAll();
+    }
 }

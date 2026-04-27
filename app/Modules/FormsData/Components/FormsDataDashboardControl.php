@@ -110,7 +110,7 @@ class FormsDataDashboardControl extends Control
 
     public function handleSendMail(?int $id = null, ?string $email = null, ?string $subject = null, ?string $content = null): void
     {
-   
+
         // Fallback pro případ, že Nette ne namapovalo parametry automaticky z AJAX požadavku
         $id = $id ?? (int)$this->getPresenter()->getParameter('id');
         $email = $email ?? $this->getPresenter()->getParameter('email');

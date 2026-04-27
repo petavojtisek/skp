@@ -28,6 +28,12 @@ class MembersDao extends BaseDao
         return $this->mapper->countMembers($search, $source, $registrationEmail, $registrationConfirm, $paymentConfirm, $isPaid, $active);
     }
 
+    public function findLatestRegistrations(int $limit): array
+    {
+        $data = $this->mapper->findLatestRegistrations($limit);
+        return $this->getEntities($this->entityName, $data);
+    }
+
     public function getNextMemberNumber(): int
     {
         return $this->mapper->getNextMemberNumber();

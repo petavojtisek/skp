@@ -105,7 +105,7 @@ class FormsDataAdminControl extends Control implements IToolsControl
              $this->getPresenter()->flashMessage("Chybí povinné údaje pro odeslání e-mailu.", 'danger');
         } else {
              $this->emailsFacade->sendGenericEmail($email, $subject, $content);
-             
+
              // Uložení odpovědi do databáze
              if ($id) {
                  $formData = $this->facade->getFormData($id);
@@ -159,7 +159,7 @@ class FormsDataAdminControl extends Control implements IToolsControl
         }
     }
 
-    public function handleDelete(int $id): void
+    public function handleDelete(?int $id): void
     {
         $this->facade->deleteFormData($id);
         $this->getPresenter()->flashMessage('Záznam byl smazán.', 'success');
