@@ -119,10 +119,16 @@
                                 <div class="invalid-feedback" n:ifcontent>{$form['zip']->error}</div>
                             </div>
                         </div>
+                        <div class="col-md-3" style="padding-bottom: 5px;">
+                            <input n:name="gdpr" class="form-control {$form['gdpr']->error ? is-invalid}" style="width:20px !important; float:left; height:50px;margin-right: 20px;"> <label n:name="gdpr"> Odesláním formuláře beru na vědomí, že spolek Spolek krajina Polabí, z.s.
+                                zpracovává mé osobní údaje pro účely správy členství a informování o činnosti v souladu se <a href="{$pages[6]->page_rewrite}.html" target="_blank">Zásadami ochrany osobních údajů.</a></label>
+                            <div class="invalid-feedback" n:ifcontent>{$form['gdpr']->error}</div>
+                        </div>
                     </div>
 
                     <div class="text-center mt-4">
                         <button n:name="send" class="btn btn-primary">Odeslat registraci</button>
+
                     </div>
                 </form>
             {/if}

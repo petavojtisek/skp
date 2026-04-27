@@ -11,6 +11,7 @@ use App\Model\Presentation\PresentationService;
 use App\Model\PageGroup\PageGroupService;
 use App\Model\System\Cache;
 use App\Model\System\ModelEventManager;
+use Nette\Security\Passwords;
 
 
 class AdminFacade
@@ -25,6 +26,8 @@ class AdminFacade
     private Cache $cache;
     private ModelEventManager $eventManager;
 
+    private Passwords $passwords;
+
     public function __construct(
         AdminService $adminService,
         AdminGroupService $adminGroupService,
@@ -34,7 +37,8 @@ class AdminFacade
         ModuleService $moduleService,
         LogFacade $logFacade,
         Cache $cache,
-        ModelEventManager $eventManager
+        ModelEventManager $eventManager,
+        Passwords $passwords
     ) {
         $this->adminService = $adminService;
         $this->adminGroupService = $adminGroupService;
@@ -44,6 +48,7 @@ class AdminFacade
         $this->moduleService = $moduleService;
         $this->logFacade = $logFacade;
         $this->cache = $cache;
+        $this->passwords = $passwords;
         $this->eventManager = $eventManager;
     }
 
@@ -97,4 +102,21 @@ class AdminFacade
     public function saveAdminPresentations(int $adminId, array $presentationIds): void {
         $this->presentationService->saveAdminPresentations($adminId, $presentationIds);
     }
+
+    public function createPassswordFromString(string $password) :string
+    {
+       return $this->passwords->hash($password);
+
+    }
+    public function generateSalt(): string|null
+    {
+        try {
+            return bin2hex(random_bytes(16));
+        }catch (\Exception $e) {
+            // Handle the exception if random_bytes fails
+            return null;
+        }
+    }
+
+
 }

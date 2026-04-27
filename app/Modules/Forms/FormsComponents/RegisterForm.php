@@ -47,6 +47,8 @@ class RegisterForm extends BaseForm
         $this->template->qrFile = $qrFile;
         $this->template->formData = $this->formData;
         $this->template->error = $this->error?? false;
+        $this->template->pages = $this->getPresenter()?->frontRunner->pages;
+
         $this->template->setFile(__DIR__ . '/../templates/Forms/RegisterForm.latte');
         try {
             $this->template->render();
@@ -121,6 +123,10 @@ class RegisterForm extends BaseForm
             ->setRequired('Zadejte prosím město.');
         $form->addText('zip', 'PSČ')
             ->setRequired('Zadejte prosím PSČ.');
+
+        $form->addCheckbox('gdpr', 'GDRP')
+            ->setRequired('Souhlas je povinný.');
+
 
         $form->addSubmit('send', 'Odeslat registraci');
 

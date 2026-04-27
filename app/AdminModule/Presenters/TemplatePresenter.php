@@ -3,6 +3,7 @@
 namespace App\AdminModule\Presenters;
 
 use App\Model\Entity\CodeNameEntity;
+use App\Model\Module\ModuleFacade;
 use App\Model\Template\TemplateFacade;
 use App\Model\Template\TemplateEntity;
 use App\Model\Presentation\PresentationFacade;
@@ -11,19 +12,19 @@ use Nette\Application\UI\Form;
 final class TemplatePresenter extends AdminPresenter
 {
     /** @var TemplateFacade @inject */
-    public $templateFacade;
+    public TemplateFacade $templateFacade;
 
     /** @var PresentationFacade @inject */
-    public $presentationFacade;
+    public PresentationFacade $presentationFacade;
 
     /** @var \App\Model\Module\ModuleFacade @inject */
-    public $moduleFacade;
+    public ModuleFacade $moduleFacade;
 
     /** @var int|null @persistent */
-    public $id;
+    public ?int $id;
 
     /** @var int|null @persistent */
-    public $code_name_id;
+    public ?int $code_name_id;
 
     public function actionDefault(): void
     {

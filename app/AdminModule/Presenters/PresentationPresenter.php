@@ -10,13 +10,13 @@ use Nette\Application\UI\Form;
 final class PresentationPresenter extends AdminPresenter
 {
     /** @var PresentationFacade @inject */
-    public $presentationFacade;
+    public PresentationFacade $presentationFacade;
 
     /** @var int|null @persistent */
-    public $id;
+    public ?int $id;
 
     /** @var int|null @persistent */
-    public $spec_param_id;
+    public ?int $spec_param_id;
 
     public function actionDefault(): void
     {

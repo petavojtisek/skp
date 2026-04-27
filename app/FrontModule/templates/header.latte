@@ -38,6 +38,13 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-PJC6TFCVRX');
+
+    window.ellitie_config = {
+        bannerId: 'banner_yczm2v8e8gdra4o80d5wvh',
+        debug: false
+    };
+    !function(){const e="granted",n="denied";function t(){window.dataLayer=window.dataLayer||[],window.dataLayer.push(arguments)}const r=function(){if(void 0===window.ellitie_config||!window.ellitie_config.bannerId)return null;const e=window.ellitie_config;return{bannerId:e.bannerId,debug:!0===e.debug||"true"===e.debug}}();if(!r)return;const i=function(){const e=function(){const e="ellitie-consent-cookie=",n=document.cookie.split(";");for(let t=0;t<n.length;t++){let r=n[t];for(;" "===r.charAt(0);)r=r.substring(1,r.length);if(0===r.indexOf(e))return decodeURIComponent(r.substring(23,r.length))}return null}();if(!e)return{marketing:!1,analytics:!1,preferences:!1};try{const n={};return e.split(",").forEach(e=>{const[t,r]=e.split(":");t&&r&&(n[t.trim()]=r.trim())}),{marketing:"true"===n.marketing,analytics:"true"===n.analytics,preferences:"true"===n.preferences}}catch(e){return{marketing:!1,analytics:!1,preferences:!1}}}();!function(r){t("consent","default",{analytics_storage:r.analytics?e:n,ad_storage:r.marketing?e:n,ad_user_data:r.marketing?e:n,ad_personalization:r.marketing?e:n,functionality_storage:r.preferences?e:n,personalization_storage:r.preferences?e:n,security_storage:e}),t({event:"default_consent"})}(i),function(t){window.uetq=window.uetq||[],window.uetq.some((e,n)=>!!(Array.isArray(e)&&e.length>=3)&&"consent"===e[0]&&"default"===e[1])||window.uetq.push("consent","default",{ad_storage:t.marketing?e:n})}(i),function(e){var n=null,t=null,r=null;Object.defineProperty(window,"rc",{configurable:!0,get:()=>n,set(i){n||((n=i).consent=e.marketing?1:0,Object.defineProperty(n,"retargetingHit",{configurable:!0,get:()=>t,set(e){t=function(){return arguments[0].consent=null,e.apply(n,arguments)}}}),Object.defineProperty(n,"conversionHit",{configurable:!0,get:()=>r,set(e){r=function(){return arguments[0].consent=null,e.apply(n,arguments)}}}))}})}(i),function(e){var n=null,t=null;Object.defineProperty(window,"fbq",{configurable:!0,get:()=>n,set(r){n||(n=r,Object.defineProperty(n,"queue",{configurable:!0,get:()=>t,set(r){t||(t=r,n("consent",e.marketing?"grant":"revoke"))}}))}})}(i),function(e){if(!e||!e.bannerId)return;const n=document.createElement("script");n.src="https://cdn.ellitie.com/v1/widget.js",n.async=!0,(document.head||document.body||document.documentElement).appendChild(n)}(r)}();
+
+
 </script>

@@ -8,26 +8,27 @@ use App\Model\Admin\LoggedUserEntity;
 use App\Model\Presentation\PresentationFacade;
 use App\Model\AdminGroup\AdminGroupFacade;
 use App\Model\Login\LoginFacade;
+use JetBrains\PhpStorm\NoReturn;
 
 abstract class AdminPresenter extends BasePresenter
 {
     /** @var int|null */
-    protected $adminId;
+    protected ?int $adminId;
 
     /** @var LoggedUserEntity @inject */
-    public $loggedUserEntity;
+    public LoggedUserEntity$loggedUserEntity;
 
     /** @var AdminFacade @inject */
-    public $adminFacade;
+    public AdminFacade $adminFacade;
 
     /** @var LoginFacade @inject */
-    public $loginFacade;
+    public LoginFacade $loginFacade;
 
     /** @var PresentationFacade @inject */
-    public $presentationFacade;
+    public PresentationFacade $presentationFacade;
 
     /** @var AdminGroupFacade @inject */
-    public $groupFacade;
+    public AdminGroupFacade $groupFacade;
 
     public function startup(): void
     {
@@ -48,7 +49,7 @@ abstract class AdminPresenter extends BasePresenter
 
                 // VŽDY načítat aktuální data z DB (zrušeno cachování v session pro okamžitou odezvu na změny v DB)
                 $this->loginFacade->loadLoggedUserEntity($this->adminId, $this->loggedUserEntity);
-                
+
                 // Synchronizace entity zpět do identity v session
                 $this->getUser()->updateIdentityData($this->loggedUserEntity->exportData());
 
@@ -86,7 +87,7 @@ abstract class AdminPresenter extends BasePresenter
     /**
      * Signal to switch active presentation
      */
-    public function handleSwitchPresentation($id): void
+    #[NoReturn] public function handleSwitchPresentation($id): void
     {
         $id = (int)$id;
         $userPresIds = array_keys($this->loggedUserEntity->presentations);
@@ -143,4 +144,6 @@ abstract class AdminPresenter extends BasePresenter
         if (!$admin) return false;
         return $this->canEditGroup((int)$admin->getAdminGroupId());
     }
+
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\AdminModule\Presenters;
 
+use App\Model\Log\LogFacade;
 use App\Model\Login\LoginFacade;
 use Nette\Application\UI\Form;
 use Nette\Security\AuthenticationException;
@@ -9,10 +10,10 @@ use Nette\Security\AuthenticationException;
 class SignPresenter extends AdminPresenter
 {
     /** @var LoginFacade @inject */
-    public $loginFacade;
+    public LoginFacade $loginFacade;
 
     /** @var \App\Model\Log\LogFacade @inject */
-    public $logFacade;
+    public LogFacade $logFacade;
 
     public function startup(): void
     {
@@ -33,10 +34,10 @@ class SignPresenter extends AdminPresenter
             $this->logFacade->logAction('System', 'LOGOUT', 'Odhlášení uživatele: ' . $this->getUser()->getIdentity()->user_name, (int)$this->getUser()->getId());
         }
         $this->getUser()->logout();
-        
+
         // Remove admin_active cookie on logout
         $this->getHttpResponse()->deleteCookie('admin_active');
-        
+
         $this->flashMessage('Byli jste odhlášeni.');
         $this->redirect('in');
     }
@@ -60,10 +61,10 @@ class SignPresenter extends AdminPresenter
     {
         try {
             $this->loginFacade->login($values->username, $values->password);
-            
+
             // Set cookie for file picker bypass (lasts 1 day)
             $this->getHttpResponse()->setCookie('admin_active', (string)$this->getUser()->getId(), '1 day');
-            
+
             $this->redirect('Dashboard:');
 
         } catch (AuthenticationException) {

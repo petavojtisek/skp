@@ -71,5 +71,10 @@ class AdministratorEntity extends SecurityEntity implements IEntity
         $this->admin_group_name = $adminGroupName;
     }
 
+    public function setPassword(string $passwd) : void
+    {
+        $this->setVariable('user_password',$passwd);
+    }
+
 
 }

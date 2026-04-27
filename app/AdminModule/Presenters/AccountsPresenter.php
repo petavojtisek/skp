@@ -14,10 +14,10 @@ final class AccountsPresenter extends AdminPresenter
     public $lookupFacade;
 
     /** @var PresentationFacade @inject */
-    public $presentationFacade;
+    public PresentationFacade $presentationFacade;
 
     /** @var int|null @persistent */
-    public $id;
+    public ?int $id;
 
     public function actionDefault(): void
     {
@@ -119,7 +119,10 @@ final class AccountsPresenter extends AdminPresenter
         if (empty($values->user_password)) {
             unset($values->user_password);
         } else {
-            $admin->setPassword($values->user_password);
+           
+            $hash = $this->adminFacade->createPassswordFromString($values->user_password);
+            $admin->setPassword($hash);
+            $admin->setUserPassSalt( $this->adminFacade->generateSalt());
             unset($values->user_password);
         }
 
