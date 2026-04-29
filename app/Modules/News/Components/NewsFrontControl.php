@@ -2,11 +2,11 @@
 
 namespace App\Modules\News\Components;
 
+use App\Model\Helper\BaseControl;
 use App\Model\Helper\IObjectControl;
 use App\Modules\News\Model\NewsFacade;
-use Nette\Application\UI\Control;
 
-class NewsFrontControl extends Control implements IObjectControl
+class NewsFrontControl extends BaseControl implements IObjectControl
 {
     private NewsFacade $facade;
     private int $componentId;

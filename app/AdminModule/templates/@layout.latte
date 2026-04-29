@@ -268,7 +268,7 @@
       extended_valid_elements: 'svg[*],defs[*],pattern[*],desc[*],metadata[*],g[*],mask[*],path[*],line[*],polyline[*],rect[*],circle[*],ellipse[*],polygon[*],use[*],stop[*],linearGradient[*],radialGradient[*],text[*],tspan[*]',
       custom_elements: 'svg,defs,pattern,desc,metadata,g,mask,path,line,polyline,rect,circle,ellipse,polygon,use,stop,linearGradient,radialGradient,text,tspan',
       plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-      toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link macros | code help',
+      toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link gallery macros | code help',
       file_picker_callback: (callback, value, meta) => {
         const textarea = document.querySelector('.wysiwyg');
         let fmUrl = textarea ? textarea.getAttribute('data-fm-url') : null;
@@ -277,23 +277,38 @@
           return;
         }
 
+        // Uložíme si callback pro globální message handler
+        window.tinymce_callback = callback;
+
         // Add picker flag to URL
         const separator = fmUrl.includes('?') ? '&' : '?';
         fmUrl += separator + 'picker=1';
+        if (meta.filetype === 'image') fmUrl += '&baseType=images';
+        if (meta.filetype === 'file') fmUrl += '&baseType=documents';
 
-        const win = window.open(fmUrl, 'FileManager', 'width=1100,height=700,resizable=yes');
-
-        const messageHandler = (e) => {
-          if (e.data && e.data.mceAction === 'selectFile') {
-            callback(e.data.url);
-            window.removeEventListener('message', messageHandler);
-          }
-        };
-        window.addEventListener('message', messageHandler);
+        window.open(fmUrl, 'FileManager', 'width=1100,height=700,resizable=yes');
       },
       setup: (editor) => {
         editor.on('change', () => {
           editor.save(); // Sync with original textarea for Nette forms
+        });
+
+        const openGalleryPicker = () => {
+          const textarea = document.querySelector('.wysiwyg');
+          let fmUrl = textarea ? textarea.getAttribute('data-fm-url') : null;
+          if (!fmUrl) {
+            alert('FileManager URL is not defined.');
+            return;
+          }
+          const separator = fmUrl.includes('?') ? '&' : '?';
+          fmUrl += separator + 'picker=1&baseType=gallery';
+          window.open(fmUrl, 'FileManager', 'width=1100,height=700,resizable=yes');
+        };
+
+        editor.ui.registry.addButton('gallery', {
+          icon: 'gallery',
+          tooltip: 'Vložit galerii',
+          onAction: openGalleryPicker
         });
 
         editor.ui.registry.addMenuButton('macros', {
@@ -305,18 +320,15 @@
             const items = [
               {
                 type: 'menuitem',
-                text: 'Název stránky',
-                onAction: () => editor.insertContent(page_name)},
-              {
-                type: 'menuitem',
-                text: 'Titulek stránky',
-                onAction: () => editor.insertContent(page_title)
+                text: 'Vložit galerii',
+                icon: 'gallery',
+                onAction: openGalleryPicker
               },
-              {
-                type: 'menuitem',
-                text: 'URL prezentace',
-                onAction: () => editor.insertContent(baseUrl)
-              }
+              { type: 'nestedmenuitem', text: 'Systémové proměnné', items: [
+                { type: 'menuitem', text: 'Název stránky', onAction: () => editor.insertContent(page_name) },
+                { type: 'menuitem', text: 'Titulek stránky', onAction: () => editor.insertContent(page_title) },
+                { type: 'menuitem', text: 'URL prezentace', onAction: () => editor.insertContent(baseUrl) }
+              ]}
             ];
             callback(items);
           }
@@ -376,16 +388,34 @@
   });
 
   window.addEventListener('message', function(event) {
-    if (event.data && event.data.mceAction === 'selectFile' && event.data.callback) {
-      const callbackId = event.data.callback;
-      const input = document.getElementById(callbackId);
-      const nameDisplay = document.getElementById(callbackId + '-name');
-      if (input) {
-        input.value = event.data.fileId;
-        $(input).trigger('change');
+    if (!event.data || !event.data.mceAction) return;
+
+    if (event.data.mceAction === 'selectFile') {
+      if (event.data.callback) {
+        // Obshluha pro samostatné inputy (např. v editaci stránky)
+        const callbackId = event.data.callback;
+        const input = document.getElementById(callbackId);
+        const nameDisplay = document.getElementById(callbackId + '-name');
+        if (input) {
+          input.value = event.data.fileId;
+          $(input).trigger('change');
+        }
+        if (nameDisplay) {
+          nameDisplay.innerText = event.data.name;
+        }
+      } else {
+        // Obsluha pro TinyMCE (standardní file_picker)
+        // Pokud existuje aktivní callback od TinyMCE, zavoláme ho
+        if (window.tinymce_callback) {
+          window.tinymce_callback(event.data.url);
+          window.tinymce_callback = null;
+        }
       }
-      if (nameDisplay) {
-        nameDisplay.innerText = event.data.name;
+    }
+
+    if (event.data.mceAction === 'insertGallery') {
+      if (tinymce.activeEditor) {
+        tinymce.activeEditor.insertContent(event.data.shortcode);
       }
     }
   });

@@ -1,0 +1,213 @@
+@use 'myconst' as *;
+
+// Přebijeme globální styly WYSIWYGu přes vysokou prioritu
+.wysiwyg-content .opocnice {
+  background: #f0f5f7 !important;
+  padding: 50px 30px !important;
+  border-radius: 40px !important;
+  margin: 40px auto !important;
+  max-width: 1250px !important;
+  text-align: left !important;
+
+  .main-title {
+    text-align: center !important;
+    color: #1a3a3a !important;
+    font-family: $font-header !important;
+    font-size: 2.2rem !important;
+    margin: 0 0 10px 0 !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .opocnice-intro {
+    text-align: center !important;
+    max-width: 850px !important;
+    margin: 0 auto 50px !important;
+    font-size: 1.1rem !important;
+    font-style: italic !important;
+    color: #555 !important;
+  }
+
+  // --- GRID PRO VŠECHNY KARTY ---
+  .project-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 30px !important;
+    @media (max-width: 992px) { grid-template-columns: 1fr !important; }
+  }
+
+  // --- JEDNOTNÝ STYL KARTY (BOXU) ---
+  .info-card {
+    background: #ffffff !important;
+    border-radius: 25px !important;
+    padding: 35px !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06) !important;
+    border: 1px solid rgba(0,0,0,0.03) !important;
+    display: flex !important;
+    flex-direction: column !important;
+
+    &.wide-card {
+      grid-column: span 2 !important;
+      @media (max-width: 992px) { grid-column: span 1 !important; }
+    }
+
+    h3 {
+      color: $primary-green !important;
+      font-family: $font-header !important;
+      font-size: 1.6rem !important;
+      margin: 0 0 10px 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: none !important;
+    }
+
+    .card-desc {
+      color: #666 !important;
+      font-size: 0.95rem !important;
+      margin-bottom: 25px !important;
+      line-height: 1.4 !important;
+    }
+  }
+
+  // --- GRAFICKÉ IKONY (PRÁVNÍ BOJ) ---
+  .legal-icons-container {
+    display: flex !important;
+    justify-content: space-around !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+    margin-top: 10px !important;
+
+    .legal-icon-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      width: 100px !important;
+      text-align: center !important;
+
+      .icon-circle {
+        width: 70px !important;
+        height: 70px !important;
+        background: #fff !important;
+        border: 1px solid #ddd !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-bottom: 10px !important;
+        padding: 12px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.04) !important;
+
+        img {
+          max-width: 100% !important;
+          max-height: 100% !important;
+          margin: 0 !important;
+        }
+      }
+
+      span {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        color: #333 !important;
+      }
+    }
+  }
+
+  // --- RESETY OBRÁZKŮ A GRIDŮ ---
+  img {
+    margin: 0 !important;
+    border-radius: 15px !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  .visual-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 15px !important;
+    .v-item span { display: block; text-align: center; font-size: 0.8rem; margin-top: 5px; color: #888; }
+  }
+
+  .caption {
+    display: block !important;
+    font-size: 0.85rem !important;
+    color: #888 !important;
+    margin-top: 10px !important;
+    text-align: center !important;
+    font-style: normal !important;
+  }
+
+  // --- RESET SEZNAMŮ (ZABIJEME ZELENÉ TEČKY Z WYSIWYG) ---
+  .opocnice-timeline, .video-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    &::before { content: none !important; } // Zrušení teček u ul
+
+    li {
+      margin: 0 !important;
+      padding: 0 !important;
+      &::before { content: none !important; } // Zrušení teček u li
+    }
+  }
+
+  // --- DOKUMENTY (KARTY) ---
+  .doc-links-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    .doc-item {
+      background: #f9f9f9 !important;
+      padding: 12px !important;
+      border-radius: 12px !important;
+      border: 1px solid #eee !important;
+      color: $text-dark !important;
+      text-decoration: none !important;
+      font-weight: 700 !important;
+      font-size: 0.85rem !important;
+      display: flex !important;
+      align-items: center !important;
+      &:hover { border-color: $primary-green !important; background: #fff !important; }
+      &::before { content: 'PDF'; font-size: 0.6rem; background: #e74c3c; color: #fff; padding: 2px 4px; border-radius: 3px; margin-right: 10px; }
+    }
+  }
+
+  // --- VIDEA ---
+  .video-list .video-row {
+    display: flex !important;
+    align-items: center !important;
+    background: #fcfcfc !important;
+    padding: 15px !important;
+    border-radius: 15px !important;
+    border: 1px solid #eee !important;
+    text-decoration: none !important;
+    color: $text-dark !important;
+    font-weight: 700 !important;
+    margin-bottom: 10px !important;
+    .play-icon {
+      width: 30px !important; height: 30px !important;
+      background: $primary-green !important;
+      color: #fff !important;
+      border-radius: 50% !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      margin-right: 15px !important; font-size: 0.7rem !important;
+    }
+  }
+
+  // --- TIMELINE ---
+  .opocnice-timeline li {
+    padding: 10px 0 10px 30px !important;
+    border-left: 2px solid #ddd !important;
+    margin-left: 10px !important;
+    position: relative !important;
+    &::after {
+      content: '' !important;
+      position: absolute !important;
+      left: -7px !important; top: 15px !important;
+      width: 12px !important; height: 12px !important;
+      background: $primary-green !important;
+      border-radius: 50% !important;
+    }
+    .date { font-weight: 800 !important; color: $primary-green !important; margin-right: 10px !important; }
+  }
+}

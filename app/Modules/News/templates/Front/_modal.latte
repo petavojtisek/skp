@@ -2,7 +2,7 @@
 {* Skrytý kontejner pro data detailů - mimo slider *}
 <div id="news-details-source" style="display:none;">
     {foreach $items as $item}
-        <div id="news-content-{$item->getId()}">{$item->getContent()|noescape}</div>
+        <div id="news-content-{$item->getId()}">{$item->getContent()|parseShortcodes|noescape}</div>
     {/foreach}
 </div>
 

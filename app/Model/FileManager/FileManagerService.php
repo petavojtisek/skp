@@ -73,8 +73,9 @@ class FileManagerService extends BaseService
     public function createDirectory(string $baseType, string $path): bool
     {
         $fullPath = $this->storageDir . DIRECTORY_SEPARATOR . $baseType . DIRECTORY_SEPARATOR . $path;
+
         if (!file_exists($fullPath)) {
-            return FileSystem::createDir($fullPath);
+            FileSystem::createDir($fullPath);
         }
         return true;
     }

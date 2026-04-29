@@ -15,6 +15,7 @@ class FileManagerMapper extends BaseMapper
         return $this->db->select('*')
             ->from($this->tableName)
             ->where('path = %s', $path)
+            ->orderBy('sort_order ASC, created_dt DESC')
             ->fetchAll() ?: [];
     }
 
@@ -24,6 +25,7 @@ class FileManagerMapper extends BaseMapper
             ->from($this->tableName)
             ->where('source_type = %s', $sourceType)
             ->and('element_id = %i', $elementId)
+            ->orderBy('sort_order ASC, created_dt DESC')
             ->fetchAll() ?: [];
     }
 }

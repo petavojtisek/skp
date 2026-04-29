@@ -17,7 +17,7 @@ final class FilesPresenter extends AdminPresenter
     public \App\Model\Page\PageFacade $pageFacade;
 
     /** @persistent */
-    public string $baseType = 'images'; // images | documents | pages
+    public string $baseType = 'images'; // images | documents | gallery | pages
 
     /** @persistent */
     public string $subDir = '';
@@ -87,6 +87,7 @@ final class FilesPresenter extends AdminPresenter
             // Ensure base directories exist
             $this->fileManagerFacade->createDirectory('images', '');
             $this->fileManagerFacade->createDirectory('documents', '');
+            $this->fileManagerFacade->createDirectory('gallery', '');
 
             $this->template->directories = $this->fileManagerFacade->getDirectories($this->baseType, $this->subDir);
             $this->template->files = $this->fileManagerFacade->getFilesByPath($this->baseType, $this->subDir);
@@ -162,6 +163,31 @@ final class FilesPresenter extends AdminPresenter
         $this->fileManagerFacade->deleteFile($id);
         $this->flashMessage('Soubor byl smazán.');
         $this->redirect('this');
+    }
+
+    public function handleSaveFileMeta(int $id = 0, int $sort = 0, int $main = 0): void
+    {
+
+        if (!$id) {
+            $id = (int)$this->getHttpRequest()->getPost('id');
+            $sort = (int)$this->getHttpRequest()->getPost('sort');
+            $main = (int)$this->getHttpRequest()->getPost('main');
+        }
+
+        $file = $this->fileManagerFacade->getFile($id);
+        if ($file) {
+            $file->setSortOrder((int)$sort);
+            $file->setIsMain((int)$main);
+            $this->fileManagerFacade->saveFile($file);
+
+            if ($this->isAjax()) {
+                $this->flashMessage('Změny byly uloženy.');
+                $this->redrawControl('files-list');
+                $this->redrawControl('flashes');
+            } else {
+                $this->redirect('this');
+            }
+        }
     }
 
     private function processCompleteUpload(string $tempDir, int $totalChunks, string $originalName): void

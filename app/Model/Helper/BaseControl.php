@@ -3,12 +3,25 @@
 namespace App\Model\Helper;
 
 use Nette\Application\UI\Control;
+use App\Model\Helper\ShortcodeService;
 
 class BaseControl extends Control
 {
+    /** @var ShortcodeService */
+    public $shortcodeService;
+
+    public function injectShortcodeService(ShortcodeService $shortcodeService): void
+    {
+        $this->shortcodeService = $shortcodeService;
+    }
+
     protected function createTemplate(?string $class = null): \Nette\Application\UI\Template
     {
         $template = parent::createTemplate();
+
+        $template->addFilter('parseShortcodes', function ($content) {
+            return $this->shortcodeService ? $this->shortcodeService->parse((string)$content) : $content;
+        });
 
         $template->addFilter('renderString', function ($content) use ($template) {
             if (!$content) return '';
@@ -17,14 +30,16 @@ class BaseControl extends Control
             $latte->setLoader(new \Latte\Loaders\StringLoader);
 
             try {
-                // Tady bacha: $template->getParameters() v controlu
-                // nemusí obsahovat globální proměnné z presenteru!
-                // Musíš je tam buď poslat, nebo vzít z presenteru:
                 $params = $this->getPresenter()->getTemplate()->getParameters();
                 $result = $latte->renderToString($content, $params);
             } finally {
                 $latte->setLoader($originalLoader);
             }
+
+            if ($this->shortcodeService) {
+                return $this->shortcodeService->parse($result);
+            }
+            
             return $result;
         });
 

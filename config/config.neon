@@ -25,6 +25,8 @@ mail:
 decorator:
 	App\Model\Base\AMapper:
 		inject: yes
+	App\Model\Helper\BaseControl:
+		inject: yes
 
 session:
 	expiration: 14 days
@@ -167,6 +169,6 @@ services:
 	- App\Model\ModuleRight\ModuleRightFacade
 	- App\Model\FileManager\FileManagerFacade
 	- App\Model\Emails\EmailsFacade(debugMode: %debugMode%)
-	- App\Model\Helper\ShortcodeService(%appDir%)
+	- App\Model\Helper\ShortcodeService(appDir: %appDir%)
 
 	# Register other ebcar-like services here

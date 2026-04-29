@@ -17,6 +17,8 @@ class FileManagerEntity extends BaseEntity
     public ?string $extension = null;
     public ?string $mime_type = null;
     public ?int $size = null;
+    public ?int $sort_order = 0;
+    public ?int $is_main = 0;
     public mixed $created_dt = null;
     public ?int $admin_id = null;
 
@@ -128,6 +130,26 @@ class FileManagerEntity extends BaseEntity
     public function setSize(?int $size): void
     {
         $this->setVariable('size', $size, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getSortOrder(): ?int
+    {
+        return $this->sort_order;
+    }
+
+    public function setSortOrder(?int $sortOrder): void
+    {
+        $this->setVariable('sort_order', $sortOrder, self::VALUE_TYPE_INTEGER);
+    }
+
+    public function getIsMain(): bool
+    {
+        return (bool)$this->is_main;
+    }
+
+    public function setIsMain(mixed $isMain): void
+    {
+        $this->setVariable('is_main', $isMain, self::VALUE_TYPE_INTEGER);
     }
 
     public function getCreatedDt($format = null)

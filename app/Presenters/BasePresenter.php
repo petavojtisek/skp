@@ -15,6 +15,14 @@ abstract class BasePresenter extends Presenter
     /** @var LookupFacade @inject */
     public $lookupFacade;
 
+    /** @var \App\Model\Helper\ShortcodeService */
+    public $shortcodeService;
+
+    public function injectShortcodeService(\App\Model\Helper\ShortcodeService $shortcodeService): void
+    {
+        $this->shortcodeService = $shortcodeService;
+    }
+
     public function startup(): void
     {
         parent::startup();
@@ -37,10 +45,16 @@ abstract class BasePresenter extends Presenter
     protected function createTemplate(?string $class = null): \Nette\Application\UI\Template
     {
         $template = parent::createTemplate();
+        
+        $template->addFilter('parseShortcodes', function ($content) {
+            return $this->shortcodeService->parse((string)$content);
+        });
+
         $template->addFilter('renderString', function ($content) use ($template) {
             $latte = $template->getLatte(); // Získáme už existující engine
             // Použijeme stávající parametry, které už v template jsou
-            return $latte->renderToString($content, $template->getParameters());
+            $rendered = $latte->renderToString($content, $template->getParameters());
+            return $this->shortcodeService->parse($rendered);
         });
         return $template;
     }

@@ -8,6 +8,9 @@
             <a n:href="switchBase!, type => 'documents'" class="btn {if $baseType == 'documents'}btn-primary{else}btn-outline-primary{/if}">
                 <i class="fas fa-file-alt"></i> Dokumenty
             </a>
+            <a n:href="switchBase!, type => 'gallery'" class="btn {if $baseType == 'gallery'}btn-primary{else}btn-outline-primary{/if}">
+                <i class="fas fa-camera-retro"></i> Galerie
+            </a>
         </div>
     </div>
 </div>
@@ -28,6 +31,24 @@
                 </div>
             </div>
             <div class="card-body">
+                <div class="row mb-4" n:if="$baseType == 'gallery' && $subDir">
+                    <div class="col-md-12">
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i class="fas fa-info-circle mr-3 fa-2x"></i>
+                            <div>
+                                <strong>Galerie (zkratka pro texty):</strong><br>
+                                Pro vložení této galerie vložte tento kód:<br>
+                                <code id="gallery-shortcode" class="text-dark p-1 px-2 border rounded shadow-sm">[gallery path="{$baseType}/{$subDir}" limit="4" type="gallery"]</code>
+                                <button class="btn btn-xs btn-outline-warning ml-2" onclick="copyShortcode()"><i class="fas fa-copy"></i> Kopírovat</button>
+                                <br><small class="">
+                                    Parametry:  limit  (počet viditelných fotek),
+                                     type  (<strong>gallery</strong> = mřížka, <strong>slider</strong> = posuvník).
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row mb-4">
                     <div class="col-md-12">
                         <div id="file-dropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 5px; min-height: 150px; background: #f8f9fa; cursor: pointer;">
@@ -40,11 +61,13 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive" n:snippet="files-list">
                     <table class="table table-sm table-hover">
                         <thead class="thead-light">
                             <tr>
                                 <th>Název</th>
+                                <th style="width: 80px">Pořadí</th>
+                                <th style="width: 60px" class="text-center">Hlavní</th>
                                 <th>Velikost</th>
                                 <th>Datum</th>
                                 <th class="text-right">Akce</th>
@@ -53,19 +76,17 @@
                         <tbody>
                             {* Tlačítko zpět *}
                             <tr n:if="$subDir">
-                                <td>
+                                <td colspan="5">
                                     <a n:href="goUp!" class="text-warning">
                                         <i class="fas fa-level-up-alt fa-rotate-90 mr-2"></i> ..
                                     </a>
                                 </td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
                             </tr>
 
                             {* Složky *}
                             <tr n:foreach="$directories as $dir">
-                                <td>
+                                <td colspan="3">
                                     <a n:href="openFolder!, name => $dir" class="text-warning">
                                         <i class="fas fa-folder mr-2"></i> <strong>{$dir}</strong>
                                     </a>
@@ -81,16 +102,27 @@
                                     <i class="fas {if $file->file_type == 'image'}fa-file-image text-success{else}fa-file-alt text-primary{/if} mr-2"></i>
                                     {$file->original_name}
                                 </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm meta-sort" data-id="{$file->file_id}" value="{$file->sort_order}" style="width: 60px">
+                                </td>
+                                <td class="text-center">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input meta-main" id="main-{$file->file_id}" data-id="{$file->file_id}" {if $file->is_main}checked{/if}>
+                                        <label class="custom-control-label" for="main-{$file->file_id}"></label>
+                                    </div>
+                                </td>
                                 <td><small class="text-muted">{$file->size|bytes}</small></td>
                                 <td><small class="text-muted">{$file->getCreatedDt('j.n.Y H:i')}</small></td>
                                 <td class="text-right">
                                     <div class="btn-group">
+                                        <button class="btn btn-xs btn-primary save-meta" data-id="{$file->file_id}" title="Uložit změny"><i class="fas fa-save"></i></button>
                                         {if isset($picker) && $picker}
                                            <button class="btn btn-xs btn-success" onclick="selectFile({link :Front:File:get, id => $file->file_id})">
                                                <i class="fas fa-check"></i> Vybrat
                                            </button>
                                         {/if}
-                                        <a n:href=":Front:File:detail, id => $file->getEncodedId()" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>                                        <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger" data-confirm="Smazat soubor?"><i class="fas fa-trash"></i></a>
+                                        <a n:href=":Front:File:detail, id => $file->getEncodedId()" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>
+                                        <a n:href="deleteFile!, id => $file->file_id" class="btn btn-xs btn-outline-danger ajax" data-confirm="Smazat soubor?"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -119,7 +151,28 @@
 <script>
     Dropzone.autoDiscover = false;
 
+    function copyShortcode() {
+        var code = document.getElementById('gallery-shortcode').innerText;
+        navigator.clipboard.writeText(code).then(function() {
+            alert('Zkopírováno: ' + code);
+        });
+    }
+
     $(function() {
+        // Save meta data
+        $(document).on('click', '.save-meta', function() {
+            var btn = $(this);
+            var id = btn.data('id');
+            var sort = $('.meta-sort[data-id="' + id + '"]').val();
+            var main = $('.meta-main[data-id="' + id + '"]').is(':checked') ? 1 : 0;
+
+            naja.makeRequest('POST', {link saveFileMeta!}, {
+                id: id,
+                sort: sort,
+                main: main
+            });
+        });
+
         window.selectFile = function(url) {
             if (window.opener) {
                 window.opener.postMessage({ mceAction: 'selectFile', url: url }, '*');
