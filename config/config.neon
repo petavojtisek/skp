@@ -6,7 +6,7 @@ extensions:
 parameters:
 	domain: skp.cz
 	storageDir: %appDir%/../storage
-	webStorageDir: %appDir%/web_storage
+	webStorageDir: %appDir%/../www/web_storage
 	tempDir: %tempDir%
 	# Paths or other global parameters like in ebcar
 
@@ -167,5 +167,6 @@ services:
 	- App\Model\ModuleRight\ModuleRightFacade
 	- App\Model\FileManager\FileManagerFacade
 	- App\Model\Emails\EmailsFacade(debugMode: %debugMode%)
+	- App\Model\Helper\ShortcodeService(%appDir%)
 
 	# Register other ebcar-like services here

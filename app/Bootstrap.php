@@ -13,6 +13,7 @@ define('TEMP_DIR', PROJECT_ROOT_DIR . DS . 'temp');
 define('CONFIG_DIR', PROJECT_ROOT_DIR . DS . 'config');
 define('STORAGE_DIR', PROJECT_ROOT_DIR . DS . 'storage');
 define('ASSETS_DIR', PROJECT_ROOT_DIR . DS . 'www/assets');
+define('BIN_DIR', PROJECT_ROOT_DIR . DS . 'bin');
 
 // List of IPs allowed to bypass maintenance mode
 define('MAINTENANCE_WHITELIST', [

@@ -9,7 +9,8 @@ use App\Modules\Members\Model\MembersEntity;
 
 $facade = $container->getByType(MembersFacade::class);
 
-$csvFile =  'members.csv';
+$csvFile =  BIN_DIR. DS.'members.csv';
+
 
 if (!file_exists($csvFile)) {
     echo "Soubor members.csv nebyl nalezen v rootu projektu.\n";
@@ -28,7 +29,7 @@ $header = fgetcsv($file);
 $count = 0;
 while (($data = fgetcsv($file)) !== false) {
     // Mapping based on CSV structure:
-    // 0: titule, 1: name, 2: surname, 3: birth_date, 4: street, 5: city, 6: zip, 7: email, 8: phone, 9: note, 10: Č.ÚČTU, 11: last_member_payment
+    // 0: titule, 1: name, 2: surname, 3: birth_date, 4: street, 5: city, 6: zip, 7: email, 8: phone, 9: note, 10: last_member_payment
 
     $entity = new MembersEntity();
     $entity->setDegree($data[0] ?: null);
@@ -53,9 +54,9 @@ while (($data = fgetcsv($file)) !== false) {
     $entity->setEmail($data[7] ?: null);
     $entity->setPhone($data[8] ?: null);
     $entity->setNote($data[9] ?: null);
-    $entity->setLastMemberPayment($parseDate($data[11]));
+    $entity->setLastMemberPayment($parseDate($data[10]));
     $entity->setActive(0);
-    $entity->seCreatedDt(new \Dibi\DateTime());
+    $entity->setCreatedDt(new \Dibi\DateTime());
     $entity->setSource(MembersEntity::SOURCE_IMPORT);
 
     try {

@@ -125,6 +125,14 @@
 | element_id | int | NO | PRI | NULL | auto_increment |
 | content | text | YES |  | NULL |  |
 
+## Table: `documents`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| element_id | int | YES |  | NULL |  |
+| file_id | int | YES |  | NULL |  |
+| text | varchar(255) | YES |  | NULL |  |
+
 ## Table: `element`
 
 | Field | Type | Null | Key | Default | Extra |
@@ -172,8 +180,8 @@
 
 | Field | Type | Null | Key | Default | Extra |
 |-------|------|------|-----|---------|-------|
-| element_id | int | NO | PRI | NULL |  |
-| form_component | varchar(255) | NO |  | NULL |  |
+| element_id | int | NO |  | NULL |  |
+| form_component | varchar(255) | YES |  | NULL |  |
 
 ## Table: `install`
 
@@ -203,6 +211,32 @@
 | value | varchar(255) | YES |  | NULL |  |
 
 ## Table: `members`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| member_id | int | NO | PRI | NULL | auto_increment |
+| member_number | varchar(255) | YES |  | NULL |  |
+| name | varchar(255) | YES |  | NULL |  |
+| surname | varchar(255) | YES |  | NULL |  |
+| degree | varchar(255) | YES |  | NULL |  |
+| birth_date | date | YES |  | NULL |  |
+| street | text | YES |  | NULL |  |
+| zip | varchar(255) | YES |  | NULL |  |
+| city | varchar(255) | YES |  | NULL |  |
+| email | varchar(255) | YES |  | NULL |  |
+| phone | varchar(255) | YES |  | NULL |  |
+| note | varchar(255) | YES |  | NULL |  |
+| last_member_payment | date | YES |  | NULL |  |
+| active | tinyint | YES |  | NULL |  |
+| source | varchar(100) | YES |  | NULL |  |
+| registration_email_dt | timestamp | YES |  | NULL |  |
+| registration_confirm_email_dt | timestamp | YES |  | NULL |  |
+| payment_confirm_email_dt | timestamp | YES |  | NULL |  |
+| payment_reminder_email_dt | timestamp | YES |  | NULL |  |
+| payment_renew_email_dt | timestamp | YES |  | NULL |  |
+| created_dt | timestamp | YES |  | NULL |  |
+
+## Table: `members_live`
 
 | Field | Type | Null | Key | Default | Extra |
 |-------|------|------|-----|---------|-------|
@@ -268,7 +302,7 @@
 
 | Field | Type | Null | Key | Default | Extra |
 |-------|------|------|-----|---------|-------|
-| element_id | int | YES |  | NULL |  |
+| element_id | int | NO | PRI | NULL |  |
 | title | varchar(255) | YES |  | NULL |  |
 | short_text | varchar(255) | YES |  | NULL |  |
 | content | longtext | YES |  | NULL |  |
@@ -387,6 +421,14 @@
 | presentation_id | int | NO | MUL | NULL |  |
 | name | varchar(255) | NO |  | NULL |  |
 | value | varchar(255) | NO |  | NULL |  |
+
+## Table: `system_constants`
+
+| Field | Type | Null | Key | Default | Extra |
+|-------|------|------|-----|---------|-------|
+| system_constant_id | int | NO | PRI | NULL | auto_increment |
+| code | varchar(255) | YES |  | NULL |  |
+| value | longtext | YES |  | NULL |  |
 
 ## Table: `template`
 
