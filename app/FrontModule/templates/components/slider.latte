@@ -3,50 +3,40 @@
 
 <div class="gallery-slider-wrapper mb-4">
     <div id="{$galleryId}" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators">
+        <div class="carousel-inner shadow rounded">
             {foreach $visibleImages as $img}
-                <li data-target="#{$galleryId}" data-slide-to="{$iterator->counter0}" n:class="$iterator->first ? active"></li>
-            {/foreach}
-        </ol>
-        <div class="carousel-inner rounded shadow-sm">
-            {foreach $visibleImages as $img}
-                <div n:class="carousel-item, $iterator->first ? active">
-                    <a href="/storage/{$img->getPath()}/{$img->getFileName()}" 
-                       data-lightbox="lightbox-{$galleryId}" 
-                       data-title="{$img->getOriginalName()}">
-                        <img src="/storage/{$img->getPath()}/{$img->getFileName()}" 
-                             class="d-block w-100" 
-                             alt="{$img->getOriginalName()}"
-                             style="height: 500px; object-fit: cover;">
+                <div class="carousel-item {if $iterator->first}active{/if}">
+                    <a href="{$img['url']}" data-lightbox="{$galleryId}-main" data-title="{$img['original_name']}">
+                        <div class="slider-image-container" style="height: 400px; background: #333; position: relative; overflow: hidden;">
+                            <img src="{$img['url']}" 
+                                 class="d-block w-100" 
+                                 alt="{$img['original_name']}"
+                                 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-height: 100%; min-width: 100%; object-fit: cover;">
+                        </div>
                     </a>
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.3); border-radius: 10px;">
-                        <h5>{$img->getOriginalName()}</h5>
-                    </div>
                 </div>
             {/foreach}
         </div>
-        <a class="carousel-control-prev" href="#{$galleryId}" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Předchozí</span>
-        </a>
-        <a class="carousel-control-next" href="#{$galleryId}" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Další</span>
-        </a>
+        
+        {if count($visibleImages) > 1}
+            <a class="carousel-control-prev" href="#{$galleryId}" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Předchozí</span>
+            </a>
+            <a class="carousel-control-next" href="#{$galleryId}" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Další</span>
+            </a>
+        {/if}
     </div>
 
-    {* Skryté fotky pro lightbox (pokud jich je víc než limit) *}
+    {* Skryté zbývající obrázky pro lightbox pokud jich je víc než limit *}
     {if count($images) > $limit}
         {foreach array_slice($images, $limit) as $img}
-            <a href="/storage/{$img->getPath()}/{$img->getFileName()}" 
-               data-lightbox="lightbox-{$galleryId}" 
-               data-title="{$img->getOriginalName()}" 
+            <a href="{$img['url']}" 
+               data-lightbox="{$galleryId}-main" 
+               data-title="{$img['original_name']}" 
                style="display:none"></a>
         {/foreach}
     {/if}
 </div>
-
-{* 
-Slider používá standardní Bootstrap 4 Carousel, který je již v projektu přítomen.
-Lightbox zůstává zachován pro detailní prohlížení.
-*}

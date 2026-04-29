@@ -38,11 +38,11 @@
                             <div>
                                 <strong>Galerie (zkratka pro texty):</strong><br>
                                 Pro vložení této galerie vložte tento kód:<br>
-                                <code id="gallery-shortcode" class="text-dark p-1 px-2 border rounded shadow-sm">[gallery path="{$baseType}/{$subDir}" limit="4" type="gallery"]</code>
+                                <code id="gallery-shortcode" class="text-dark p-1 px-2 border rounded shadow-sm">((gallery|path:{$baseType}/{$subDir}|limit:4|type:gallery))</code>
                                 <button class="btn btn-xs btn-outline-warning ml-2" onclick="copyShortcode()"><i class="fas fa-copy"></i> Kopírovat</button>
                                 <br><small class="">
-                                    Parametry:  limit  (počet viditelných fotek),
-                                     type  (<strong>gallery</strong> = mřížka, <strong>slider</strong> = posuvník).
+                                    Parametry: limit (počet viditelných fotek), 
+                                    type (<strong>gallery</strong> = mřížka, <strong>slider</strong> = posuvník).
                                 </small>
                             </div>
                         </div>

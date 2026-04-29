@@ -23,17 +23,21 @@ class ShortcodeService
      */
     public function parse(string $content): string
     {
-        // Debug log
-        // file_put_contents($this->appDir . '/../log/shortcode.log', "Parsing content: " . substr($content, 0, 100) . "...\n", FILE_APPEND);
-
-        if (strpos($content, '[gallery') === false) {
+        // Podpora pro nový formát ((gallery|path:value)) i starší varianty
+        if (strpos($content, 'gallery') === false) {
             return $content;
         }
 
-        return preg_replace_callback('/\[gallery\s+([^\]]+)\]/', function ($matches) {
+        // Regex pro ((gallery ...)), {{gallery ...}} i [gallery ...]
+        return preg_replace_callback('/(?:\(\(|\{\{|\[)gallery[\| ]([^\]\} \)]+)(?:\)\)|\}\}|\])/', function ($matches) {
             $paramString = html_entity_decode($matches[1]);
-            $params = $this->parseParams($paramString);
-            // file_put_contents($this->appDir . '/../log/shortcode.log', "Found gallery with params: " . json_encode($params) . "\n", FILE_APPEND);
+
+            if (strpos($paramString, '|') !== false || strpos($paramString, ':') !== false) {
+                $params = $this->parseNewParams($paramString);
+            } else {
+                $params = $this->parseParams($paramString);
+            }
+
             $result = $this->renderGallery($params);
             if (empty($result)) {
                 return "<!-- Gallery not found or empty: " . htmlspecialchars($paramString) . " -->";
@@ -42,14 +46,29 @@ class ShortcodeService
         }, $content);
     }
 
+    private function parseNewParams(string $paramString): array
+    {
+        $params = [];
+        $parts = explode('|', $paramString);
+        foreach ($parts as $part) {
+            $kv = explode(':', $part, 2);
+            if (count($kv) === 2) {
+                $val = trim($kv[1], "\"' ");
+                $params[trim($kv[0])] = str_replace('"', '', $val);
+            } elseif (!isset($params['path']) && !empty(trim($kv[0]))) {
+                $val = trim($kv[0], "\"' ");
+                $params['path'] = str_replace('"', '', $val);
+            }
+        }
+        return $params;
+    }
     private function parseParams(string $paramString): array
     {
         $params = [];
-        // Match attribute="value", attribute='value', or attribute=value
-        // Also handles multiple quotes like ""path"" or &quot;path&quot;
         preg_match_all('/(\w+)=["\'&quot;]*([^"\'\s&quot;\]]+)["\'&quot;]*/', $paramString, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $params[$match[1]] = trim($match[2], "\"' ");
+            $val = trim($match[2], "\"' ");
+            $params[$match[1]] = str_replace('"', '', $val);
         }
         return $params;
     }
@@ -68,7 +87,7 @@ class ShortcodeService
         $subDir = $parts[1] ?? '';
 
         $files = $this->fileManagerFacade->getFilesByPath($baseType, $subDir);
-        
+
         // Filter only images
         $images = array_filter($files, function($file) {
             return $file->getFileType() === 'image';
@@ -76,30 +95,39 @@ class ShortcodeService
 
         if (empty($images)) return '';
 
+        // Sort images if needed (already sorted by sort_order from mapper)
+
         // Select template based on type
         $templateName = $type === 'slider' ? 'slider.latte' : 'gallery.latte';
         $templatePath = $this->appDir . '/FrontModule/templates/components/' . $templateName;
 
         if (!file_exists($templatePath)) {
-            // Fallback to gallery.latte if specific template not found
             $templatePath = $this->appDir . '/FrontModule/templates/components/gallery.latte';
         }
 
+        // Prepare image data with correct URLs
+        $imageData = [];
+        foreach ($images as $img) {
+            $imageData[] = [
+                'url' => '/file/get/' . $img->getEncodedId(),
+                'original_name' => $img->getOriginalName(),
+                'is_main' => $img->is_main,
+                'entity' => $img
+            ];
+        }
+
         if (!file_exists($templatePath)) {
-            // Very basic fallback if no template exists at all
             $html = '<div class="gallery-fallback row">';
-            foreach (array_slice($images, 0, $limit) as $img) {
-                $url = '/storage/' . $img->getPath() . '/' . $img->getFileName();
-                $html .= '<div class="col-md-3 mb-3"><a href="'.$url.'" data-lightbox="gallery"><img src="'.$url.'" class="img-fluid"></a></div>';
+            foreach (array_slice($imageData, 0, $limit) as $img) {
+                $html .= '<div class="col-md-3 mb-3"><a href="'.$img['url'].'" data-lightbox="gallery"><img src="'.$img['url'].'" class="img-fluid" alt="'.$img['original_name'].'"></a></div>';
             }
             $html .= '</div>';
             return $html;
         }
 
         return $this->latte->renderToString($templatePath, [
-            'images' => $images,
+            'images' => $imageData,
             'params' => $params,
             'limit' => $limit
         ]);
-    }
-}
+    }}

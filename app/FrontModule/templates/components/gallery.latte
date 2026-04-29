@@ -3,42 +3,37 @@
 
 <div class="gallery-wrapper mb-4">
     <div class="row">
-        {foreach $images as $img}
-            {var $isHidden = $iterator->counter > $limit}
-            <div class="col-6 col-md-4 col-lg-3 mb-4" n:if="!$isHidden">
-                <div class="gallery-item position-relative">
-                    <a href="/storage/{$img->getPath()}/{$img->getFileName()}" 
-                       data-lightbox="{$galleryId}" 
-                       data-title="{$img->getOriginalName()}">
-                        <img src="/storage/{$img->getPath()}/{$img->getFileName()}" 
-                             class="img-fluid rounded shadow-sm" 
-                             alt="{$img->getOriginalName()}"
-                             style="width: 100%; height: 200px; object-fit: cover;">
-                        
-                        {* Pokud je to poslední viditelná fotka a jsou další skryté, zobrazíme překryv *}
-                        {if $iterator->counter == $limit && count($images) > $limit}
-                            <div class="gallery-overlay d-flex align-items-center justify-content-center rounded" 
-                                 style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); color: white; cursor: pointer;">
-                                <span class="h4">+ {count($images) - $limit}</span>
-                            </div>
-                        {/if}
-                    </a>
-                </div>
+        {foreach array_slice($images, 0, $limit) as $img}
+            <div class="col-6 col-md-3 mb-4">
+                <a href="{$img['url']}" 
+                   data-lightbox="{$galleryId}" 
+                   data-title="{$img['original_name']}"
+                   class="gallery-item d-block shadow-sm rounded overflow-hidden">
+                    <div class="aspect-ratio-box" style="position: relative; padding-top: 75%; background: #eee;">
+                        <img src="{$img['url']}" 
+                             alt="{$img['original_name']}" 
+                             class="img-fluid" 
+                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                    </div>
+                </a>
             </div>
-
-            {* Skryté fotky pro lightbox *}
-            <a n:if="$isHidden" 
-               href="/storage/{$img->getPath()}/{$img->getFileName()}" 
-               data-lightbox="{$galleryId}" 
-               data-title="{$img->getOriginalName()}" 
-               style="display:none"></a>
         {/foreach}
+    </div>
+
+    {* Skryté zbývající obrázky pro lightbox *}
+    <div class="hidden-gallery-images" style="display:none;">
+        {if count($images) > $limit}
+            {foreach array_slice($images, $limit) as $img}
+                <a href="{$img['url']}" 
+                   data-lightbox="{$galleryId}" 
+                   data-title="{$img['original_name']}"></a>
+            {/foreach}
+        {/if}
     </div>
 </div>
 
-{* 
-Doporučená knihovna pro front-end: Lightbox2 (https://lokeshdhakar.com/projects/lightbox2/)
-Stačí přidat do @layout.latte:
-<link href="path/to/lightbox.css" rel="stylesheet" />
-<script src="path/to/lightbox.js"></script>
-*}
+<style>
+    .gallery-item:hover img {
+        transform: scale(1.05);
+    }
+</style>
