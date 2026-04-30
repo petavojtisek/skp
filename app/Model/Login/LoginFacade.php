@@ -124,4 +124,22 @@ class LoginFacade
             'page_rights' => $this->pageGroupService->getAccessiblePageGroupIdsWithNames($groupId),
         ];
     }
+
+    public function autoLoginByAdminId(int $adminId): void
+    {
+        $entity = new LoggedUserEntity();
+        $this->loadLoggedUserEntity($adminId, $entity);
+
+        if ($entity->getId() > 0) {
+            $identity = new SimpleIdentity($adminId, ['admin'], $entity->exportData());
+            $this->user->login($identity);
+
+            $this->logService->logAction(
+                'System',
+                'AUTOLOGIN',
+                'Automatické přihlášení uživatele ID: ' . $adminId,
+                $adminId
+            );
+        }
+    }
 }

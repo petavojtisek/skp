@@ -29,6 +29,7 @@ decorator:
 		inject: yes
 
 session:
+	name: skp_session
 	expiration: 14 days
 	refererCheck: off
 	cookieSamesite: Lax
@@ -134,6 +135,7 @@ services:
 	- App\Model\ModuleGroupRight\ModuleGroupRightService
 	- App\Model\ModuleRight\ModuleRightService
 	- App\Model\FileManager\FileManagerService(%storageDir%, %tempDir%)
+	- App\Model\System\EncodeDecode
 	- App\Model\Helper\ImageResizer(%webStorageDir%)
 
 	# FACADE

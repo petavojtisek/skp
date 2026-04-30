@@ -162,7 +162,8 @@ final class FilesPresenter extends AdminPresenter
     {
         $this->fileManagerFacade->deleteFile($id);
         $this->flashMessage('Soubor byl smazán.');
-        $this->redirect('this');
+        $this->redrawControl('files-list');
+        //$this->redirect('this');
     }
 
     public function handleSaveFileMeta(int $id = 0, int $sort = 0, int $main = 0): void

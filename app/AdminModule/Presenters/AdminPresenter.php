@@ -30,12 +30,25 @@ abstract class AdminPresenter extends BasePresenter
     /** @var AdminGroupFacade @inject */
     public AdminGroupFacade $groupFacade;
 
+    /** @var \App\Model\System\EncodeDecode @inject */
+    public \App\Model\System\EncodeDecode $encodeDecode;
+
     public function startup(): void
     {
         parent::startup();
 
+        // Silent autologin from cookie if session expired but remember cookie exists
+        if (!$this->getUser()->isLoggedIn() && !$this->isPresenter('Sign')) {
+            $rememberCookie = $this->getHttpRequest()->getCookie('admin_remember');
+            if ($rememberCookie) {
+                $adminId = $this->encodeDecode->decodeSmallHash($rememberCookie);
+                if ($adminId) {
+                    $this->loginFacade->autoLoginByAdminId((int)$adminId);
+                }
+            }
+        }
+
         // Allow bypassing login check for file picker if specifically requested
-        // but we will add stricter check in FilesPresenter for security.
         $isPicker = ($this->getName() === 'Admin:Files' && $this->getParameter('picker'));
 
         if (!$this->getUser()->isLoggedIn() && !$this->isPresenter('Sign') && !$isPicker) {

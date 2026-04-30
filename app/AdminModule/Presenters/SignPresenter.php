@@ -15,6 +15,9 @@ class SignPresenter extends AdminPresenter
     /** @var \App\Model\Log\LogFacade @inject */
     public LogFacade $logFacade;
 
+    /** @var \App\Model\System\EncodeDecode @inject */
+    public \App\Model\System\EncodeDecode $encodeDecode;
+
     public function startup(): void
     {
         parent::startup();
@@ -35,8 +38,9 @@ class SignPresenter extends AdminPresenter
         }
         $this->getUser()->logout();
 
-        // Remove admin_active cookie on logout
+        // Remove admin_active and admin_remember cookie on logout
         $this->getHttpResponse()->deleteCookie('admin_active');
+        $this->getHttpResponse()->deleteCookie('admin_remember');
 
         $this->flashMessage('Byli jste odhlášeni.');
         $this->redirect('in');
@@ -64,6 +68,10 @@ class SignPresenter extends AdminPresenter
 
             // Set cookie for file picker bypass (lasts 1 day)
             $this->getHttpResponse()->setCookie('admin_active', (string)$this->getUser()->getId(), '1 day');
+
+            // Set persistent remember cookie with encoded ID
+            $encodedId = $this->encodeDecode->encodeSmallHash((int)$this->getUser()->getId());
+            $this->getHttpResponse()->setCookie('admin_remember', $encodedId, '14 days');
 
             $this->redirect('Dashboard:');
 
