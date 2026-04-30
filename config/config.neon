@@ -4,7 +4,7 @@ extensions:
 	modules: App\DI\ModulesExtension
 
 parameters:
-	domain: skp.cz
+	domain: krajinapolabi.cz
 	storageDir: %appDir%/../storage
 	webStorageDir: %appDir%/../www/web_storage
 	tempDir: %tempDir%

@@ -400,6 +400,95 @@ textarea.form-control {
   margin-right: 10px !important;
 }
 
+.wysiwyg-content .rozcestnik-wrapper {
+  max-width: 1100px !important;
+  margin: 40px auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-row {
+  display: flex !important;
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #eef2f5 !important;
+  border-radius: 15px !important;
+  overflow: hidden !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+  transition: transform 0.2s ease !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-row:hover {
+  transform: translateY(-3px) !important;
+  border-color: #4a7c2c !important;
+}
+@media (max-width: 768px) {
+  .wysiwyg-content .rozcestnik-wrapper .rozcestnik-row {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-image {
+  width: 250px !important;
+  height: 180px !important;
+  flex-shrink: 0 !important;
+}
+@media (max-width: 768px) {
+  .wysiwyg-content .rozcestnik-wrapper .rozcestnik-image {
+    width: 100% !important;
+    height: 200px !important;
+  }
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-content {
+  display: flex !important;
+  flex-grow: 1 !important;
+  padding: 25px 35px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 30px !important;
+}
+@media (max-width: 768px) {
+  .wysiwyg-content .rozcestnik-wrapper .rozcestnik-content {
+    flex-direction: column !important;
+    padding: 20px !important;
+  }
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-text {
+  flex: 1 !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-text h3 {
+  margin: 0 0 10px 0 !important;
+  color: #4a7c2c !important;
+  font-family: "Montserrat", sans-serif !important;
+  font-size: 1.5rem !important;
+  border: none !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .rozcestnik-text p {
+  margin: 0 !important;
+  color: #666 !important;
+  font-size: 0.95rem !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .cta-button {
+  display: inline-block !important;
+  background: #4a7c2c !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  padding: 12px 25px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-family: "Montserrat", sans-serif !important;
+  white-space: nowrap !important;
+}
+.wysiwyg-content .rozcestnik-wrapper .cta-button:hover {
+  background: rgb(51.5357142857, 86.3571428571, 30.6428571429) !important;
+}
+
 /* Minimalistické alerty inspirované Bootstrapem */
 .alert {
   position: relative;
@@ -658,6 +747,9 @@ body.menu-open {
 }
 .main-header .main-nav ul a:hover, .main-header .main-nav ul a.active {
   color: #4a7c2c;
+}
+.main-header .main-nav ul a.btn:hover {
+  color: #fff !important;
 }
 @media (max-width: 768px) {
   .main-header .main-nav ul a {

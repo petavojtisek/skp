@@ -3,6 +3,7 @@
 @use 'forms';
 @use 'wysiwyg';
 @use 'opocnice';
+@use 'rozcestnik';
 @use 'flashmessage';
 
 // ==========================================================================
@@ -223,6 +224,12 @@ body {
         &:hover, &.active {
           color: $primary-green;
         }
+        // OPRAVA: Zde musíme zvýšit specifitu, aby bílá vyhrála nad zelenou
+        &.btn {
+          &:hover {
+            color: $white !important;
+          }
+        }
 
         @media (max-width: 768px) {
           display: block;
@@ -292,7 +299,7 @@ body {
         display: none;
         width: 100%;
         padding: 0 0 10px 20px;
-        
+
         li a {
           font-size: 1.05rem;
           padding: 10px 0 !important;

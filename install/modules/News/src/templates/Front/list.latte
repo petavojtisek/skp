@@ -8,10 +8,10 @@
                 <h3 class="news-title">{$item->getTitle()}</h3>
                 <div class="news-date text-muted small mb-2">{$item->getCreatedDt()|date:'d.m.Y'}</div>
                 <div class="news-short-text mb-2">
-                    {$item->getShortText()|noescape}
+                    {$item->getShortText()|parseShortcodes|noescape}
                 </div>
                 <div class="news-content">
-                    {$item->getContent()|noescape}
+                    {$item->getContent()|parseShortcodes|noescape}
                 </div>
             </div>
         </div>
