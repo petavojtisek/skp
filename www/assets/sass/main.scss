@@ -1,4 +1,3 @@
-
 @use "sass:color";
 @use 'myconst' as *;
 @use 'forms';
@@ -28,7 +27,7 @@ body {
   width: 100%;
   position: relative;
 
-  .menu-open {
+  &.menu-open {
     overflow: hidden;
   }
 }
@@ -126,7 +125,7 @@ body {
     }
 
     .hamburger-box {
-      display: block; // Nutné, aby držel rozměry
+      display: block;
       width: 25px;
       height: 18px;
       position: relative;
@@ -135,7 +134,7 @@ body {
     .hamburger-inner {
       width: 100%;
       height: 3px;
-      background-color: $primary-green; // Tato čára ti chybí
+      background-color: $primary-green;
       position: absolute;
       left: 0;
       top: 50%;
@@ -156,10 +155,6 @@ body {
     }
   }
 
-  // Navigace na mobilu
-
-
-
   .logo {
     display: flex;
     align-items: center;
@@ -175,8 +170,6 @@ body {
     }
   }
 
-
-
   .main-nav {
     display: flex;
     align-items: center;
@@ -187,65 +180,153 @@ body {
       gap: 25px;
       margin: 0; padding: 0;
       align-items: center;
+
       li {
-        display: flex;
-        align-items: center;
+        position: relative;
+        display: block;
+
+        .nav-item-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          gap: 5px;
+        }
+
+        @media (min-width: 769px) {
+          &:hover > .submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+          }
+        }
       }
 
       @media (max-width: 768px) {
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        width: 100%;
       }
 
       a {
         text-decoration: none;
         color: $text-dark;
         font-weight: 600;
-        transition: color 0.3s;
+        transition: all 0.3s;
+        display: inline-block;
 
-        &:hover {
+        &:not(.btn) {
+          padding: 10px 0;
+        }
+
+        &:hover, &.active {
           color: $primary-green;
         }
 
-        // OPRAVA: Zde musíme zvýšit specifitu, aby bílá vyhrála nad zelenou
-        &.btn {
-          &:hover {
-            color: $white !important;
+        @media (max-width: 768px) {
+          display: block;
+          width: 100%;
+          font-size: 1.15rem;
+          padding: 12px 0 !important;
+          border-bottom: 1px solid rgba(0,0,0,0.05);
+
+          &.btn {
+             text-align: center;
+             margin: 20px 0;
+             border-bottom: none;
           }
         }
       }
     }
 
-    .btn {
+    .submenu-toggle {
+      background: none;
+      border: none;
+      color: $text-dark; // Změněno z $text-light na $text-dark pro lepší viditelnost
+      cursor: pointer;
+      padding: 10px;
+      display: none;
+      transition: transform 0.3s;
+
+      @media (max-width: 768px) {
+        display: block;
+        padding: 15px; // Větší plocha pro kliknutí na mobilu
+      }
+    }
+
+    li.is-open > .nav-item-wrapper .submenu-toggle {
+      transform: rotate(180deg);
+      color: $primary-green;
+    }
+
+    .submenu {
+      list-style: none;
+      background: $white;
+      margin: 0;
+      z-index: 100;
+
+      @media (min-width: 769px) {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 220px;
+        padding: 10px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+
+        li a {
+          padding: 8px 20px !important;
+          font-size: 0.95rem;
+          width: 100%;
+          border: none;
+          &:hover { background: rgba($primary-green, 0.05); }
+        }
+      }
+
       @media (max-width: 768px) {
         display: none;
+        width: 100%;
+        padding: 0 0 10px 20px;
+        
+        li a {
+          font-size: 1.05rem;
+          padding: 10px 0 !important;
+          border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+      }
+    }
+
+    li.is-open > .submenu {
+      @media (max-width: 768px) {
+        display: block;
       }
     }
 
     @media (max-width: 768px) {
       position: fixed;
-      top: 0;
-      right: -100%; // Schované vpravo mimo obrazovku
-      width: 80%;
-      height: 100vh;
+      top: 0; right: -100%;
+      width: 85%; height: 100vh;
       background: $white;
-      box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-      transition: right 0.3s ease-in-out;
+      padding: 80px 30px;
       z-index: 90;
-      padding: 100px 40px;
-
-      &.is-open {
-        right: 0; // Vysune se dovnitř
-      }
-
-      ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 25px;
-      }
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      &.is-open { right: 0; }
     }
   }
+}
+
+// Pomocné třídy pro viditelnost
+.mobile-only {
+  @media (min-width: 769px) { display: none !important; }
+}
+.desktop-only {
+  @media (max-width: 768px) { display: none !important; }
 }
 
 // ==========================================================================
@@ -341,16 +422,14 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.08); height: 100%;
 
     .card-img-placeholder {
-      display: flex;            // Aktivuje flexbox
-      align-items: center;      // Vycentruje svisle
-      justify-content: center;   // Vycentruje vodorovně
-      overflow: hidden;         // Schová přesahy, pokud by byl obr. moc velký
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
 
       img {
-        #max-width: 100%;        // Obrázek nepřeteče šířku
-        #max-height: 100%;       // Obrázek nepřeteče výšku
-        width: auto;            // Zachová poměr stran
-        height: auto;           // Zachová poměr stran
+        width: auto;
+        height: auto;
       }
     }
 
@@ -366,8 +445,8 @@ body {
 .wave-container {
   line-height: 0;
   width: 100%;
-  margin-top: -5px; // Posun nahoru proti lince
-  margin-bottom: -2px; // Posun dolů proti lince
+  margin-top: -5px;
+  margin-bottom: -2px;
   position: relative;
   z-index: 2;
 
@@ -375,8 +454,8 @@ body {
     width: 100%;
     height: auto;
     display: block;
-    fill: $primary-green; // Vynucení barvy
-    transform: scale(1.01); // Mírný přesah
+    fill: $primary-green;
+    transform: scale(1.01);
   }
 }
 
@@ -438,7 +517,7 @@ body {
   align-items: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
-  border-left: 4px solid $primary-green; // Zvýraznění tvou zelenou
+  border-left: 4px solid $primary-green;
 
   &:hover {
     transform: translateX(5px);
@@ -447,7 +526,7 @@ body {
 
   .doc-icon {
     font-size: 1.8rem;
-    color: #dc3545; // PDF červená
+    color: #dc3545;
     margin-right: 20px;
   }
 
@@ -491,13 +570,10 @@ body {
   }
 }
 
-
-
-// 1. Horní sekce s textem (WYSIWYG obsah)
+// WYSIWYG obsah
 section.container.section-padding {
-  max-width: 900px; // Zúžíme text, aby se lépe četl a nebyl "rozpláclý"
+  max-width: 900px;
   margin: 0 auto;
-  // Stylování odkazu na Stanovy a další linky v textu
   a {
     color: $river-blue;
     font-weight: bold;
@@ -508,8 +584,6 @@ section.container.section-padding {
       border-color: $primary-green;
     }
   }
-
-  // Zvýraznění adresy/info, pokud je v odstavcích
   p strong {
     color: $primary-green;
     display: inline-block;
@@ -517,55 +591,34 @@ section.container.section-padding {
   }
 }
 
-// 2. Spodní sekce s formulářem
+// Kontakt
 section.contact-section {
-  background-color: #f9f9f9; // Jemné odlišení pozadí pod formulářem
+  background-color: #f9f9f9;
   border-top: 1px solid #eee;
 
-  .contact-form-card {
-    background: $white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    max-width: 800px;
-    margin: -60px auto 0; // "Vytáhneme" kartu trochu nahoru přes předchozí sekci
-    position: relative;
-    z-index: 10;
-  }
-
-
-  // Hlavní kontejner gridu přepneme na jednosloupcový "flex"
   .contact-grid {
     display: flex;
     flex-direction: column;
-    align-items: center; // Vycentrování horizontálně
-    text-align: center;  // Vycentrování textu
-    gap: 30px;           // Přesná mezera mezi textem a formulářem
+    align-items: center;
+    text-align: center;
+    gap: 30px;
     margin: 0 auto;
-    max-width: 800px;    // Omezíme šířku, aby to na desktopu nevypadalo moc roztaženě
+    max-width: 800px;
   }
 
   .contact-info {
-    margin: 0;           // Resetujeme případné marginy
+    margin: 0;
     padding: 0;
-
-    .section-title {
-      margin-bottom: 15px;
-    }
-
-    .section-subtitle {
-      margin-bottom: 0;  // Aby se to nelepilo ke kartě, o mezeru se stará 'gap' v gridu
-    }
+    .section-title { margin-bottom: 15px; }
+    .section-subtitle { margin-bottom: 0; }
   }
 
   .contact-form-card {
-    width: 100%;         // Karta vyplní šířku kontejneru (800px)
-    margin-top: 0;       // ZRUŠIT záporný margin - tohle vyřeší to překrývání!
+    width: 100%;
     background: $white;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    text-align: left;    // Vnitřek formuláře (labely) necháme raději vlevo, je to přehlednější
+    text-align: left;
   }
-
 }

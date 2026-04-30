@@ -15,10 +15,15 @@
 
         <nav class="main-nav">
             <ul class="nav-list">
-                <li n:foreach="$menuTree as $item">
-                    <a n:href="Home:default, page_id => $item->getId()" n:class="$active_page_id == $item->getId() ? active">
-                        {$item->getPageName()}
-                    </a>
+                <li n:foreach="$menuTree as $item" n:class="!empty($item->children) ? has-submenu">
+                    <div class="nav-item-wrapper">
+                        <a n:href="Home:default, page_id => $item->getId()" n:class="$active_page_id == $item->getId() ? active">
+                            {$item->getPageName()}
+                        </a>
+                        <button n:if="!empty($item->children)" class="submenu-toggle" aria-label="Rozbalit podmenu">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
                     <ul n:if="!empty($item->children)" class="submenu">
                         <li n:foreach="$item->children as $subitem">
                             <a n:href="Home:default, page_id => $subitem->getId()" n:class="$active_page_id == $subitem->getId() ? active">
@@ -27,7 +32,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="mobile-only"><a href="{$pages[3]->page_rewrite}.html" class="btn btn-primary">Přidejte se</a></li>
+                <li class="desktop-only"><a href="{$pages[3]->page_rewrite}.html" class="btn btn-primary">Přidejte se</a></li>
             </ul>
         </nav>
     </div>

@@ -3,19 +3,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('.menu-toggle');
     const nav = document.querySelector('.main-nav');
 
-    if (toggle && nav) { // Pojistka, aby to neházelo chyby na stránkách bez menu
-        toggle.addEventListener('click', () => {
-
+    if (toggle && nav) { // Pojistka, aby to nehĂˇzelo chyby na strĂˇnkĂˇch bez menu
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             nav.classList.toggle('is-open');
             document.body.classList.toggle('menu-open');
         });
 
-        // Zavření při kliknutí na odkaz
+        // 1b. SUBMENU TOGGLE NA MOBILU
+        document.querySelectorAll('.submenu-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const parentLi = btn.closest('li');
+                parentLi.classList.toggle('is-open');
+            });
+        });
+
+        // ZavĹ™enĂ­ pĹ™i kliknutĂ­ na odkaz (pokud to nenĂ­ toggle podmenu)
         document.querySelectorAll('.nav-list a').forEach(link => {
             link.addEventListener('click', () => {
                 nav.classList.remove('is-open');
                 document.body.classList.remove('menu-open');
             });
+        });
+
+        // ZavĹ™enĂ­ pĹ™i kliknutĂ­ mimo menu
+        document.addEventListener('click', (e) => {
+            if (nav.classList.contains('is-open') && !nav.contains(e.target) && !toggle.contains(e.target)) {
+                nav.classList.remove('is-open');
+                document.body.classList.remove('menu-open');
+            }
         });
     }
 
