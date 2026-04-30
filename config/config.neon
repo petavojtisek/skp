@@ -30,6 +30,8 @@ decorator:
 
 session:
 	expiration: 14 days
+	refererCheck: off
+	cookieSamesite: Lax
 
 latte:
 	strictParsing: yes
