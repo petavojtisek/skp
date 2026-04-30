@@ -293,16 +293,26 @@
           editor.save(); // Sync with original textarea for Nette forms
         });
 
-        const openGalleryPicker = () => {
+        const openFileManager = (urlParams) => {
           const textarea = document.querySelector('.wysiwyg');
           let fmUrl = textarea ? textarea.getAttribute('data-fm-url') : null;
           if (!fmUrl) {
             alert('FileManager URL is not defined.');
             return;
           }
+          
+          // Pokud fmUrl obsahuje doménu, zajistíme stejný protokol jako aktuální stránka
+          if (fmUrl.startsWith('http')) {
+            const currentProto = window.location.protocol; // http: nebo https:
+            fmUrl = fmUrl.replace(/^https?:/, currentProto);
+          }
+
           const separator = fmUrl.includes('?') ? '&' : '?';
-          fmUrl += separator + 'picker=1&baseType=gallery';
-          window.open(fmUrl, 'FileManager', 'width=1100,height=700,resizable=yes');
+          window.open(fmUrl + separator + urlParams, 'FileManager', 'width=1100,height=700,resizable=yes');
+        };
+
+        const openGalleryPicker = () => {
+          openFileManager('picker=1&baseType=gallery');
         };
 
         editor.ui.registry.addButton('gallery', {
